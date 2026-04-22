@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAYLAR Shop — Stealth Edition</title>
+    <style>
+        :root {
+            --accent: #10b981; 
+            --accent-glow: rgba(16, 185, 129, 0.4);
+            --bg-black: #020617;
+            --border: rgba(255, 255, 255, 0.15);
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-black);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон (Сферы) */
+        .bg-shape {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 8s infinite alternate ease-in-out;
+        }
+        .shape-1 {
+            width: 300px; height: 300px;
+            background: #10b981;
+            top: 5%; left: 10%;
+        }
+        .shape-2 {
+            width: 400px; height: 400px;
+            background: #0ea5e9;
+            bottom: 10%; right: 5%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(40px) scale(1.1); }
+        }
+
+        .container { width: 100%; max-width: 400px; z-index: 1; }
+
+        /* Glassmorphism (Стеклянная карточка) */
+        .card {
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            transition: all 0.4s ease;
+        }
+
+        /* Neon Glow для готовой формы */
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
+            50% { box-shadow: 0 0 30px var(--accent), inset 0 0 20px var(--accent); border-color: #fff; }
+            100% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
+        }
+        .card.neon-ready {
+            animation: neonPulse 2s infinite;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 0 0 25px 0;
+            font-size: 28px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 25px var(--accent-glow);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.5);
+            border-radius: 16px;
+            padding: 4px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+
+        .tab.active { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .section { display: none; animation: slideUp 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
+
+        input {
+            width: 100%; padding: 16px; background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border); border-radius: 14px;
+            color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; 
+            outline: none; transition: all 0.3s ease;
+        }
+
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+
+        .error-msg { color: var(--error); font-size: 11px; margin-bottom: 15px; display: none; font-weight: bold; padding-left: 5px; }
+
+        .premium-option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .premium-option:hover {
+            transform: translateX(8px);
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .premium-option.selected { 
+            border-color: var(--accent); 
+            background: rgba(16, 185, 129, 0.15); 
+        }
+
+        .price-display { text-align: center; margin: 20px 0; }
+        .price-display span { font-size: 34px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+
+        /* Блок с плюсами */
+        .pros-box {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .pros-box div {
+            font-size: 12px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pros-box div:last-child { margin-bottom: 0; }
+        .pros-box b { color: var(--accent); }
+
+        .btn {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            font-size: 15px; font-weight: 900; text-transform: uppercase; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .btn-main { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 10px 25px var(--accent-glow);
+        }
+
+        .btn-main:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 35px var(--accent-glow);
+        }
+
+        .btn-main:disabled { 
+            background: #1e293b; 
+            color: #475569; 
+            box-shadow: none; 
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(15px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(30px);
+            width: 100%; max-width: 340px;
+            padding: 30px;
+            border-radius: 35px;
+            border: 1px solid var(--accent);
+            text-align: center;
+            box-shadow: 0 0 40px var(--accent-glow);
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .final-price { font-size: 32px; color: var(--accent); font-weight: 900; margin: 15px 0; }
+
+        .bank-box {
+            background: #000;
+            padding: 18px;
+            border-radius: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .close-btn { color: var(--text-dim); float: right; font-size: 22px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="bg-shape shape-1"></div>
+<div class="bg-shape shape-2"></div>
+
+<div class="container">
+    <div class="card" id="main-card">
+        <h2>SAYLAR SHOP</h2>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('stars', this)">ЗВЁЗДЫ</div>
+            <div class="tab" onclick="switchTab('premium', this)">PREMIUM</div>
+        </div>
+
+        <label>Никнейм (только Английский)</label>
+        <input type="text" id="username" placeholder="@nickname" oninput="validateForm()">
+        <div id="name-error" class="error-msg">Русские буквы запрещены!</div>
+
+        <div id="stars-section" class="section active">
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Кол-во звёзд</label>
+                    <input type="number" id="stars-input" placeholder="50" oninput="calcFromStars()">
+                </div>
+                <div style="flex: 1;">
+                    <label>Сумма в рублях</label>
+                    <input type="number" id="rub-input" placeholder="70" oninput="calcFromRub()">
+                </div>
+            </div>
+            <p style="font-size: 10px; color: var(--text-dim); margin-top: 5px;">* Минимальный заказ — 70₽ (50 звёзд)</p>
+            <div class="price-display"><span id="res-stars">0 ₽</span></div>
+        </div>
+
+        <div id="premium-section" class="section">
+            <div class="premium-option" onclick="setPrem(3, 1000, this)"><span>3 Месяца</span> <b>1000 ₽</b></div>
+            <div class="premium-option" onclick="setPrem(6, 1320, this)"><span>6 Месяцев</span> <b>1320 ₽</b></div>
+            <div class="premium-option" onclick="setPrem(12, 2400, this)"><span>12 Месяцев</span> <b>2400 ₽</b></div>
+            <div class="price-display"><span id="res-prem">0 ₽</span></div>
+        </div>
+
+        <div class="pros-box">
+            <div><b>⚡</b> Быстрая подача товара (1-5 мин)</div>
+            <div><b>🔒</b> Дешевле чем в оф. боте</div>
+            <div><b>⭐</b> Даю гарантию от блокировок</div>
+        </div>
+
+        <button class="btn btn-main" id="pay-btn" onclick="openPay()" disabled>Оформить заказ</button>
+        <a href="https://t.me/SAYLARgifts/201" style="display:block; text-align:center; color:var(--accent); margin-top:20px; font-size:12px; text-decoration:none; font-weight:800;" target="_blank">ОТЗЫВЫ КЛИЕНТОВ (100+)</a>
+    </div>
+</div>
+
+<div id="modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closePay()">✕</span>
+        <h3 style="margin:0;">ИТОГО К ОПЛАТЕ:</h3>
+        <div class="final-price" id="modal-sum">0 ₽</div>
+        <h3 style="margin:0;">Т-банк</h3>
+        <div class="bank-box">
+            2200 7019 4219 4652<br>
+            +7 966 349 22 74
+        </div>
+        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">Дамир О.</p>
+        <button class="btn btn-main" onclick="finish()">Я ОПЛАТИЛ</button>
+    </div>
+</div>
+
+<script>
+    // --- Логика магазина ---
+    let mode = 'stars';
+    let pPrice = 0;
+    let pMonths = 0;
+    let totalSum = 0;
+    const rate = 1.4;
+
+    function switchTab(t, el) {
+        mode = t;
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById(t + '-section').classList.add('active');
+        validateForm();
+    }
+
+    function calcFromStars() {
+        let s = document.getElementById('stars-input').value;
+        if (s > 0) {
+            document.getElementById('rub-input').value = Math.ceil(s * rate);
+        } else {
+            document.getElementById('rub-input').value = "";
+        }
+        validateForm();
+    }
+
+    function calcFromRub() {
+        let r = document.getElementById('rub-input').value;
+        if (r > 0) {
+            document.getElementById('stars-input').value = Math.floor(r / rate);
+        } else {
+            document.getElementById('stars-input').value = "";
+        }
+        validateForm();
+    }
+
+    function setPrem(m, p, el) {
+        pMonths = m; pPrice = p;
+        document.querySelectorAll('.premium-option').forEach(x => x.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('res-prem').innerText = p + " ₽";
+        validateForm();
+    }
+
+    function validateForm() {
+        let user = document.getElementById('username').value;
+        let rubVal = document.getElementById('rub-input').value;
+        let btn = document.getElementById('pay-btn');
+        let error = document.getElementById('name-error');
+        let card = document.getElementById('main-card');
+        
+        let hasRussian = /[а-яА-ЯёЁ]/.test(user);
+        error.style.display = hasRussian ? 'block' : 'none';
+
+        let isNameOk = user.length > 2 && !hasRussian;
+        
+        if (mode === 'stars') {
+            totalSum = rubVal >= 70 ? parseInt(rubVal) : 0;
+            document.getElementById('res-stars').innerText = totalSum + " ₽";
+            btn.disabled = !(isNameOk && totalSum >= 70);
+        } else {
+            totalSum = pPrice;
+            btn.disabled = !(isNameOk && pPrice > 0);
+        }
+
+        if (!btn.disabled) {
+            card.classList.add('neon-ready');
+        } else {
+            card.classList.remove('neon-ready');
+        }
+    }
+
+    function openPay() {
+        document.getElementById('modal-sum').innerText = totalSum + " ₽";
+        document.getElementById('modal').classList.add('active');
+    }
+
+    function closePay() { 
+        document.getElementById('modal').classList.remove('active'); 
+    }
+
+    function finish() {
+        let user = document.getElementById('username').value;
+        let msg = mode === 'stars' 
+            ? `Оплатил ${totalSum}р за ${document.getElementById('stars-input').value} звёзд. Ник: ${user}`
+            : `Оплатил ${totalSum}р за Премиум (${pMonths} мес). Ник: ${user}`;
+        window.open(`https://t.me/SYLAR_garant?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+</script>
+
+</body>
+</html>
