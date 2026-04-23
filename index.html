@@ -28,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* Анимированный фон (Сферы) */
         .bg-shape {
             position: fixed;
             border-radius: 50%;
@@ -56,7 +55,6 @@
 
         .container { width: 100%; max-width: 400px; z-index: 1; }
 
-        /* Glassmorphism (Стеклянная карточка) */
         .card {
             background: rgba(15, 23, 42, 0.3);
             backdrop-filter: blur(30px);
@@ -68,7 +66,6 @@
             transition: all 0.4s ease;
         }
 
-        /* Neon Glow для готовой формы */
         @keyframes neonPulse {
             0% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
             50% { box-shadow: 0 0 30px var(--accent), inset 0 0 20px var(--accent); border-color: #fff; }
@@ -160,7 +157,6 @@
         .price-display { text-align: center; margin: 20px 0; }
         .price-display span { font-size: 34px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
 
-        /* Блок с плюсами */
         .pros-box {
             background: rgba(0,0,0,0.4);
             border: 1px solid var(--border);
@@ -286,8 +282,8 @@
         </div>
 
         <div class="pros-box">
-            <div><b>⚡</b> Быстрая подача товара (1-5 мин)</div>
-            <div><b>🔒</b> Дешевле чем в оф. боте</div>
+            <div><b>⚡</b> Быстрая выдача товара (1-5 мин)</div>
+            <div><b>🔒</b> 100% Безопасность аккаунта</div>
             <div><b>⭐</b> Даю гарантию от блокировок</div>
         </div>
 
@@ -301,7 +297,6 @@
         <span class="close-btn" onclick="closePay()">✕</span>
         <h3 style="margin:0;">ИТОГО К ОПЛАТЕ:</h3>
         <div class="final-price" id="modal-sum">0 ₽</div>
-        <h3 style="margin:0;">Т-банк</h3>
         <div class="bank-box">
             2200 7019 4219 4652<br>
             +7 966 349 22 74
@@ -312,7 +307,6 @@
 </div>
 
 <script>
-    // --- Логика магазина ---
     let mode = 'stars';
     let pPrice = 0;
     let pMonths = 0;
@@ -394,11 +388,30 @@
     }
 
     function finish() {
-        let user = document.getElementById('username').value;
-        let msg = mode === 'stars' 
-            ? `Оплатил ${totalSum}р за ${document.getElementById('stars-input').value} звёзд. Ник: ${user}`
-            : `Оплатил ${totalSum}р за Премиум (${pMonths} мес). Ник: ${user}`;
-        window.open(`https://t.me/SYLAR_garant?text=${encodeURIComponent(msg)}`, '_blank');
+        const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
+        const chatId = '1717982615';
+        const user = document.getElementById('username').value;
+        
+        let productDetails = mode === 'stars' 
+            ? `${document.getElementById('stars-input').value} звёзд`
+            : `Премиум на ${pMonths} мес.`;
+
+        const message = `💰 НОВЫЙ ЗАКАЗ!\n\n👤 Клиент: ${user}\n📦 Товар: ${productDetails}\n💵 Сумма: ${totalSum} ₽`;
+
+        const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+        fetch(url)
+            .then(response => {
+                if (response.ok) {
+                    alert('Заказ отправлен боту! Ожидайте выдачи.');
+                    closePay();
+                } else {
+                    alert('Ошибка! Проверь запущен ли бот.');
+                }
+            })
+            .catch(error => {
+                alert('Проблема с сетью.');
+            });
     }
 </script>
 
