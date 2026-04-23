@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAYLAR Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SAYLAR SHOP — Premium Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -13,14 +13,17 @@
             --border: rgba(255, 255, 255, 0.15);
             --text-main: #f1f5f9;
             --text-dim: #94a3b8;
+            --error: #ef4444;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-black);
             color: var(--text-main);
             margin: 0;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,61 +31,175 @@
             overflow: hidden;
         }
 
+        /* Анимированный фон со сферами */
         .bg-shape {
             position: fixed;
             border-radius: 50%;
-            filter: blur(80px);
+            filter: blur(90px);
             z-index: -1;
-            opacity: 0.3;
-            animation: float 6s infinite alternate ease-in-out;
+            opacity: 0.4;
+            animation: float 8s infinite alternate ease-in-out;
         }
-        .shape-1 { width: 250px; height: 250px; background: var(--accent); top: -50px; left: -50px; }
-        .shape-2 { width: 300px; height: 300px; background: #0ea5e9; bottom: -50px; right: -50px; }
+        .shape-1 {
+            width: 300px; height: 300px;
+            background: #10b981;
+            top: 5%; left: 10%;
+        }
+        .shape-2 {
+            width: 400px; height: 400px;
+            background: #0ea5e9;
+            bottom: 10%; right: 5%;
+            animation-delay: -4s;
+        }
 
         @keyframes float {
-            from { transform: translate(0, 0); }
-            to { transform: translate(20px, 30px); }
+            0% { transform: translateY(0px) rotate(0deg) scale(1); }
+            100% { transform: translateY(40px) rotate(20deg) scale(1.1); }
         }
 
-        .container { width: 100%; max-width: 380px; }
+        .container { width: 100%; max-width: 400px; z-index: 1; }
 
+        /* Основная карточка с эффектом стекла */
         .card {
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            transition: 0.3s;
+            border-radius: 30px;
+            padding: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .card.neon { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        /* Неоновая пульсация при готовности */
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 15px var(--accent-glow); border-color: var(--accent); }
+            50% { box-shadow: 0 0 35px var(--accent); border-color: #fff; }
+            100% { box-shadow: 0 0 15px var(--accent-glow); border-color: var(--accent); }
+        }
+        .card.neon-ready {
+            animation: neonPulse 2s infinite;
+        }
 
-        h2 { text-align: center; margin: 0 0 20px 0; letter-spacing: 2px; }
+        h2 {
+            text-align: center;
+            margin: 0 0 25px 0;
+            font-size: 28px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 25px var(--accent-glow);
+        }
 
-        .tabs { display: flex; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
-        .tab { flex: 1; padding: 10px; text-align: center; border-radius: 10px; font-weight: 800; font-size: 12px; color: var(--text-dim); cursor: pointer; }
-        .tab.active { background: var(--accent); color: #000; }
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.5);
+            border-radius: 16px;
+            padding: 4px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
 
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.3s; }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+
+        .tab.active { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        /* Секции */
+        .section { display: none; animation: slideUp 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            color: var(--text-dim); 
+            letter-spacing: 1px; 
+        }
+
+        input {
+            width: 100%; padding: 16px; background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border); border-radius: 14px;
+            color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; 
+            outline: none; transition: all 0.3s ease;
+        }
+
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+
+        .premium-option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .premium-option:hover { transform: translateX(8px); border-color: var(--accent); }
+        .premium-option.selected { 
+            border-color: var(--accent); 
+            background: rgba(16, 185, 129, 0.15); 
+            box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+
+        .price-display { text-align: center; margin: 20px 0; }
+        .price-display span { font-size: 36px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+
+        /* Кнопки */
+        .btn {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            font-size: 15px; font-weight: 900; text-transform: uppercase; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .btn-main { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 10px 25px var(--accent-glow);
+        }
+
+        .btn-main:hover:not(:disabled) { transform: translateY(-4px); box-shadow: 0 15px 35px var(--accent-glow); }
+        .btn-main:disabled { background: #1e293b; color: #475569; cursor: not-allowed; opacity: 0.5; box-shadow: none; }
+
+        /* Экран оплаты (внутри карточки) */
+        .pay-screen { display: none; text-align: center; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        label { display: block; margin-bottom: 6px; font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
-        input { width: 100%; padding: 14px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--accent); }
+        .bank-box {
+            background: #000; padding: 20px; border-radius: 20px;
+            margin: 20px 0; border: 1px solid var(--accent);
+            color: var(--accent); font-family: monospace; font-size: 17px;
+            box-shadow: inset 0 0 15px var(--accent-glow);
+        }
 
-        .premium-option { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 15px; border-radius: 14px; display: flex; justify-content: space-between; margin-bottom: 8px; cursor: pointer; }
-        .premium-option.selected { border-color: var(--accent); background: rgba(16, 185, 129, 0.1); }
-
-        .price { text-align: center; font-size: 32px; font-weight: 900; color: var(--accent); margin: 15px 0; }
-
-        .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; }
-        .btn-main { background: var(--accent); color: #000; }
-        .btn-main:disabled { opacity: 0.2; cursor: not-allowed; }
-
-        .pay-ui { display: none; text-align: center; }
-        .bank-box { background: #000; padding: 15px; border-radius: 15px; margin: 15px 0; border: 1px solid var(--accent); color: var(--accent); font-family: monospace; }
+        .back-link {
+            display: block; margin-top: 15px; color: var(--text-dim);
+            text-decoration: none; font-size: 13px; font-weight: bold; cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -91,40 +208,53 @@
 <div class="bg-shape shape-2"></div>
 
 <div class="container">
-    <div class="card" id="card">
+    <div class="card" id="main-card">
         
         <div id="shop-ui">
             <h2>SAYLAR SHOP</h2>
+
             <div class="tabs">
                 <div class="tab active" onclick="switchTab('stars', this)">ЗВЁЗДЫ</div>
                 <div class="tab" onclick="switchTab('premium', this)">PREMIUM</div>
             </div>
 
-            <label>Твой никнейм</label>
-            <input type="text" id="user" placeholder="@nickname" oninput="check()">
+            <label>Ваш никнейм</label>
+            <input type="text" id="username" placeholder="@nickname" oninput="validate()">
 
-            <div id="stars-sec" class="section active">
-                <input type="number" id="s-in" placeholder="Кол-во звёзд" oninput="calcS()">
-                <div class="price" id="p-stars">0 ₽</div>
+            <div id="stars-section" class="section active">
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Количество</label>
+                        <input type="number" id="stars-input" placeholder="50" oninput="calcStars()">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Сумма (₽)</label>
+                        <input type="number" id="rub-input" placeholder="70" oninput="calcRub()">
+                    </div>
+                </div>
+                <div class="price-display"><span id="res-stars">0 ₽</span></div>
             </div>
 
-            <div id="prem-sec" class="section">
-                <div class="premium-option" onclick="setP(3, 1000, this)"><span>3 Месяца</span> <b>1000 ₽</b></div>
-                <div class="premium-option" onclick="setP(6, 1320, this)"><span>6 Месяцев</span> <b>1320 ₽</b></div>
-                <div class="premium-option" onclick="setP(12, 2400, this)"><span>12 Месяцев</span> <b>2400 ₽</b></div>
-                <div class="price" id="p-prem">0 ₽</div>
+            <div id="premium-section" class="section">
+                <div class="premium-option" onclick="setPrem(3, 1000, this)"><span>3 Месяца</span> <b>1000 ₽</b></div>
+                <div class="premium-option" onclick="setPrem(6, 1320, this)"><span>6 Месяцев</span> <b>1320 ₽</b></div>
+                <div class="premium-option" onclick="setPrem(12, 2400, this)"><span>12 Месяцев</span> <b>2400 ₽</b></div>
+                <div class="price-display"><span id="res-prem">0 ₽</span></div>
             </div>
 
-            <button class="btn btn-main" id="go" onclick="showPay()" disabled>Заказать</button>
+            <button class="btn btn-main" id="pay-btn" onclick="showPay()" disabled>Оформить заказ</button>
         </div>
 
-        <div id="pay-ui" class="pay-ui">
-            <h3 style="margin:0">К ОПЛАТЕ:</h3>
-            <div class="price" id="f-sum">0 ₽</div>
-            <div class="bank-box">2200 7019 4219 4652<br>+7 966 349 22 74</div>
-            <p style="font-size:12px; color:var(--text-dim)">Получатель: Дамир О.</p>
-            <button class="btn btn-main" id="done" onclick="send()">Я ОПЛАТИЛ</button>
-            <button style="background:none; border:none; color:var(--text-dim); margin-top:15px; cursor:pointer;" onclick="hidePay()">← Назад</button>
+        <div id="pay-ui" class="pay-screen">
+            <h3 style="margin-top:0;">ОПЛАТИТЕ ЗАКАЗ</h3>
+            <div class="price-display"><span id="final-sum">0 ₽</span></div>
+            <div class="bank-box">
+                2200 7019 4219 4652<br>
+                +7 966 349 22 74
+            </div>
+            <p style="color: var(--text-dim); font-size: 13px;">Получатель: Дамир О.</p>
+            <button class="btn btn-main" id="confirm-btn" onclick="sendData()">Я ОПЛАТИЛ</button>
+            <div class="back-link" onclick="hidePay()">← Вернуться к выбору</div>
         </div>
 
     </div>
@@ -132,45 +262,66 @@
 
 <script>
     const tg = window.Telegram.WebApp;
-    tg.expand(); // Развернуть на весь экран
+    tg.expand(); // Разворачиваем на весь экран в телеге
 
-    let mode = 'stars', sum = 0, premM = 0, premP = 0;
+    let mode = 'stars';
+    let totalSum = 0;
+    let premMonths = 0;
+    const rate = 1.4;
 
     function switchTab(t, el) {
         mode = t;
         document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
         document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
-        document.getElementById(t + '-sec').classList.add('active');
-        check();
+        document.getElementById(t + '-section').classList.add('active');
+        validate();
     }
 
-    function calcS() {
-        let val = document.getElementById('s-in').value;
-        sum = val >= 50 ? Math.ceil(val * 1.4) : 0;
-        document.getElementById('p-stars').innerText = sum + " ₽";
-        check();
+    function calcStars() {
+        let s = document.getElementById('stars-input').value;
+        document.getElementById('rub-input').value = s > 0 ? Math.ceil(s * rate) : "";
+        validate();
     }
 
-    function setP(m, p, el) {
-        premM = m; premP = p; sum = p;
+    function calcRub() {
+        let r = document.getElementById('rub-input').value;
+        document.getElementById('stars-input').value = r > 0 ? Math.floor(r / rate) : "";
+        validate();
+    }
+
+    function setPrem(m, p, el) {
+        premMonths = m;
+        totalSum = p;
         document.querySelectorAll('.premium-option').forEach(x => x.classList.remove('selected'));
         el.classList.add('selected');
-        document.getElementById('p-prem').innerText = p + " ₽";
-        check();
+        document.getElementById('res-prem').innerText = p + " ₽";
+        validate();
     }
 
-    function check() {
-        let u = document.getElementById('user').value;
-        let isOk = u.length > 2 && sum > 0 && !/[а-яА-Я]/.test(u);
-        document.getElementById('go').disabled = !isOk;
-        document.getElementById('card').classList.toggle('neon', isOk);
+    function validate() {
+        let user = document.getElementById('username').value;
+        let rub = document.getElementById('rub-input').value;
+        let btn = document.getElementById('pay-btn');
+        let card = document.getElementById('main-card');
+
+        let nameOk = user.length > 2 && !/[а-яА-Я]/.test(user);
+        
+        if (mode === 'stars') {
+            totalSum = rub >= 70 ? parseInt(rub) : 0;
+            document.getElementById('res-stars').innerText = totalSum + " ₽";
+            btn.disabled = !(nameOk && totalSum >= 70);
+        } else {
+            btn.disabled = !(nameOk && totalSum > 0);
+        }
+
+        card.classList.toggle('neon-ready', !btn.disabled);
     }
 
     function showPay() {
         document.getElementById('shop-ui').style.display = 'none';
         document.getElementById('pay-ui').style.display = 'block';
-        document.getElementById('f-sum').innerText = sum + " ₽";
+        document.getElementById('final-sum').innerText = totalSum + " ₽";
     }
 
     function hidePay() {
@@ -178,25 +329,35 @@
         document.getElementById('pay-ui').style.display = 'none';
     }
 
-    function send() {
-        const btn = document.getElementById('done');
+    function sendData() {
+        const btn = document.getElementById('confirm-btn');
         btn.disabled = true;
-        btn.innerText = "ОТПРАВКА...";
+        btn.innerText = "ОТПРАВЛЯЮ...";
 
         const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
         const chat = '1717982615';
-        const user = document.getElementById('user').value;
-        let prod = mode === 'stars' ? document.getElementById('s-in').value + ' звёзд' : 'Премиум ' + premM + ' мес.';
+        const user = document.getElementById('username').value;
+        
+        let item = mode === 'stars' 
+            ? document.getElementById('stars-input').value + " звёзд" 
+            : "Премиум на " + premMonths + " мес.";
 
-        const text = `💰 НОВЫЙ ЗАКАЗ!\n👤 Клиент: ${user}\n📦 Товар: ${prod}\n💵 Сумма: ${sum} ₽`;
+        const text = `💎 НОВЫЙ ЗАКАЗ!\n\n👤 Клиент: ${user}\n📦 Товар: ${item}\n💵 Сумма: ${totalSum} ₽`;
 
         fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat}&text=${encodeURIComponent(text)}`)
-        .then(() => {
-            tg.showAlert('Заказ отправлен! Ожидайте.', () => {
-                tg.close(); // Закрыть приложение после оплаты
-            });
+        .then(res => {
+            if(res.ok) {
+                tg.showAlert("Заказ отправлен! Ожидайте пополнения.", () => {
+                    tg.close(); // Закрываем мини-апп после уведомления
+                });
+            } else {
+                alert("Ошибка! Проверь бота.");
+                btn.disabled = false;
+                btn.innerText = "Я ОПЛАТИЛ";
+            }
         });
     }
 </script>
+
 </body>
 </html>
