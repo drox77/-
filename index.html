@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR SHOP</title>
+    <title>SAYLAR SHOP — Premium Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -89,27 +89,11 @@
 
         .btn { width: 100%; padding: 18px; border-radius: 18px; border: none; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
         .btn-main { background: var(--accent); color: #000; box-shadow: 0 10px 25px var(--accent-glow); }
-        .btn-main:disabled { background: #1e293b; color: #475569; cursor: not-allowed; opacity: 0.5; box-shadow: none; }
+        .btn-main:disabled { background: #1e293b; color: #475569; cursor: not-allowed; opacity: 0.5; }
 
         .pay-screen { display: none; text-align: center; animation: fadeIn 0.5s ease; }
         .bank-box { background: #000; padding: 20px; border-radius: 20px; margin: 20px 0; border: 1px solid var(--accent); color: var(--accent); font-family: monospace; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Окно успеха */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-            display: none; justify-content: center; align-items: center; z-index: 100;
-        }
-        .modal-box {
-            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent);
-            padding: 30px; border-radius: 20px; text-align: center;
-            box-shadow: 0 0 30px var(--accent-glow); animation: popIn 0.4s ease;
-            width: 90%; max-width: 320px;
-        }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-box h3 { color: var(--accent); margin-top: 0; font-size: 22px; }
-        .modal-box p { color: var(--text-main); font-size: 15px; margin-bottom: 20px; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -156,21 +140,14 @@
 
         <div id="pay-ui" class="pay-screen">
             <h3>ОПЛАТИТЕ</h3>
+            <h3>Т-Банк</h3>
             <div class="price-display"><span id="final-sum">0 ₽</span></div>
             <div class="bank-box">2200 7019 4219 4652<br>+7 966 349 22 74</div>
             <p style="color: var(--text-dim); font-size: 13px;">Получатель: Дамир О.</p>
             <button class="btn btn-main" id="confirm-btn" onclick="sendToBot()">Я ОПЛАТИЛ</button>
-            <div style="margin-top:15px; color:var(--text-dim); cursor:pointer; font-weight:bold;" onclick="hidePay()">← Назад</div>
+            <div style="margin-top:15px; color:var(--text-dim); cursor:pointer;" onclick="hidePay()">← Назад</div>
         </div>
 
-    </div>
-</div>
-
-<div id="success-modal" class="modal-overlay">
-    <div class="modal-box">
-        <h3>УСПЕШНО!</h3>
-        <p>Ваш заказ отправлен.<br>Скоро будет выдан.</p>
-        <button class="btn btn-main" onclick="tg.close()">Закрыть</button>
     </div>
 </div>
 
@@ -217,8 +194,8 @@
         let btn = document.getElementById('pay-btn');
         let card = document.getElementById('main-card');
         
-        // Проверка: больше 3 символов, есть английская буква, нет русских букв
-        let ok = user.length >= 3 && /[a-zA-Z]/.test(user) && !/[а-яА-Я]/.test(user);
+        // Только проверка на отсутствие русских букв и длина больше 2
+        let ok = user.length > 2 && !/[а-яА-ЯёЁ]/.test(user);
 
         if (mode === 'stars') {
             total = rub >= 70 ? parseInt(rub) : 0;
@@ -251,13 +228,11 @@
 
         fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
         .then(() => {
-            // Показываем наше красивое окно
-            document.getElementById('success-modal').style.display = 'flex';
-            
-            // Само закроется через 3 секунды
+            btn.innerText = "ОТПРАВЛЕНО";
+            // Закрываем телеграм-апп через 1.5 секунды
             setTimeout(() => {
                 tg.close();
-            }, 3000);
+            }, 1500);
         });
     }
 </script>
