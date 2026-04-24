@@ -1,3 +1,8 @@
+ 1. Копейки убрал.
+ 2. Реквизиты удалил.
+ 3. Добавил желтую кнопку для перевода в Т-Банк. Сумма подставится нужная.
+Полный код:
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,7 +12,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --accent: #10b981; 
+            --accent: #10b981;
             --accent-glow: rgba(16, 185, 129, 0.4);
             --bg-black: #020617;
             --border: rgba(255, 255, 255, 0.15);
@@ -15,7 +20,6 @@
             --text-dim: #94a3b8;
             --error: #ef4444;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-black);
@@ -28,8 +32,6 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
-        /* Анимированный фон (Сферы) */
         .bg-shape {
             position: fixed;
             border-radius: 50%;
@@ -38,26 +40,13 @@
             opacity: 0.4;
             animation: float 8s infinite alternate ease-in-out;
         }
-        .shape-1 {
-            width: 300px; height: 300px;
-            background: #10b981;
-            top: 5%; left: 10%;
-        }
-        .shape-2 {
-            width: 400px; height: 400px;
-            background: #0ea5e9;
-            bottom: 10%; right: 5%;
-            animation-delay: -4s;
-        }
-
+        .shape-1 { width: 300px; height: 300px; background: #10b981; top: 5%; left: 10%; }
+        .shape-2 { width: 400px; height: 400px; background: #0ea5e9; bottom: 10%; right: 5%; animation-delay: -4s; }
         @keyframes float {
             0% { transform: translateY(0px) scale(1); }
             100% { transform: translateY(40px) scale(1.1); }
         }
-
         .container { width: 100%; max-width: 400px; z-index: 1; }
-
-        /* Glassmorphism (Стеклянная карточка) */
         .card {
             background: rgba(15, 23, 42, 0.3);
             backdrop-filter: blur(30px);
@@ -68,17 +57,12 @@
             box-shadow: 0 25px 60px rgba(0,0,0,0.5);
             transition: all 0.4s ease;
         }
-
-        /* Neon Glow для готовой формы */
         @keyframes neonPulse {
             0% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
             50% { box-shadow: 0 0 30px var(--accent), inset 0 0 20px var(--accent); border-color: #fff; }
             100% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
         }
-        .card.neon-ready {
-            animation: neonPulse 2s infinite;
-        }
-
+        .card.neon-ready { animation: neonPulse 2s infinite; }
         h2 {
             text-align: center;
             margin: 0 0 25px 0;
@@ -86,7 +70,6 @@
             letter-spacing: 3px;
             text-shadow: 0 0 25px var(--accent-glow);
         }
-
         .tabs {
             display: flex;
             background: rgba(0,0,0,0.5);
@@ -95,7 +78,6 @@
             margin-bottom: 25px;
             border: 1px solid var(--border);
         }
-
         .tab {
             flex: 1;
             padding: 12px;
@@ -107,34 +89,22 @@
             color: var(--text-dim);
             cursor: pointer;
         }
-
-        .tab.active { 
-            background: var(--accent); 
-            color: #000; 
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
+        .tab.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); }
         .section { display: none; animation: slideUp 0.4s ease-out; }
         .section.active { display: block; }
-
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
-
         input {
             width: 100%; padding: 16px; background: rgba(0,0,0,0.6);
             border: 1px solid var(--border); border-radius: 14px;
             color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; 
             outline: none; transition: all 0.3s ease;
         }
-
         input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
-
         .error-msg { color: var(--error); font-size: 11px; margin-bottom: 15px; display: none; font-weight: bold; padding-left: 5px; }
-
         .premium-option {
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
@@ -146,22 +116,14 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-
         .premium-option:hover {
             transform: translateX(8px);
             border-color: var(--accent);
             background: rgba(16, 185, 129, 0.05);
         }
-
-        .premium-option.selected { 
-            border-color: var(--accent); 
-            background: rgba(16, 185, 129, 0.15); 
-        }
-
+        .premium-option.selected { border-color: var(--accent); background: rgba(16, 185, 129, 0.15); }
         .price-display { text-align: center; margin: 20px 0; }
         .price-display span { font-size: 34px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
-
-        /* Блок с плюсами */
         .pros-box {
             background: rgba(0,0,0,0.4);
             border: 1px solid var(--border);
@@ -179,33 +141,15 @@
         }
         .pros-box div:last-child { margin-bottom: 0; }
         .pros-box b { color: var(--accent); }
-
         .btn {
             width: 100%; padding: 18px; border-radius: 18px; border: none;
             font-size: 15px; font-weight: 900; text-transform: uppercase; 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
         }
-
-        .btn-main { 
-            background: var(--accent); 
-            color: #000; 
-            box-shadow: 0 10px 25px var(--accent-glow);
-        }
-
-        .btn-main:hover:not(:disabled) {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 15px 35px var(--accent-glow);
-        }
-
-        .btn-main:disabled { 
-            background: #1e293b; 
-            color: #475569; 
-            box-shadow: none; 
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
+        .btn-main { background: var(--accent); color: #000; box-shadow: 0 10px 25px var(--accent-glow); }
+        .btn-main:hover:not(:disabled) { transform: translateY(-4px) scale(1.02); box-shadow: 0 15px 35px var(--accent-glow); }
+        .btn-main:disabled { background: #1e293b; color: #475569; box-shadow: none; opacity: 0.7; cursor: not-allowed; }
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -217,7 +161,6 @@
             z-index: 1000;
             padding: 20px;
         }
-
         .modal-content {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(30px);
@@ -228,21 +171,8 @@
             text-align: center;
             box-shadow: 0 0 40px var(--accent-glow);
         }
-
         .modal-overlay.active { display: flex; }
-
         .final-price { font-size: 32px; color: var(--accent); font-weight: 900; margin: 15px 0; }
-
-        .bank-box {
-            background: #000;
-            padding: 18px;
-            border-radius: 20px;
-            margin: 20px 0;
-            font-family: monospace;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-        }
-
         .close-btn { color: var(--text-dim); float: right; font-size: 22px; cursor: pointer; }
     </style>
 </head>
@@ -302,12 +232,9 @@
         <span class="close-btn" onclick="closePay()">✕</span>
         <h3 style="margin:0;">ИТОГО К ОПЛАТЕ:</h3>
         <div class="final-price" id="modal-sum">0 ₽</div>
-        <div class="bank-box">
-            2200 7019 4219 4652<br>
-            +7 966 349 22 74
-        </div>
-        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">Дамир О.</p>
-        <button class="btn btn-main" id="confirm-btn" onclick="finish()">Я ОПЛАТИЛ</button>
+        
+        <button class="btn btn-main" style="margin-bottom: 15px; background: #ffdd2d; color: #000;" onclick="goToBank()">ОПЛАТИТЬ В Т-БАНКЕ</button>
+        <button class="btn" id="confirm-btn" style="background: #1e293b; color: #fff;" onclick="finish()">Я ОПЛАТИЛ</button>
     </div>
 </div>
 
@@ -320,7 +247,6 @@
 </div>
 
 <script>
-    // Раскрываем приложение в ТГ на весь экран, если открыто там
     if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.expand();
     }
@@ -361,7 +287,8 @@
     }
 
     function setPrem(m, p, el) {
-        pMonths = m; pPrice = p;
+        pMonths = m;
+        pPrice = p;
         document.querySelectorAll('.premium-option').forEach(x => x.classList.remove('selected'));
         el.classList.add('selected');
         document.getElementById('res-prem').innerText = p + " ₽";
@@ -374,13 +301,12 @@
         let btn = document.getElementById('pay-btn');
         let error = document.getElementById('name-error');
         let card = document.getElementById('main-card');
-        
-        // Проверяем только на наличие русских букв
+
         let hasRussian = /[а-яА-ЯёЁ]/.test(user);
         error.style.display = hasRussian ? 'block' : 'none';
 
         let isNameOk = user.length > 2 && !hasRussian;
-        
+
         if (mode === 'stars') {
             totalSum = rubVal >= 70 ? parseInt(rubVal) : 0;
             document.getElementById('res-stars').innerText = totalSum + " ₽";
@@ -402,11 +328,15 @@
         document.getElementById('modal').classList.add('active');
     }
 
-    function closePay() { 
-        document.getElementById('modal').classList.remove('active'); 
+    function closePay() {
+        document.getElementById('modal').classList.remove('active');
     }
 
-    // Отправка в бота
+    function goToBank() {
+        const url = `https://www.tinkoff.ru/rm/9663492274/?amount=${totalSum}`;
+        window.open(url, '_blank');
+    }
+
     function finish() {
         const btn = document.getElementById('confirm-btn');
         btn.disabled = true;
@@ -415,9 +345,9 @@
         const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
         const chatId = '1717982615';
         const user = document.getElementById('username').value;
-        
-        let item = mode === 'stars' 
-            ? document.getElementById('stars-input').value + " звёзд" 
+
+        let item = mode === 'stars'
+            ? document.getElementById('stars-input').value + " звёзд"
             : "Премиум (" + pMonths + " мес.)";
 
         const msg = `💎 НОВЫЙ ЗАКАЗ!\n\n👤 Клиент: ${user}\n📦 Товар: ${item}\n💵 Сумма: ${totalSum} ₽`;
@@ -426,12 +356,9 @@
         fetch(url)
             .then(response => {
                 btn.innerText = "ОТПРАВЛЕНО";
-                
-                // Через 1 секунду прячем окно с реквизитами и показываем "Успешно"
                 setTimeout(() => {
                     document.getElementById('modal').classList.remove('active');
                     document.getElementById('success-modal').classList.add('active');
-                    // Возвращаем кнопку в исходное состояние (на случай, если не закроют окно)
                     btn.disabled = false;
                     btn.innerText = "Я ОПЛАТИЛ";
                 }, 1000);
@@ -443,7 +370,6 @@
             });
     }
 
-    // Закрытие мини-приложения
     function closeAll() {
         document.getElementById('success-modal').classList.remove('active');
         if (window.Telegram && window.Telegram.WebApp) {
@@ -454,3 +380,5 @@
 
 </body>
 </html>
+
+```
