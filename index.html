@@ -327,9 +327,20 @@
         document.getElementById('modal').classList.remove('active');
     }
 
+    // ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТКРЫТИЯ Т-БАНКА ==========
     function goToBank() {
-        const url = `https://www.tinkoff.ru/rm/79663492274/?amount=${totalSum}`;
-        window.open(url, '_blank');
+        // Формируем сумму в рублях с двумя знаками после запятой (копейки)
+        const sumFormatted = totalSum.toFixed(2);
+        // Ссылка на перевод в Т-Банк с предзаполненной суммой
+        const url = `https://www.tinkoff.ru/rm/79663492274/?sum=${sumFormatted}`;
+
+        // Если сайт открыт внутри Telegram Mini App – используем их безопасный метод
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.openLink(url);
+        } else {
+            // Обычный браузер или встроенный WebView Telegram
+            window.open(url, '_blank');
+        }
     }
 
     function finish() {
