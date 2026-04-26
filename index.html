@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* ========== ТВОИ СТИЛИ (сохранены полностью) ========== */
+        /* ========== ВСЕ ТВОИ СТИЛИ (сжаты для читаемости, но полностью) ========== */
         :root {
             --accent: #10b981; 
             --accent-glow: rgba(16, 185, 129, 0.4);
@@ -339,24 +339,24 @@
         <h2>SAYLAR SHOP</h2>
 
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('stars', this)">ЗВЁЗДЫ</div>
-            <div class="tab" onclick="switchTab('premium', this)">PREMIUM</div>
-            <div class="tab" onclick="switchTab('profile', this)">ПРОФИЛЬ</div>
+            <div class="tab active" data-tab="stars">ЗВЁЗДЫ</div>
+            <div class="tab" data-tab="premium">PREMIUM</div>
+            <div class="tab" data-tab="profile">ПРОФИЛЬ</div>
         </div>
 
         <label>Никнейм (Английский + цифры)</label>
-        <input type="text" id="username" placeholder="@nickname" oninput="onNicknameChange()">
+        <input type="text" id="username" placeholder="@nickname">
         <div id="name-error" class="error-msg">Русские буквы запрещены!</div>
 
         <div id="stars-section" class="section active">
             <div style="display: flex; gap: 10px;">
                 <div style="flex: 1;">
                     <label>Кол-во звёзд</label>
-                    <input type="number" id="stars-input" placeholder="50" oninput="calcFromStars()">
+                    <input type="number" id="stars-input" placeholder="50">
                 </div>
                 <div style="flex: 1;">
                     <label>Сумма в рублях</label>
-                    <input type="number" id="rub-input" placeholder="70" oninput="calcFromRub()">
+                    <input type="number" id="rub-input" placeholder="70">
                 </div>
             </div>
             <p style="font-size: 10px; color: var(--text-dim); margin-top: 5px;">* Минимальный заказ — 70₽ (50 звёзд)</p>
@@ -364,9 +364,9 @@
         </div>
 
         <div id="premium-section" class="section">
-            <div class="premium-option" onclick="setPrem(3, 1000, this)"><span>3 Месяца</span> <b>1000 ₽</b></div>
-            <div class="premium-option" onclick="setPrem(6, 1320, this)"><span>6 Месяцев</span> <b>1320 ₽</b></div>
-            <div class="premium-option" onclick="setPrem(12, 2400, this)"><span>12 Месяцев</span> <b>2400 ₽</b></div>
+            <div class="premium-option" data-months="3" data-price="1000"><span>3 Месяца</span> <b>1000 ₽</b></div>
+            <div class="premium-option" data-months="6" data-price="1320"><span>6 Месяцев</span> <b>1320 ₽</b></div>
+            <div class="premium-option" data-months="12" data-price="2400"><span>12 Месяцев</span> <b>2400 ₽</b></div>
             <div class="price-display"><span id="res-prem">0 ₽</span></div>
         </div>
 
@@ -382,7 +382,7 @@
             </div>
             
             <div style="margin-bottom: 20px;">
-                <button class="btn btn-main bonus-btn" id="daily-bonus-btn" onclick="claimDailyBonus()">🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)</button>
+                <button class="btn btn-main bonus-btn" id="daily-bonus-btn">🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)</button>
                 <div id="bonus-timer" style="font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 8px;"></div>
             </div>
 
@@ -393,7 +393,7 @@
                     <div class="flip-choice" data-choice="0">🦅 ОРЁЛ</div>
                     <div class="flip-choice" data-choice="1">🪙 РЕШКА</div>
                 </div>
-                <button class="btn btn-main flip-btn" id="flip-btn" onclick="placeFlipBet()">КИНУТЬ МОНЕТКУ</button>
+                <button class="btn btn-main flip-btn" id="flip-btn">КИНУТЬ МОНЕТКУ</button>
                 <div id="flip-result" style="margin-top: 15px; text-align: center; min-height: 45px;"></div>
             </div>
         </div>
@@ -404,7 +404,7 @@
             <div><b>⭐</b> Даю гарантию от блокировок</div>
         </div>
 
-        <button class="btn btn-main" id="pay-btn" onclick="openPay()" disabled>Оформить заказ</button>
+        <button class="btn btn-main" id="pay-btn" disabled>Оформить заказ</button>
         <a href="https://t.me/saylarreviews" style="display:block; text-align:center; color:var(--accent); margin-top:20px; font-size:12px; text-decoration:none; font-weight:800;" target="_blank">ОТЗЫВЫ КЛИЕНТОВ (100+)</a>
     </div>
 </div>
@@ -420,7 +420,7 @@
             +7 966 349 22 74
         </div>
         <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">Дамир О.</p>
-        <button class="btn btn-main" id="confirm-btn" onclick="finish()">Я ОПЛАТИЛ</button>
+        <button class="btn btn-main" id="confirm-btn">Я ОПЛАТИЛ</button>
     </div>
 </div>
 
@@ -428,395 +428,439 @@
     <div class="modal-content">
         <h3 style="margin:0; color: var(--accent);">ЗАЯВКА ПРИНЯТА</h3>
         <p style="margin: 20px 0; font-size: 15px; color: var(--text-main);">Отправьте скриншот чека в поддержку @saylar_support. После проверки бонус будет начислен вручную.</p>
-        <button class="btn btn-main" onclick="closeAll()">ОК</button>
+        <button class="btn btn-main" id="close-success">ОК</button>
     </div>
 </div>
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    // ---------- ПОДКЛЮЧЕНИЕ К SUPABASE (ТВОИ ДАННЫЕ) ----------
-    const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';  // publishable (anon) ключ
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // ---------- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ----------
-    let currentUser = null;        // { username, coins, last_bonus, is_owner }
-    let mode = 'stars';
-    let pPrice = 0;
-    let pMonths = 0;
-    let totalSum = 0;
-    const rate = 1.4;
-    
-    // Элементы DOM
-    const balanceSpan = document.getElementById('balance-display');
-    const profileNickSpan = document.getElementById('profile-nick');
-    const ownerBadgeSpan = document.getElementById('owner-badge');
-    const dailyBonusBtn = document.getElementById('daily-bonus-btn');
-    const bonusTimerDiv = document.getElementById('bonus-timer');
-    const usernameInput = document.getElementById('username');
-    const payBtn = document.getElementById('pay-btn');
-
-    // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
-    function showToast(msg, duration = 3000) {
-        const toast = document.getElementById('toast-msg');
-        toast.innerText = msg;
-        toast.style.opacity = '1';
-        setTimeout(() => { toast.style.opacity = '0'; }, duration);
-    }
-
-    function updateProfileUI() {
-        if (!currentUser) {
-            profileNickSpan.innerText = "Не авторизован";
-            ownerBadgeSpan.innerHTML = '';
-            balanceSpan.innerText = "0";
+    (function() {
+        // ---------- ПОДКЛЮЧЕНИЕ К SUPABASE (уникальное имя) ----------
+        const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';
+        // Проверяем, что библиотека загружена
+        if (!window.supabase || !window.supabase.createClient) {
+            console.error('Supabase library not loaded!');
+            alert('Ошибка загрузки библиотеки. Проверьте интернет.');
             return;
         }
-        profileNickSpan.innerText = currentUser.username;
-        if (currentUser.is_owner) {
-            ownerBadgeSpan.innerHTML = '<span class="owner-badge">👑 ВЛАДЕЛЕЦ</span>';
-        } else {
-            ownerBadgeSpan.innerHTML = '<span style="background:#1e293b; padding:4px 12px; border-radius:30px; font-size:12px; color:#94a3b8;">Обычный юзер</span>';
-        }
-        balanceSpan.innerText = currentUser.coins;
-    }
+        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    function updateBonusButtonState() {
-        if (!currentUser) return;
-        const today = new Date().toISOString().slice(0,10);
-        const lastBonus = currentUser.last_bonus;
-        if (lastBonus === today) {
-            dailyBonusBtn.disabled = true;
-            dailyBonusBtn.style.opacity = "0.6";
-            dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
-            bonusTimerDiv.innerText = "✨ Возвращайтесь завтра за новым бонусом!";
-        } else {
-            dailyBonusBtn.disabled = false;
-            dailyBonusBtn.style.opacity = "1";
-            dailyBonusBtn.innerText = "🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)";
-            bonusTimerDiv.innerText = "⭐ Доступен! Заберите свои монеты.";
-        }
-    }
+        // ---------- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ----------
+        let currentUser = null;
+        let currentMode = 'stars';
+        let selectedPremiumMonths = 0;
+        let selectedPremiumPrice = 0;
+        let totalSum = 0;
+        const RATE = 1.4;
+        let selectedFlipChoice = null;
 
-    // Загрузить или создать пользователя в Supabase
-    async function loadOrCreateUser(username) {
-        try {
-            // 1. Ищем пользователя
-            let { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('username', username)
-                .maybeSingle();
-            
-            if (error) {
-                console.error('Ошибка поиска:', error);
-                showToast('Ошибка подключения к базе');
-                return false;
+        // DOM элементы
+        const usernameInput = document.getElementById('username');
+        const nameErrorDiv = document.getElementById('name-error');
+        const starsInput = document.getElementById('stars-input');
+        const rubInput = document.getElementById('rub-input');
+        const resStarsSpan = document.getElementById('res-stars');
+        const resPremSpan = document.getElementById('res-prem');
+        const payBtn = document.getElementById('pay-btn');
+        const mainCard = document.getElementById('main-card');
+        const modal = document.getElementById('modal');
+        const modalSumSpan = document.getElementById('modal-sum');
+        const confirmBtn = document.getElementById('confirm-btn');
+        const successModal = document.getElementById('success-modal');
+        const balanceSpan = document.getElementById('balance-display');
+        const profileNickSpan = document.getElementById('profile-nick');
+        const ownerBadgeSpan = document.getElementById('owner-badge');
+        const dailyBonusBtn = document.getElementById('daily-bonus-btn');
+        const bonusTimerDiv = document.getElementById('bonus-timer');
+        const betAmountInput = document.getElementById('bet-amount');
+        const flipResultDiv = document.getElementById('flip-result');
+        const closeSuccessBtn = document.getElementById('close-success');
+
+        // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
+        function showToast(msg) {
+            const toast = document.getElementById('toast-msg');
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+        }
+
+        function updateProfileUI() {
+            if (!currentUser) {
+                profileNickSpan.innerText = "Не авторизован";
+                ownerBadgeSpan.innerHTML = '';
+                balanceSpan.innerText = "0";
+                return;
             }
-            
-            if (data) {
-                // Пользователь существует
-                currentUser = {
-                    username: data.username,
-                    coins: data.coins,
-                    last_bonus: data.last_bonus,
-                    is_owner: data.is_owner
-                };
-                updateProfileUI();
-                updateBonusButtonState();
-                return true;
+            profileNickSpan.innerText = currentUser.username;
+            if (currentUser.is_owner) {
+                ownerBadgeSpan.innerHTML = '<span class="owner-badge">👑 ВЛАДЕЛЕЦ</span>';
             } else {
-                // Создаём нового пользователя
-                const isOwner = (username === 'SAYLAR');
-                const newUser = {
-                    username: username,
-                    coins: 0,
-                    last_bonus: null,
-                    is_owner: isOwner
-                };
-                const { data: inserted, error: insertError } = await supabase
+                ownerBadgeSpan.innerHTML = '<span style="background:#1e293b; padding:4px 12px; border-radius:30px; font-size:12px; color:#94a3b8;">Обычный юзер</span>';
+            }
+            balanceSpan.innerText = currentUser.coins;
+        }
+
+        function updateBonusUI() {
+            if (!currentUser) return;
+            const today = new Date().toISOString().slice(0,10);
+            if (currentUser.last_bonus === today) {
+                dailyBonusBtn.disabled = true;
+                dailyBonusBtn.style.opacity = "0.6";
+                dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
+                bonusTimerDiv.innerText = "✨ Возвращайтесь завтра за новым бонусом!";
+            } else {
+                dailyBonusBtn.disabled = false;
+                dailyBonusBtn.style.opacity = "1";
+                dailyBonusBtn.innerText = "🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)";
+                bonusTimerDiv.innerText = "⭐ Доступен! Заберите свои монеты.";
+            }
+        }
+
+        async function loadOrCreateUser(username) {
+            try {
+                // Ищем пользователя
+                let { data, error } = await sbClient
                     .from('users')
-                    .insert([newUser])
-                    .select()
-                    .single();
+                    .select('*')
+                    .eq('username', username)
+                    .maybeSingle();
                 
-                if (insertError) {
-                    console.error('Ошибка создания:', insertError);
-                    showToast('Не удалось создать аккаунт');
+                if (error) {
+                    console.error('Ошибка поиска:', error);
+                    showToast('Ошибка подключения к базе');
                     return false;
                 }
-                currentUser = {
-                    username: inserted.username,
-                    coins: inserted.coins,
-                    last_bonus: inserted.last_bonus,
-                    is_owner: inserted.is_owner
-                };
-                updateProfileUI();
-                updateBonusButtonState();
-                return true;
-            }
-        } catch (err) {
-            console.error('Исключение:', err);
-            showToast('Ошибка сети. Проверьте соединение.');
-            return false;
-        }
-    }
-
-    // Обновить баланс и last_bonus в базе
-    async function updateUserInDB(updates) {
-        if (!currentUser) return false;
-        try {
-            const { error } = await supabase
-                .from('users')
-                .update(updates)
-                .eq('username', currentUser.username);
-            if (error) {
-                console.error('Ошибка обновления:', error);
-                showToast('Ошибка сохранения в базе');
+                
+                if (data) {
+                    currentUser = {
+                        username: data.username,
+                        coins: data.coins,
+                        last_bonus: data.last_bonus,
+                        is_owner: data.is_owner
+                    };
+                    updateProfileUI();
+                    updateBonusUI();
+                    return true;
+                } else {
+                    // Создаём нового
+                    const isOwner = (username === 'SAYLAR');
+                    const newUser = {
+                        username: username,
+                        coins: 0,
+                        last_bonus: null,
+                        is_owner: isOwner
+                    };
+                    const { data: inserted, error: insertError } = await sbClient
+                        .from('users')
+                        .insert([newUser])
+                        .select()
+                        .single();
+                    
+                    if (insertError) {
+                        console.error('Ошибка создания:', insertError);
+                        showToast('Не удалось создать аккаунт');
+                        return false;
+                    }
+                    currentUser = {
+                        username: inserted.username,
+                        coins: inserted.coins,
+                        last_bonus: inserted.last_bonus,
+                        is_owner: inserted.is_owner
+                    };
+                    updateProfileUI();
+                    updateBonusUI();
+                    return true;
+                }
+            } catch (err) {
+                console.error('Исключение:', err);
+                showToast('Ошибка сети. Проверьте соединение.');
                 return false;
             }
-            // Обновляем локальный объект
-            if (updates.coins !== undefined) currentUser.coins = updates.coins;
-            if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
-            updateProfileUI();
-            updateBonusButtonState();
-            return true;
-        } catch (err) {
-            console.error(err);
-            return false;
         }
-    }
 
-    // ---------- ОСНОВНЫЕ ДЕЙСТВИЯ ----------
-    async function claimDailyBonus() {
-        if (!currentUser) {
-            showToast('Сначала введите никнейм');
-            return;
-        }
-        const today = new Date().toISOString().slice(0,10);
-        if (currentUser.last_bonus === today) {
-            showToast("❌ Вы уже получали бонус сегодня!");
-            return;
-        }
-        const newCoins = currentUser.coins + 10;
-        const success = await updateUserInDB({
-            coins: newCoins,
-            last_bonus: today
-        });
-        if (success) {
-            showToast("🎉 +10 S-Coins! Ежедневный бонус получен.");
-        }
-    }
-
-    let selectedFlipChoice = null;
-    function initFlipUI() {
-        const options = document.querySelectorAll('.flip-choice');
-        options.forEach(opt => {
-            opt.addEventListener('click', () => {
-                options.forEach(o => o.classList.remove('selected'));
-                opt.classList.add('selected');
-                selectedFlipChoice = parseInt(opt.getAttribute('data-choice'));
-            });
-        });
-    }
-
-    async function placeFlipBet() {
-        if (!currentUser) {
-            showToast('Сначала введите никнейм');
-            return;
-        }
-        const betInput = document.getElementById('bet-amount');
-        let bet = parseInt(betInput.value);
-        if (isNaN(bet) || bet <= 0) {
-            showToast("Введите корректную ставку (>0)");
-            return;
-        }
-        if (bet > currentUser.coins) {
-            showToast("❌ Недостаточно S-Coins!");
-            return;
-        }
-        if (selectedFlipChoice === null) {
-            showToast("Выберите Орла или Решку!");
-            return;
-        }
-        const result = Math.random() < 0.5 ? 0 : 1;
-        const win = (result === selectedFlipChoice);
-        const resultText = result === 0 ? "🦅 ОРЁЛ" : "🪙 РЕШКА";
-        
-        let newCoins = currentUser.coins;
-        if (win) {
-            newCoins += bet;
-            showToast(`🎉 ВЫИГРЫШ! +${bet} S-Coins`);
-        } else {
-            newCoins -= bet;
-            showToast(`💔 ПРОИГРЫШ... -${bet} S-Coins`);
-        }
-        document.getElementById('flip-result').innerHTML = `<span style="color:${win ? '#10b981' : '#ef4444'}">${win ? 'Выигрыш!' : 'Проигрыш...'} Выпал ${resultText}</span>`;
-        betInput.value = '';
-        
-        const success = await updateUserInDB({ coins: newCoins });
-        if (!success) {
-            showToast('Ошибка при обновлении баланса');
-        }
-    }
-
-    // ---------- ЛОГИКА МАГАЗИНА (без автоначисления монет) ----------
-    function switchTab(t, el) {
-        mode = t;
-        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-        document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById(t + '-section').classList.add('active');
-        
-        if (t === 'profile') {
-            payBtn.classList.add('hidden-pay-btn');
-            if (currentUser) {
+        async function updateUserInDB(updates) {
+            if (!currentUser) return false;
+            try {
+                const { error } = await sbClient
+                    .from('users')
+                    .update(updates)
+                    .eq('username', currentUser.username);
+                if (error) {
+                    console.error('Ошибка обновления:', error);
+                    showToast('Ошибка сохранения в базе');
+                    return false;
+                }
+                if (updates.coins !== undefined) currentUser.coins = updates.coins;
+                if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
                 updateProfileUI();
-                updateBonusButtonState();
+                updateBonusUI();
+                return true;
+            } catch (err) {
+                console.error(err);
+                return false;
             }
-        } else {
-            payBtn.classList.remove('hidden-pay-btn');
-            validateForm();
         }
-    }
 
-    function calcFromStars() {
-        let s = document.getElementById('stars-input').value;
-        if (s > 0) {
-            document.getElementById('rub-input').value = Math.ceil(s * rate);
-        } else {
-            document.getElementById('rub-input').value = "";
-        }
-        validateForm();
-    }
-    
-    function calcFromRub() {
-        let r = document.getElementById('rub-input').value;
-        if (r > 0) {
-            document.getElementById('stars-input').value = Math.floor(r / rate);
-        } else {
-            document.getElementById('stars-input').value = "";
-        }
-        validateForm();
-    }
-    
-    function setPrem(m, p, el) {
-        pMonths = m; pPrice = p;
-        document.querySelectorAll('.premium-option').forEach(x => x.classList.remove('selected'));
-        el.classList.add('selected');
-        document.getElementById('res-prem').innerText = p + " ₽";
-        validateForm();
-    }
-    
-    function validateForm() {
-        let user = document.getElementById('username').value;
-        let rubVal = document.getElementById('rub-input').value;
-        let error = document.getElementById('name-error');
-        let card = document.getElementById('main-card');
-        
-        let hasRussian = /[а-яА-ЯёЁ]/.test(user);
-        error.style.display = hasRussian ? 'block' : 'none';
-        let isNameOk = user.length > 2 && !hasRussian;
-        
-        if (mode === 'stars') {
-            totalSum = rubVal >= 70 ? parseInt(rubVal) : 0;
-            document.getElementById('res-stars').innerText = totalSum + " ₽";
-            payBtn.disabled = !(isNameOk && totalSum >= 70);
-        } else if (mode === 'premium') {
-            totalSum = pPrice;
-            payBtn.disabled = !(isNameOk && pPrice > 0);
-        }
-        
-        if (!payBtn.disabled && mode !== 'profile') {
-            card.classList.add('neon-ready');
-        } else {
-            card.classList.remove('neon-ready');
-        }
-    }
-    
-    function openPay() {
-        document.getElementById('modal-sum').innerText = totalSum + " ₽";
-        document.getElementById('modal').classList.add('active');
-    }
-    
-    function closePay() { 
-        document.getElementById('modal').classList.remove('active'); 
-    }
-    
-    // Функция finish – только уведомление админу, монеты НЕ начисляются
-    function finish() {
-        const btn = document.getElementById('confirm-btn');
-        btn.disabled = true;
-        btn.innerText = "ОТПРАВКА...";
-    
-        const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
-        const chatId = '1717982615';
-        const user = document.getElementById('username').value;
-        
-        let item = mode === 'stars' 
-            ? document.getElementById('stars-input').value + " звёзд" 
-            : "Премиум (" + pMonths + " мес.)";
-        
-        const msg = `💎 НОВЫЙ ЗАКАЗ (ОЖИДАЕТ ПРОВЕРКИ ОПЛАТЫ)\n\n👤 Клиент: ${user}\n📦 Товар: ${item}\n💵 Сумма: ${totalSum} ₽\n❗️ Бонусные монеты НЕ начислены. Проверьте перевод и начислите вручную.`;
-        const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`;
-    
-        fetch(url)
-            .then(response => {
-                document.getElementById('modal').classList.remove('active');
-                document.getElementById('success-modal').classList.add('active');
-            })
-            .catch(error => {
-                alert('Ошибка отправки уведомления. Попробуйте ещё раз.');
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerText = "Я ОПЛАТИЛ";
+        // ---------- ОСНОВНЫЕ ДЕЙСТВИЯ ----------
+        async function claimDailyBonus() {
+            if (!currentUser) {
+                showToast('Сначала введите никнейм');
+                return;
+            }
+            const today = new Date().toISOString().slice(0,10);
+            if (currentUser.last_bonus === today) {
+                showToast("❌ Вы уже получали бонус сегодня!");
+                return;
+            }
+            const newCoins = currentUser.coins + 10;
+            const success = await updateUserInDB({
+                coins: newCoins,
+                last_bonus: today
             });
-    }
-    
-    function closeAll() {
-        document.getElementById('success-modal').classList.remove('active');
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.close();
+            if (success) {
+                showToast("🎉 +10 S-Coins! Ежедневный бонус получен.");
+            }
         }
-    }
-    
-    // ---------- ОБРАБОТЧИК НИКНЕЙМА (автовход/создание) ----------
-    async function onNicknameChange() {
-        const rawNick = usernameInput.value.trim();
-        const hasRussian = /[а-яА-ЯёЁ]/.test(rawNick);
-        if (hasRussian || rawNick.length < 3) {
-            // не пытаемся загрузить, пока ник невалидный
-            if (currentUser) currentUser = null;
-            updateProfileUI();
-            validateForm();
-            return;
+
+        async function placeFlipBet() {
+            if (!currentUser) {
+                showToast('Сначала введите никнейм');
+                return;
+            }
+            let bet = parseInt(betAmountInput.value);
+            if (isNaN(bet) || bet <= 0) {
+                showToast("Введите корректную ставку (>0)");
+                return;
+            }
+            if (bet > currentUser.coins) {
+                showToast("❌ Недостаточно S-Coins!");
+                return;
+            }
+            if (selectedFlipChoice === null) {
+                showToast("Выберите Орла или Решку!");
+                return;
+            }
+            const result = Math.random() < 0.5 ? 0 : 1;
+            const win = (result === selectedFlipChoice);
+            const resultText = result === 0 ? "🦅 ОРЁЛ" : "🪙 РЕШКА";
+            
+            let newCoins = currentUser.coins;
+            if (win) {
+                newCoins += bet;
+                showToast(`🎉 ВЫИГРЫШ! +${bet} S-Coins`);
+            } else {
+                newCoins -= bet;
+                showToast(`💔 ПРОИГРЫШ... -${bet} S-Coins`);
+            }
+            flipResultDiv.innerHTML = `<span style="color:${win ? '#10b981' : '#ef4444'}">${win ? 'Выигрыш!' : 'Проигрыш...'} Выпал ${resultText}</span>`;
+            betAmountInput.value = '';
+            
+            const success = await updateUserInDB({ coins: newCoins });
+            if (!success) {
+                showToast('Ошибка при обновлении баланса');
+            }
         }
-        // Валидный ник – загружаем/создаём пользователя
-        const success = await loadOrCreateUser(rawNick);
-        if (!success) {
-            showToast('Не удалось войти. Проверьте соединение с интернетом.');
+
+        // ---------- ЛОГИКА МАГАЗИНА ----------
+        function validateAndCalculate() {
+            const username = usernameInput.value.trim();
+            const hasRussian = /[а-яА-ЯёЁ]/.test(username);
+            nameErrorDiv.style.display = hasRussian ? 'block' : 'none';
+            const isNameValid = username.length >= 3 && !hasRussian;
+            
+            if (currentMode === 'stars') {
+                let rubles = parseInt(rubInput.value);
+                if (isNaN(rubles)) rubles = 0;
+                totalSum = (rubles >= 70) ? rubles : 0;
+                resStarsSpan.innerText = totalSum + " ₽";
+                payBtn.disabled = !(isNameValid && totalSum >= 70);
+            } else if (currentMode === 'premium') {
+                payBtn.disabled = !(isNameValid && selectedPremiumPrice > 0);
+            }
+            
+            if (!payBtn.disabled && currentMode !== 'profile') {
+                mainCard.classList.add('neon-ready');
+            } else {
+                mainCard.classList.remove('neon-ready');
+            }
         }
-        validateForm();
-    }
-    
-    // ---------- ИНИЦИАЛИЗАЦИЯ ----------
-    function init() {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.expand();
+
+        function calcFromStars() {
+            let stars = parseInt(starsInput.value);
+            if (!isNaN(stars) && stars > 0) {
+                rubInput.value = Math.ceil(stars * RATE);
+            } else {
+                rubInput.value = '';
+            }
+            validateAndCalculate();
         }
-        initFlipUI();
-        // если в поле уже есть что-то при загрузке – пробуем загрузить
-        if (usernameInput.value.trim().length >= 3) {
-            onNicknameChange();
-        } else {
-            currentUser = null;
-            updateProfileUI();
+        
+        function calcFromRub() {
+            let rub = parseInt(rubInput.value);
+            if (!isNaN(rub) && rub > 0) {
+                starsInput.value = Math.floor(rub / RATE);
+            } else {
+                starsInput.value = '';
+            }
+            validateAndCalculate();
         }
-        validateForm();
-        payBtn.classList.remove('hidden-pay-btn');
-    }
-    
-    init();
+        
+        function selectPremium(months, price, element) {
+            selectedPremiumMonths = months;
+            selectedPremiumPrice = price;
+            document.querySelectorAll('.premium-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            resPremSpan.innerText = price + " ₽";
+            validateAndCalculate();
+        }
+        
+        function openPay() {
+            if (currentMode === 'stars') {
+                totalSum = parseInt(rubInput.value) || 0;
+                if (totalSum < 70) return;
+            } else if (currentMode === 'premium') {
+                totalSum = selectedPremiumPrice;
+                if (totalSum <= 0) return;
+            } else {
+                return;
+            }
+            modalSumSpan.innerText = totalSum + " ₽";
+            modal.classList.add('active');
+        }
+        
+        function closePay() {
+            modal.classList.remove('active');
+        }
+        
+        function finishOrder() {
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = "ОТПРАВКА...";
+            const username = usernameInput.value.trim();
+            let itemDesc = '';
+            if (currentMode === 'stars') {
+                itemDesc = starsInput.value + " звёзд";
+            } else {
+                itemDesc = "Премиум (" + selectedPremiumMonths + " мес.)";
+            }
+            const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
+            const chatId = '1717982615';
+            const msg = `💎 НОВЫЙ ЗАКАЗ (ОЖИДАЕТ ПРОВЕРКИ ОПЛАТЫ)\n\n👤 Клиент: ${username}\n📦 Товар: ${itemDesc}\n💵 Сумма: ${totalSum} ₽\n❗️ Бонусные монеты НЕ начислены. Проверьте перевод и начислите вручную.`;
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
+                .then(() => {
+                    modal.classList.remove('active');
+                    successModal.classList.add('active');
+                })
+                .catch(() => alert('Ошибка отправки уведомления'))
+                .finally(() => {
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerText = "Я ОПЛАТИЛ";
+                });
+        }
+        
+        function closeAll() {
+            successModal.classList.remove('active');
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.close();
+            }
+        }
+        
+        // ---------- ОБРАБОТЧИК НИКА ----------
+        async function onNicknameChange() {
+            const rawNick = usernameInput.value.trim();
+            const hasRussian = /[а-яА-ЯёЁ]/.test(rawNick);
+            if (hasRussian || rawNick.length < 3) {
+                if (currentUser) currentUser = null;
+                updateProfileUI();
+                validateAndCalculate();
+                return;
+            }
+            const success = await loadOrCreateUser(rawNick);
+            if (!success) {
+                showToast('Не удалось войти. Проверьте интернет и Supabase.');
+            }
+            validateAndCalculate();
+        }
+        
+        // ---------- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ----------
+        function switchTab(tabId) {
+            currentMode = tabId;
+            document.querySelectorAll('.tab').forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabId + '-section').classList.add('active');
+            
+            const payBtnEl = document.getElementById('pay-btn');
+            if (tabId === 'profile') {
+                payBtnEl.classList.add('hidden-pay-btn');
+                if (currentUser) {
+                    updateProfileUI();
+                    updateBonusUI();
+                }
+            } else {
+                payBtnEl.classList.remove('hidden-pay-btn');
+                validateAndCalculate();
+            }
+        }
+        
+        // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+        function init() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.expand();
+            }
+            // Обработчики событий
+            usernameInput.addEventListener('input', onNicknameChange);
+            starsInput.addEventListener('input', calcFromStars);
+            rubInput.addEventListener('input', calcFromRub);
+            document.querySelectorAll('.premium-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    const months = parseInt(opt.getAttribute('data-months'));
+                    const price = parseInt(opt.getAttribute('data-price'));
+                    selectPremium(months, price, opt);
+                });
+            });
+            payBtn.addEventListener('click', openPay);
+            confirmBtn.addEventListener('click', finishOrder);
+            closeSuccessBtn.addEventListener('click', closeAll);
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', closePay);
+            });
+            dailyBonusBtn.addEventListener('click', claimDailyBonus);
+            document.getElementById('flip-btn').addEventListener('click', placeFlipBet);
+            // Выбор орла/решки
+            document.querySelectorAll('.flip-choice').forEach(choice => {
+                choice.addEventListener('click', () => {
+                    document.querySelectorAll('.flip-choice').forEach(c => c.classList.remove('selected'));
+                    choice.classList.add('selected');
+                    selectedFlipChoice = parseInt(choice.getAttribute('data-choice'));
+                });
+            });
+            // Переключение вкладок
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            // Если в поле уже есть ник
+            if (usernameInput.value.trim().length >= 3) {
+                onNicknameChange();
+            } else {
+                currentUser = null;
+                updateProfileUI();
+                validateAndCalculate();
+            }
+        }
+        
+        init();
+    })();
 </script>
 </body>
 </html>
