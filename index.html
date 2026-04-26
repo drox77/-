@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR Shop — Stealth Edition | Личный кабинет</title>
+    <title>SAYLAR Shop — Stealth Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -14,8 +14,6 @@
             --text-main: #f1f5f9;
             --text-dim: #94a3b8;
             --error: #ef4444;
-            --gold: #fbbf24;
-            --gold-glow: rgba(251, 191, 36, 0.5);
         }
 
         body {
@@ -96,7 +94,6 @@
             padding: 4px;
             margin-bottom: 25px;
             border: 1px solid var(--border);
-            gap: 4px;
         }
 
         .tab {
@@ -208,90 +205,6 @@
             opacity: 0.7;
             cursor: not-allowed;
         }
-        
-        /* Стили профиля */
-        .owner-badge {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            color: #000;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-weight: 800;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 0 12px var(--gold-glow);
-            margin-left: 10px;
-        }
-        .status-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0,0,0,0.5);
-            border-radius: 20px;
-            padding: 12px 16px;
-            margin: 15px 0;
-        }
-        .balance-card {
-            background: rgba(0,0,0,0.6);
-            border-radius: 20px;
-            padding: 18px;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 1px solid var(--accent);
-        }
-        .balance-card h3 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-            color: var(--text-dim);
-        }
-        .balance-amount {
-            font-size: 42px;
-            font-weight: 900;
-            color: var(--accent);
-            text-shadow: 0 0 12px var(--accent-glow);
-        }
-        .bonus-btn, .flip-btn {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--accent);
-            margin-top: 10px;
-        }
-        .flip-options {
-            display: flex;
-            gap: 12px;
-            margin: 15px 0;
-        }
-        .flip-choice {
-            flex: 1;
-            background: #1e293b;
-            text-align: center;
-            padding: 12px;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .flip-choice.selected {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 10px var(--accent-glow);
-        }
-        .toast-msg {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            backdrop-filter: blur(16px);
-            padding: 12px 20px;
-            border-radius: 50px;
-            border-left: 4px solid var(--accent);
-            font-size: 14px;
-            font-weight: bold;
-            z-index: 1100;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            opacity: 0;
-        }
 
         .modal-overlay {
             position: fixed;
@@ -319,6 +232,7 @@
         .modal-overlay.active { display: flex; }
 
         .final-price { font-size: 32px; color: var(--accent); font-weight: 900; margin: 15px 0; }
+
         .bank-box {
             background: #000;
             padding: 18px;
@@ -328,6 +242,7 @@
             border: 1px solid var(--accent);
             color: var(--accent);
         }
+
         .close-btn { color: var(--text-dim); float: right; font-size: 22px; cursor: pointer; }
     </style>
 </head>
@@ -343,11 +258,10 @@
         <div class="tabs">
             <div class="tab active" onclick="switchTab('stars', this)">ЗВЁЗДЫ</div>
             <div class="tab" onclick="switchTab('premium', this)">PREMIUM</div>
-            <div class="tab" onclick="switchTab('profile', this)">ПРОФИЛЬ</div>
         </div>
 
         <label>Никнейм (Английский + цифры)</label>
-        <input type="text" id="username" placeholder="@nickname" oninput="onNicknameChange()">
+        <input type="text" id="username" placeholder="@nickname" oninput="validateForm()">
         <div id="name-error" class="error-msg">Русские буквы запрещены!</div>
 
         <div id="stars-section" class="section active">
@@ -372,34 +286,6 @@
             <div class="price-display"><span id="res-prem">0 ₽</span></div>
         </div>
 
-        <div id="profile-section" class="section">
-            <div class="status-row">
-                <span style="font-weight: 700;">👤 <span id="profile-nick">—</span></span>
-                <span id="owner-badge"></span>
-            </div>
-            <div class="balance-card">
-                <h3>🏦 S-COINS БАЛАНС</h3>
-                <div class="balance-amount" id="balance-display">0</div>
-                <div style="font-size: 11px; margin-top: 6px;">+ за покупки и ежедневный бонус</div>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <button class="btn btn-main bonus-btn" id="daily-bonus-btn" onclick="claimDailyBonus()">🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)</button>
-                <div id="bonus-timer" style="font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 8px;"></div>
-            </div>
-
-            <div style="border-top: 1px solid var(--border); margin: 15px 0; padding-top: 12px;">
-                <h4 style="margin: 0 0 12px 0;">🎲 КОИНФЛИП (Орёл/Решка)</h4>
-                <input type="number" id="bet-amount" placeholder="Ставка (S-Coins)" style="margin-bottom: 12px;">
-                <div class="flip-options" id="flip-options">
-                    <div class="flip-choice" data-choice="0">🦅 ОРЁЛ</div>
-                    <div class="flip-choice" data-choice="1">🪙 РЕШКА</div>
-                </div>
-                <button class="btn btn-main flip-btn" id="flip-btn" onclick="placeFlipBet()">КИНУТЬ МОНЕТКУ</button>
-                <div id="flip-result" style="margin-top: 15px; font-size: 14px; text-align: center; min-height: 45px;"></div>
-            </div>
-        </div>
-
         <div class="pros-box">
             <div><b>⚡</b> Быстрая выдача товара (1-5 мин)</div>
             <div><b>🔒</b> 100% Безопасность аккаунта</div>
@@ -407,7 +293,7 @@
         </div>
 
         <button class="btn btn-main" id="pay-btn" onclick="openPay()" disabled>Оформить заказ</button>
-        <a href="https://t.me/SAYLARgifts/201" style="display:block; text-align:center; color:var(--accent); margin-top:20px; font-size:12px; text-decoration:none; font-weight:800;" target="_blank">ОТЗЫВЫ КЛИЕНТОВ (100+)</a>
+        <a href="https://t.me/saylarreviews" style="display:block; text-align:center; color:var(--accent); margin-top:20px; font-size:12px; text-decoration:none; font-weight:800;" target="_blank">ОТЗЫВЫ КЛИЕНТОВ (100+)</a>
     </div>
 </div>
 
@@ -433,164 +319,19 @@
         <button class="btn btn-main" onclick="closeAll()">ОТЛИЧНО</button>
     </div>
 </div>
-<div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    // ======================== КОНФИГИ ========================
-    const ADMIN_NICK = "SAYLAR";  // Ник для статуса ВЛАДЕЛЕЦ (золотая плашка)
+    // Раскрываем приложение в ТГ на весь экран, если открыто там
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.expand();
+    }
+
     let mode = 'stars';
     let pPrice = 0;
     let pMonths = 0;
     let totalSum = 0;
     const rate = 1.4;
-    
-    // Глобальные переменные баланса и бонуса
-    let userBalance = 0;
-    let lastBonusDate = null; // храним строку YYYY-MM-DD
-    
-    // Элементы UI
-    const balanceSpan = document.getElementById('balance-display');
-    const profileNickSpan = document.getElementById('profile-nick');
-    const ownerBadgeSpan = document.getElementById('owner-badge');
-    const dailyBonusBtn = document.getElementById('daily-bonus-btn');
-    const bonusTimerDiv = document.getElementById('bonus-timer');
-    const usernameInput = document.getElementById('username');
-    
-    // --- Загрузка/сохранение баланса в localStorage ---
-    function loadUserData() {
-        const savedBalance = localStorage.getItem('scoins_balance');
-        userBalance = savedBalance ? parseInt(savedBalance) : 0;
-        const savedBonusDate = localStorage.getItem('last_bonus_date');
-        lastBonusDate = savedBonusDate || null;
-        updateBalanceUI();
-        updateBonusButtonState();
-    }
-    
-    function saveBalance() {
-        localStorage.setItem('scoins_balance', userBalance);
-        updateBalanceUI();
-    }
-    
-    function updateBalanceUI() {
-        if (balanceSpan) balanceSpan.innerText = userBalance;
-    }
-    
-    // Добавить монеты (положительные) или потратить
-    function addCoins(amount) {
-        if (amount === 0) return;
-        userBalance += amount;
-        if (userBalance < 0) userBalance = 0;
-        saveBalance();
-        showToast(`✨ Баланс изменён: ${amount >= 0 ? '+' : ''}${amount} S-Coins`);
-        updateProfileDisplay(); // обновляем статус/ник
-    }
-    
-    // Показать уведомление
-    function showToast(msg, duration = 2500) {
-        const toast = document.getElementById('toast-msg');
-        toast.innerText = msg;
-        toast.style.opacity = '1';
-        setTimeout(() => { toast.style.opacity = '0'; }, duration);
-    }
-    
-    // Обновление статуса владельца и ника в профиле
-    function updateProfileDisplay() {
-        let currentNick = usernameInput.value.trim();
-        if (currentNick === "") currentNick = "Не указан";
-        profileNickSpan.innerText = currentNick;
-        if (currentNick === ADMIN_NICK) {
-            ownerBadgeSpan.innerHTML = '<span class="owner-badge">👑 ВЛАДЕЛЕЦ</span>';
-        } else {
-            ownerBadgeSpan.innerHTML = '<span style="background:#1e293b; padding:4px 12px; border-radius:30px; font-size:12px; color:#94a3b8;">Обычный юзер</span>';
-        }
-        // также обновляем баланс
-        updateBalanceUI();
-    }
-    
-    // Ежедневный бонус
-    function claimDailyBonus() {
-        const today = new Date().toISOString().slice(0,10);
-        if (lastBonusDate === today) {
-            showToast("❌ Вы уже получали бонус сегодня! Возвращайтесь завтра.");
-            return;
-        }
-        // начисляем 10 монет
-        addCoins(10);
-        lastBonusDate = today;
-        localStorage.setItem('last_bonus_date', lastBonusDate);
-        updateBonusButtonState();
-        showToast("🎉 +10 S-Coins! Ежедневный бонус получен.");
-    }
-    
-    function updateBonusButtonState() {
-        const today = new Date().toISOString().slice(0,10);
-        if (lastBonusDate === today) {
-            dailyBonusBtn.disabled = true;
-            dailyBonusBtn.style.opacity = "0.6";
-            dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
-            bonusTimerDiv.innerText = "✨ Возвращайтесь завтра за новым бонусом!";
-        } else {
-            dailyBonusBtn.disabled = false;
-            dailyBonusBtn.style.opacity = "1";
-            dailyBonusBtn.innerText = "🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)";
-            bonusTimerDiv.innerText = "⭐ Доступен! Заберите свои монеты.";
-        }
-    }
-    
-    // Игра коинфлип
-    let selectedFlipChoice = null; // 0 - орёл, 1 - решка
-    
-    function initFlipUI() {
-        const options = document.querySelectorAll('.flip-choice');
-        options.forEach(opt => {
-            opt.addEventListener('click', () => {
-                options.forEach(o => o.classList.remove('selected'));
-                opt.classList.add('selected');
-                selectedFlipChoice = parseInt(opt.getAttribute('data-choice'));
-            });
-        });
-    }
-    
-    function placeFlipBet() {
-        const betInput = document.getElementById('bet-amount');
-        let bet = parseInt(betInput.value);
-        if (isNaN(bet) || bet <= 0) {
-            showToast("Введите корректную ставку (>0)");
-            return;
-        }
-        if (bet > userBalance) {
-            showToast("❌ Недостаточно S-Coins! Пополните баланс через покупки.");
-            return;
-        }
-        if (selectedFlipChoice === null) {
-            showToast("Выберите Орла или Решку!");
-            return;
-        }
-        // Результат: 0 - орёл, 1 - решка
-        const result = Math.random() < 0.5 ? 0 : 1;
-        const win = (result === selectedFlipChoice);
-        const resultText = result === 0 ? "🦅 ОРЁЛ" : "🪙 РЕШКА";
-        let outcomeMsg = "";
-        if (win) {
-            const winAmount = bet;  // x2: выигрыш = ставка (чистыми + возврат ставки)
-            addCoins(winAmount);
-            outcomeMsg = `🎉 ВЫИГРЫШ! Выпал ${resultText}. +${winAmount} S-Coins!`;
-        } else {
-            addCoins(-bet);
-            outcomeMsg = `💔 ПРОИГРЫШ... Выпал ${resultText}. -${bet} S-Coins.`;
-        }
-        document.getElementById('flip-result').innerHTML = `<span style="color:${win ? '#10b981' : '#ef4444'}">${outcomeMsg}</span>`;
-        betInput.value = '';
-        // не сбрасываем выбор, чтобы было удобно
-    }
-    
-    // При изменении ника обновляем профиль и валидацию
-    function onNicknameChange() {
-        validateForm();
-        updateProfileDisplay();
-    }
-    
-    // ================= ОСТАЛЬНАЯ ЛОГИКА МАГАЗИНА (без изменений, но добавим начисление монет после оплаты) =================
+
     function switchTab(t, el) {
         mode = t;
         document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -598,12 +339,8 @@
         el.classList.add('active');
         document.getElementById(t + '-section').classList.add('active');
         validateForm();
-        if (t === 'profile') {
-            updateProfileDisplay();
-            updateBonusButtonState();
-        }
     }
-    
+
     function calcFromStars() {
         let s = document.getElementById('stars-input').value;
         if (s > 0) {
@@ -613,7 +350,7 @@
         }
         validateForm();
     }
-    
+
     function calcFromRub() {
         let r = document.getElementById('rub-input').value;
         if (r > 0) {
@@ -623,7 +360,7 @@
         }
         validateForm();
     }
-    
+
     function setPrem(m, p, el) {
         pMonths = m; pPrice = p;
         document.querySelectorAll('.premium-option').forEach(x => x.classList.remove('selected'));
@@ -631,7 +368,7 @@
         document.getElementById('res-prem').innerText = p + " ₽";
         validateForm();
     }
-    
+
     function validateForm() {
         let user = document.getElementById('username').value;
         let rubVal = document.getElementById('rub-input').value;
@@ -639,8 +376,10 @@
         let error = document.getElementById('name-error');
         let card = document.getElementById('main-card');
         
+        // Проверяем только на наличие русских букв
         let hasRussian = /[а-яА-ЯёЁ]/.test(user);
         error.style.display = hasRussian ? 'block' : 'none';
+
         let isNameOk = user.length > 2 && !hasRussian;
         
         if (mode === 'stars') {
@@ -651,38 +390,29 @@
             totalSum = pPrice;
             btn.disabled = !(isNameOk && pPrice > 0);
         }
-        
+
         if (!btn.disabled) {
             card.classList.add('neon-ready');
         } else {
             card.classList.remove('neon-ready');
         }
     }
-    
+
     function openPay() {
         document.getElementById('modal-sum').innerText = totalSum + " ₽";
         document.getElementById('modal').classList.add('active');
     }
-    
+
     function closePay() { 
         document.getElementById('modal').classList.remove('active'); 
     }
-    
-    // Функция начисления монет за покупку (1₽ = 1 S-Coin)
-    function addCoinsForPurchase(amountRub) {
-        if (amountRub > 0) {
-            const coinsEarned = Math.floor(amountRub); // 1 к 1
-            addCoins(coinsEarned);
-            showToast(`💰 За покупку начислено ${coinsEarned} S-Coins!`);
-        }
-    }
-    
-    // Отправка в бота + бонусные монеты
+
+    // Отправка в бота
     function finish() {
         const btn = document.getElementById('confirm-btn');
         btn.disabled = true;
         btn.innerText = "ОТПРАВКА...";
-    
+
         const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
         const chatId = '1717982615';
         const user = document.getElementById('username').value;
@@ -690,55 +420,38 @@
         let item = mode === 'stars' 
             ? document.getElementById('stars-input').value + " звёзд" 
             : "Премиум (" + pMonths + " мес.)";
-    
-        const msg = `💎 НОВЫЙ ЗАКАЗ!\n\n👤 Клиент: ${user}\n📦 Товар: ${item}\n💵 Сумма: ${totalSum} ₽\n🎮 Начислено монет: ${totalSum} S-Coins`;
+
+        const msg = `💎 НОВЫЙ ЗАКАЗ!\n\n👤 Клиент: ${user}\n📦 Товар: ${item}\n💵 Сумма: ${totalSum} ₽`;
         const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`;
-    
+
         fetch(url)
             .then(response => {
-                // Начисляем монеты за оплату
-                addCoinsForPurchase(totalSum);
                 btn.innerText = "ОТПРАВЛЕНО";
+                
+                // Через 1 секунду прячем окно с реквизитами и показываем "Успешно"
                 setTimeout(() => {
                     document.getElementById('modal').classList.remove('active');
                     document.getElementById('success-modal').classList.add('active');
+                    // Возвращаем кнопку в исходное состояние (на случай, если не закроют окно)
                     btn.disabled = false;
                     btn.innerText = "Я ОПЛАТИЛ";
                 }, 1000);
             })
             .catch(error => {
-                alert('Проблема с сетью или ботом! Заказ не отправлен, но монеты не начислены.');
+                alert('Проблема с сетью или ботом!');
                 btn.disabled = false;
                 btn.innerText = "Я ОПЛАТИЛ";
             });
     }
-    
+
+    // Закрытие мини-приложения
     function closeAll() {
         document.getElementById('success-modal').classList.remove('active');
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.close();
         }
     }
-    
-    // Инициализация приложения
-    function init() {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.expand();
-        }
-        loadUserData();
-        updateProfileDisplay();
-        updateBonusButtonState();
-        initFlipUI();
-        // слушатель сброса выбора при переключении вкладок
-        document.getElementById('username').addEventListener('input', () => {
-            updateProfileDisplay();
-        });
-        // чтобы сразу показать статус если ник уже введен
-        if(usernameInput.value.trim() !== "") updateProfileDisplay();
-        validateForm();
-    }
-    
-    init();
 </script>
+
 </body>
 </html>
