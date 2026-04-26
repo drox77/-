@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR Shop — Stealth Edition | Личный кабинет</title>
+    <title>SAYLAR Shop — Supabase Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --accent: #10b981; 
@@ -376,7 +377,7 @@
             <div class="balance-card">
                 <h3>🏦 S-COINS БАЛАНС</h3>
                 <div class="balance-amount" id="balance-display">0</div>
-                <div style="font-size: 11px; margin-top: 6px;">10% от покупки + ежедневный бонус</div>
+                <div style="font-size: 11px; margin-top: 6px;">За покупки бонус начисляется вручную после проверки</div>
             </div>
             
             <div style="margin-bottom: 20px;">
@@ -424,25 +425,28 @@
 
 <div id="success-modal" class="modal-overlay">
     <div class="modal-content">
-        <h3 style="margin:0; color: var(--accent);">УСПЕШНО!</h3>
-        <p style="margin: 20px 0; font-size: 15px; color: var(--text-main);">Ваш заказ отправлен, скоро будет выдан.</p>
-        <button class="btn btn-main" onclick="closeAll()">ОТЛИЧНО</button>
+        <h3 style="margin:0; color: var(--accent);">ЗАЯВКА ПРИНЯТА</h3>
+        <p style="margin: 20px 0; font-size: 15px; color: var(--text-main);">Отправьте скриншот чека в поддержку @saylar_support (или сюда). После проверки бонус будет начислен вручную.</p>
+        <button class="btn btn-main" onclick="closeAll()">ОК</button>
     </div>
 </div>
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    // ======================== КОНФИГИ ========================
-    const ADMIN_NICK = "SAYLAR";  // Ник для статуса ВЛАДЕЛЕЦ
+    // ---------- ПОДКЛЮЧЕНИЕ К SUPABASE ----------
+    const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';  // твой publishable ключ
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ---------- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ----------
+    let currentUser = null;        // { username, coins, last_bonus, is_owner }
     let mode = 'stars';
     let pPrice = 0;
     let pMonths = 0;
     let totalSum = 0;
     const rate = 1.4;
     
-    let userBalance = 0;
-    let lastBonusDate = null;
-    
+    // Элементы DOM
     const balanceSpan = document.getElementById('balance-display');
     const profileNickSpan = document.getElementById('profile-nick');
     const ownerBadgeSpan = document.getElementById('owner-badge');
@@ -450,71 +454,38 @@
     const bonusTimerDiv = document.getElementById('bonus-timer');
     const usernameInput = document.getElementById('username');
     const payBtn = document.getElementById('pay-btn');
-    
-    // --- Загрузка/сохранение баланса ---
-    function loadUserData() {
-        const savedBalance = localStorage.getItem('scoins_balance');
-        userBalance = savedBalance ? parseInt(savedBalance) : 0;
-        const savedBonusDate = localStorage.getItem('last_bonus_date');
-        lastBonusDate = savedBonusDate || null;
-        updateBalanceUI();
-        updateBonusButtonState();
-    }
-    
-    function saveBalance() {
-        localStorage.setItem('scoins_balance', userBalance);
-        updateBalanceUI();
-    }
-    
-    function updateBalanceUI() {
-        if (balanceSpan) balanceSpan.innerText = userBalance;
-    }
-    
-    function addCoins(amount) {
-        if (amount === 0) return;
-        userBalance += amount;
-        if (userBalance < 0) userBalance = 0;
-        saveBalance();
-        showToast(`✨ Баланс изменён: ${amount >= 0 ? '+' : ''}${amount} S-Coins`);
-        updateProfileDisplay();
-    }
-    
-    function showToast(msg, duration = 2500) {
+
+    // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
+    function showToast(msg, duration = 3000) {
         const toast = document.getElementById('toast-msg');
         toast.innerText = msg;
         toast.style.opacity = '1';
         setTimeout(() => { toast.style.opacity = '0'; }, duration);
     }
-    
-    function updateProfileDisplay() {
-        let currentNick = usernameInput.value.trim();
-        if (currentNick === "") currentNick = "Не указан";
-        profileNickSpan.innerText = currentNick;
-        if (currentNick === ADMIN_NICK) {
+
+    // Обновить интерфейс профиля (ник, бейдж владельца, баланс)
+    function updateProfileUI() {
+        if (!currentUser) {
+            profileNickSpan.innerText = "Не авторизован";
+            ownerBadgeSpan.innerHTML = '';
+            balanceSpan.innerText = "0";
+            return;
+        }
+        profileNickSpan.innerText = currentUser.username;
+        if (currentUser.is_owner) {
             ownerBadgeSpan.innerHTML = '<span class="owner-badge">👑 ВЛАДЕЛЕЦ</span>';
         } else {
             ownerBadgeSpan.innerHTML = '<span style="background:#1e293b; padding:4px 12px; border-radius:30px; font-size:12px; color:#94a3b8;">Обычный юзер</span>';
         }
-        updateBalanceUI();
+        balanceSpan.innerText = currentUser.coins;
     }
-    
-    // Ежедневный бонус
-    function claimDailyBonus() {
-        const today = new Date().toISOString().slice(0,10);
-        if (lastBonusDate === today) {
-            showToast("❌ Вы уже получали бонус сегодня! Возвращайтесь завтра.");
-            return;
-        }
-        addCoins(10);
-        lastBonusDate = today;
-        localStorage.setItem('last_bonus_date', lastBonusDate);
-        updateBonusButtonState();
-        showToast("🎉 +10 S-Coins! Ежедневный бонус получен.");
-    }
-    
+
+    // Обновить состояние кнопки ежедневного бонуса (доступна/недоступна)
     function updateBonusButtonState() {
+        if (!currentUser) return;
         const today = new Date().toISOString().slice(0,10);
-        if (lastBonusDate === today) {
+        const lastBonus = currentUser.last_bonus;
+        if (lastBonus === today) {
             dailyBonusBtn.disabled = true;
             dailyBonusBtn.style.opacity = "0.6";
             dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
@@ -526,10 +497,107 @@
             bonusTimerDiv.innerText = "⭐ Доступен! Заберите свои монеты.";
         }
     }
-    
-    // Игра коинфлип
+
+    // Загрузить или создать пользователя в Supabase
+    async function loadOrCreateUser(username) {
+        // 1. Ищем пользователя
+        let { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('username', username)
+            .maybeSingle();
+        
+        if (error && error.code !== 'PGRST116') {
+            console.error('Ошибка поиска:', error);
+            showToast('Ошибка подключения к базе');
+            return false;
+        }
+        
+        if (data) {
+            // Пользователь существует
+            currentUser = {
+                username: data.username,
+                coins: data.coins,
+                last_bonus: data.last_bonus,
+                is_owner: data.is_owner
+            };
+            updateProfileUI();
+            updateBonusButtonState();
+            return true;
+        } else {
+            // Создаём нового пользователя
+            const isOwner = (username === 'SAYLAR');
+            const newUser = {
+                username: username,
+                coins: 0,
+                last_bonus: null,
+                is_owner: isOwner
+            };
+            const { data: inserted, error: insertError } = await supabase
+                .from('users')
+                .insert([newUser])
+                .select()
+                .single();
+            
+            if (insertError) {
+                console.error('Ошибка создания:', insertError);
+                showToast('Не удалось создать аккаунт');
+                return false;
+            }
+            currentUser = {
+                username: inserted.username,
+                coins: inserted.coins,
+                last_bonus: inserted.last_bonus,
+                is_owner: inserted.is_owner
+            };
+            updateProfileUI();
+            updateBonusButtonState();
+            return true;
+        }
+    }
+
+    // Обновить баланс и last_bonus в базе (только нужные поля)
+    async function updateUserInDB(updates) {
+        if (!currentUser) return false;
+        const { error } = await supabase
+            .from('users')
+            .update(updates)
+            .eq('username', currentUser.username);
+        if (error) {
+            console.error('Ошибка обновления:', error);
+            showToast('Ошибка сохранения в базе');
+            return false;
+        }
+        // Обновляем локальный объект
+        if (updates.coins !== undefined) currentUser.coins = updates.coins;
+        if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
+        updateProfileUI();
+        updateBonusButtonState();
+        return true;
+    }
+
+    // ---------- ОСНОВНЫЕ ДЕЙСТВИЯ ----------
+    async function claimDailyBonus() {
+        if (!currentUser) {
+            showToast('Сначала введите никнейм');
+            return;
+        }
+        const today = new Date().toISOString().slice(0,10);
+        if (currentUser.last_bonus === today) {
+            showToast("❌ Вы уже получали бонус сегодня!");
+            return;
+        }
+        const newCoins = currentUser.coins + 10;
+        const success = await updateUserInDB({
+            coins: newCoins,
+            last_bonus: today
+        });
+        if (success) {
+            showToast("🎉 +10 S-Coins! Ежедневный бонус получен.");
+        }
+    }
+
     let selectedFlipChoice = null;
-    
     function initFlipUI() {
         const options = document.querySelectorAll('.flip-choice');
         options.forEach(opt => {
@@ -540,16 +608,20 @@
             });
         });
     }
-    
-    function placeFlipBet() {
+
+    async function placeFlipBet() {
+        if (!currentUser) {
+            showToast('Сначала введите никнейм');
+            return;
+        }
         const betInput = document.getElementById('bet-amount');
         let bet = parseInt(betInput.value);
         if (isNaN(bet) || bet <= 0) {
             showToast("Введите корректную ставку (>0)");
             return;
         }
-        if (bet > userBalance) {
-            showToast("❌ Недостаточно S-Coins! Пополните баланс через покупки.");
+        if (bet > currentUser.coins) {
+            showToast("❌ Недостаточно S-Coins!");
             return;
         }
         if (selectedFlipChoice === null) {
@@ -559,23 +631,25 @@
         const result = Math.random() < 0.5 ? 0 : 1;
         const win = (result === selectedFlipChoice);
         const resultText = result === 0 ? "🦅 ОРЁЛ" : "🪙 РЕШКА";
+        
+        let newCoins = currentUser.coins;
         if (win) {
-            addCoins(bet);  // выигрыш = ставка (чистая прибыль)
+            newCoins += bet;
             showToast(`🎉 ВЫИГРЫШ! +${bet} S-Coins`);
         } else {
-            addCoins(-bet);
+            newCoins -= bet;
             showToast(`💔 ПРОИГРЫШ... -${bet} S-Coins`);
         }
         document.getElementById('flip-result').innerHTML = `<span style="color:${win ? '#10b981' : '#ef4444'}">${win ? 'Выигрыш!' : 'Проигрыш...'} Выпал ${resultText}</span>`;
         betInput.value = '';
+        
+        const success = await updateUserInDB({ coins: newCoins });
+        if (!success) {
+            showToast('Ошибка при обновлении баланса');
+        }
     }
-    
-    function onNicknameChange() {
-        validateForm();
-        updateProfileDisplay();
-    }
-    
-    // ================= ЛОГИКА МАГАЗИНА =================
+
+    // ---------- ЛОГИКА МАГАЗИНА (без автоначисления монет) ----------
     function switchTab(t, el) {
         mode = t;
         document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -583,20 +657,18 @@
         el.classList.add('active');
         document.getElementById(t + '-section').classList.add('active');
         
-        // Скрыть/показать кнопку оплаты в зависимости от вкладки
         if (t === 'profile') {
             payBtn.classList.add('hidden-pay-btn');
+            if (currentUser) {
+                updateProfileUI();
+                updateBonusButtonState();
+            }
         } else {
             payBtn.classList.remove('hidden-pay-btn');
-            validateForm();  // пересчитать валидность
-        }
-        
-        if (t === 'profile') {
-            updateProfileDisplay();
-            updateBonusButtonState();
+            validateForm();
         }
     }
-    
+
     function calcFromStars() {
         let s = document.getElementById('stars-input').value;
         if (s > 0) {
@@ -660,20 +732,7 @@
         document.getElementById('modal').classList.remove('active'); 
     }
     
-    // Начисление 10% от суммы покупки (округляем вниз)
-    function addCoinsForPurchase(amountRub) {
-        if (amountRub > 0) {
-            const coinsEarned = Math.floor(amountRub * 0.1);
-            if (coinsEarned > 0) {
-                addCoins(coinsEarned);
-                showToast(`💰 За покупку начислено ${coinsEarned} S-Coins (10% от суммы)`);
-            } else {
-                showToast(`💰 За покупку начислено 0 S-Coins (сумма меньше 10₽)`);
-            }
-        }
-    }
-    
-    // Отправка в бота + бонусные монеты
+    // Функция finish – только уведомление админу, монеты НЕ начисляются
     function finish() {
         const btn = document.getElementById('confirm-btn');
         btn.disabled = true;
@@ -687,23 +746,18 @@
             ? document.getElementById('stars-input').value + " звёзд" 
             : "Премиум (" + pMonths + " мес.)";
         
-        const coinsBonus = Math.floor(totalSum * 0.1);
-        const msg = `💎 НОВЫЙ ЗАКАЗ!\n\n👤 Клиент: ${user}\n📦 Товар: ${item}\n💵 Сумма: ${totalSum} ₽\n🎮 Начислено бонусом: ${coinsBonus} S-Coins (10%)`;
+        const msg = `💎 НОВЫЙ ЗАКАЗ (ОЖИДАЕТ ПРОВЕРКИ ОПЛАТЫ)\n\n👤 Клиент: ${user}\n📦 Товар: ${item}\n💵 Сумма: ${totalSum} ₽\n❗️ Бонусные монеты НЕ начислены. Проверьте перевод и начислите вручную.`;
         const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`;
     
         fetch(url)
             .then(response => {
-                addCoinsForPurchase(totalSum);
-                btn.innerText = "ОТПРАВЛЕНО";
-                setTimeout(() => {
-                    document.getElementById('modal').classList.remove('active');
-                    document.getElementById('success-modal').classList.add('active');
-                    btn.disabled = false;
-                    btn.innerText = "Я ОПЛАТИЛ";
-                }, 1000);
+                document.getElementById('modal').classList.remove('active');
+                document.getElementById('success-modal').classList.add('active');
             })
             .catch(error => {
-                alert('Проблема с сетью или ботом! Заказ не отправлен, монеты не начислены.');
+                alert('Ошибка отправки уведомления. Попробуйте ещё раз.');
+            })
+            .finally(() => {
                 btn.disabled = false;
                 btn.innerText = "Я ОПЛАТИЛ";
             });
@@ -716,18 +770,39 @@
         }
     }
     
+    // ---------- ОБРАБОТЧИК НИКНЕЙМА (автовход/создание) ----------
+    async function onNicknameChange() {
+        const rawNick = usernameInput.value.trim();
+        const hasRussian = /[а-яА-ЯёЁ]/.test(rawNick);
+        if (hasRussian || rawNick.length < 3) {
+            // не пытаемся загрузить, пока ник невалидный
+            if (currentUser) currentUser = null;
+            updateProfileUI();
+            validateForm();
+            return;
+        }
+        // Валидный ник – загружаем/создаём пользователя
+        const success = await loadOrCreateUser(rawNick);
+        if (!success) {
+            showToast('Не удалось войти. Проверьте соединение.');
+        }
+        validateForm();
+    }
+    
+    // ---------- ИНИЦИАЛИЗАЦИЯ ----------
     function init() {
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.expand();
         }
-        loadUserData();
-        updateProfileDisplay();
-        updateBonusButtonState();
         initFlipUI();
-        usernameInput.addEventListener('input', () => updateProfileDisplay());
-        if(usernameInput.value.trim() !== "") updateProfileDisplay();
+        // если в поле уже есть что-то при загрузке – пробуем загрузить
+        if (usernameInput.value.trim().length >= 3) {
+            onNicknameChange();
+        } else {
+            currentUser = null;
+            updateProfileUI();
+        }
         validateForm();
-        // по умолчанию кнопка видна, т.к. вкладка stars активна
         payBtn.classList.remove('hidden-pay-btn');
     }
     
