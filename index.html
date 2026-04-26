@@ -7,6 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* ========== ТВОИ СТИЛИ (сохранены полностью) ========== */
         :root {
             --accent: #10b981; 
             --accent-glow: rgba(16, 185, 129, 0.4);
@@ -301,6 +302,8 @@
             padding: 20px;
         }
 
+        .modal-overlay.active { display: flex; }
+
         .modal-content {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(30px);
@@ -311,8 +314,6 @@
             text-align: center;
             box-shadow: 0 0 40px var(--accent-glow);
         }
-
-        .modal-overlay.active { display: flex; }
 
         .final-price { font-size: 32px; color: var(--accent); font-weight: 900; margin: 15px 0; }
         .bank-box {
@@ -393,7 +394,7 @@
                     <div class="flip-choice" data-choice="1">🪙 РЕШКА</div>
                 </div>
                 <button class="btn btn-main flip-btn" id="flip-btn" onclick="placeFlipBet()">КИНУТЬ МОНЕТКУ</button>
-                <div id="flip-result" style="margin-top: 15px; font-size: 14px; text-align: center; min-height: 45px;"></div>
+                <div id="flip-result" style="margin-top: 15px; text-align: center; min-height: 45px;"></div>
             </div>
         </div>
 
@@ -426,16 +427,16 @@
 <div id="success-modal" class="modal-overlay">
     <div class="modal-content">
         <h3 style="margin:0; color: var(--accent);">ЗАЯВКА ПРИНЯТА</h3>
-        <p style="margin: 20px 0; font-size: 15px; color: var(--text-main);">Отправьте скриншот чека в поддержку @saylar_support (или сюда). После проверки бонус будет начислен вручную.</p>
+        <p style="margin: 20px 0; font-size: 15px; color: var(--text-main);">Отправьте скриншот чека в поддержку @saylar_support. После проверки бонус будет начислен вручную.</p>
         <button class="btn btn-main" onclick="closeAll()">ОК</button>
     </div>
 </div>
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    // ---------- ПОДКЛЮЧЕНИЕ К SUPABASE ----------
+    // ---------- ПОДКЛЮЧЕНИЕ К SUPABASE (ТВОИ ДАННЫЕ) ----------
     const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';  // твой publishable ключ
+    const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';  // publishable (anon) ключ
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // ---------- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ----------
@@ -463,7 +464,6 @@
         setTimeout(() => { toast.style.opacity = '0'; }, duration);
     }
 
-    // Обновить интерфейс профиля (ник, бейдж владельца, баланс)
     function updateProfileUI() {
         if (!currentUser) {
             profileNickSpan.innerText = "Не авторизован";
@@ -480,7 +480,6 @@
         balanceSpan.innerText = currentUser.coins;
     }
 
-    // Обновить состояние кнопки ежедневного бонуса (доступна/недоступна)
     function updateBonusButtonState() {
         if (!currentUser) return;
         const today = new Date().toISOString().slice(0,10);
@@ -500,80 +499,91 @@
 
     // Загрузить или создать пользователя в Supabase
     async function loadOrCreateUser(username) {
-        // 1. Ищем пользователя
-        let { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('username', username)
-            .maybeSingle();
-        
-        if (error && error.code !== 'PGRST116') {
-            console.error('Ошибка поиска:', error);
-            showToast('Ошибка подключения к базе');
-            return false;
-        }
-        
-        if (data) {
-            // Пользователь существует
-            currentUser = {
-                username: data.username,
-                coins: data.coins,
-                last_bonus: data.last_bonus,
-                is_owner: data.is_owner
-            };
-            updateProfileUI();
-            updateBonusButtonState();
-            return true;
-        } else {
-            // Создаём нового пользователя
-            const isOwner = (username === 'SAYLAR');
-            const newUser = {
-                username: username,
-                coins: 0,
-                last_bonus: null,
-                is_owner: isOwner
-            };
-            const { data: inserted, error: insertError } = await supabase
+        try {
+            // 1. Ищем пользователя
+            let { data, error } = await supabase
                 .from('users')
-                .insert([newUser])
-                .select()
-                .single();
+                .select('*')
+                .eq('username', username)
+                .maybeSingle();
             
-            if (insertError) {
-                console.error('Ошибка создания:', insertError);
-                showToast('Не удалось создать аккаунт');
+            if (error) {
+                console.error('Ошибка поиска:', error);
+                showToast('Ошибка подключения к базе');
                 return false;
             }
-            currentUser = {
-                username: inserted.username,
-                coins: inserted.coins,
-                last_bonus: inserted.last_bonus,
-                is_owner: inserted.is_owner
-            };
-            updateProfileUI();
-            updateBonusButtonState();
-            return true;
+            
+            if (data) {
+                // Пользователь существует
+                currentUser = {
+                    username: data.username,
+                    coins: data.coins,
+                    last_bonus: data.last_bonus,
+                    is_owner: data.is_owner
+                };
+                updateProfileUI();
+                updateBonusButtonState();
+                return true;
+            } else {
+                // Создаём нового пользователя
+                const isOwner = (username === 'SAYLAR');
+                const newUser = {
+                    username: username,
+                    coins: 0,
+                    last_bonus: null,
+                    is_owner: isOwner
+                };
+                const { data: inserted, error: insertError } = await supabase
+                    .from('users')
+                    .insert([newUser])
+                    .select()
+                    .single();
+                
+                if (insertError) {
+                    console.error('Ошибка создания:', insertError);
+                    showToast('Не удалось создать аккаунт');
+                    return false;
+                }
+                currentUser = {
+                    username: inserted.username,
+                    coins: inserted.coins,
+                    last_bonus: inserted.last_bonus,
+                    is_owner: inserted.is_owner
+                };
+                updateProfileUI();
+                updateBonusButtonState();
+                return true;
+            }
+        } catch (err) {
+            console.error('Исключение:', err);
+            showToast('Ошибка сети. Проверьте соединение.');
+            return false;
         }
     }
 
-    // Обновить баланс и last_bonus в базе (только нужные поля)
+    // Обновить баланс и last_bonus в базе
     async function updateUserInDB(updates) {
         if (!currentUser) return false;
-        const { error } = await supabase
-            .from('users')
-            .update(updates)
-            .eq('username', currentUser.username);
-        if (error) {
-            console.error('Ошибка обновления:', error);
-            showToast('Ошибка сохранения в базе');
+        try {
+            const { error } = await supabase
+                .from('users')
+                .update(updates)
+                .eq('username', currentUser.username);
+            if (error) {
+                console.error('Ошибка обновления:', error);
+                showToast('Ошибка сохранения в базе');
+                return false;
+            }
+            // Обновляем локальный объект
+            if (updates.coins !== undefined) currentUser.coins = updates.coins;
+            if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
+            updateProfileUI();
+            updateBonusButtonState();
+            return true;
+        } catch (err) {
+            console.error(err);
             return false;
         }
-        // Обновляем локальный объект
-        if (updates.coins !== undefined) currentUser.coins = updates.coins;
-        if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
-        updateProfileUI();
-        updateBonusButtonState();
-        return true;
     }
 
     // ---------- ОСНОВНЫЕ ДЕЙСТВИЯ ----------
@@ -784,7 +794,7 @@
         // Валидный ник – загружаем/создаём пользователя
         const success = await loadOrCreateUser(rawNick);
         if (!success) {
-            showToast('Не удалось войти. Проверьте соединение.');
+            showToast('Не удалось войти. Проверьте соединение с интернетом.');
         }
         validateForm();
     }
