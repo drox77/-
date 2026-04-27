@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR Shop — только Telegram</title>
+    <title>SAYLAR Shop — логин по @username</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* ========== ВСЕ СТИЛИ (полностью, как в рабочей версии) ========== */
+        /* ========== СТИЛИ (те же, что были рабочими) ========== */
         :root {
             --accent: #10b981; 
             --accent-glow: rgba(16, 185, 129, 0.4);
@@ -44,99 +44,164 @@
         .card {
             background: rgba(15, 23, 42, 0.3);
             backdrop-filter: blur(30px);
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid var(--border);
             border-radius: 30px;
             padding: 24px;
             box-shadow: 0 25px 60px rgba(0,0,0,0.5);
         }
-        @keyframes neonPulse { 0% { box-shadow: 0 0 15px rgba(16,185,129,0.4); border-color: #10b981; } 50% { box-shadow: 0 0 30px #10b981; border-color: #fff; } 100% { box-shadow: 0 0 15px rgba(16,185,129,0.4); border-color: #10b981; } }
+        @keyframes neonPulse { 0% { box-shadow: 0 0 15px var(--accent-glow); border-color: var(--accent); } 50% { box-shadow: 0 0 30px var(--accent); border-color: #fff; } 100% { box-shadow: 0 0 15px var(--accent-glow); border-color: var(--accent); } }
         .card.neon-ready { animation: neonPulse 2s infinite; }
-        h2 { text-align: center; margin: 0 0 25px; font-size: 28px; text-shadow: 0 0 25px rgba(16,185,129,0.4); }
+        h2 { text-align: center; margin: 0 0 20px; font-size: 28px; text-shadow: 0 0 25px var(--accent-glow); }
+        .login-box {
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .login-box button {
+            width: 100%;
+        }
+        .error-msg {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 8px;
+            display: none;
+        }
         .tabs { display: flex; background: rgba(0,0,0,0.5); border-radius: 16px; padding: 4px; margin-bottom: 25px; gap: 4px; }
-        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 12px; font-weight: 800; font-size: 13px; color: #94a3b8; cursor: pointer; }
-        .tab.active { background: #10b981; color: #000; box-shadow: 0 0 15px rgba(16,185,129,0.4); }
+        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 12px; font-weight: 800; font-size: 13px; color: var(--text-dim); cursor: pointer; }
+        .tab.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); }
         .section { display: none; animation: slideUp 0.4s ease-out; }
         .section.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94a3b8; }
-        input { width: 100%; padding: 16px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: #10b981; box-shadow: 0 0 10px rgba(16,185,129,0.2); }
-        .premium-option { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; margin-bottom: 10px; cursor: pointer; }
-        .premium-option.selected { border-color: #10b981; background: rgba(16,185,129,0.15); }
+        label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); }
+        input { width: 100%; padding: 16px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 14px; color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16,185,129,0.2); }
+        .premium-option { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; margin-bottom: 10px; cursor: pointer; }
+        .premium-option.selected { border-color: var(--accent); background: rgba(16,185,129,0.15); }
         .price-display { text-align: center; margin: 20px 0; }
-        .price-display span { font-size: 34px; font-weight: 900; color: #10b981; text-shadow: 0 0 20px rgba(16,185,129,0.4); }
-        .pros-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 15px; margin-bottom: 20px; }
+        .price-display span { font-size: 34px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+        .pros-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 20px; }
         .pros-box div { font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .btn { width: 100%; padding: 18px; border-radius: 18px; border: none; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; }
-        .btn-main { background: #10b981; color: #000; box-shadow: 0 10px 25px rgba(16,185,129,0.4); }
+        .btn-main { background: var(--accent); color: #000; box-shadow: 0 10px 25px var(--accent-glow); }
         .btn-main:disabled { background: #1e293b; color: #475569; opacity: 0.7; cursor: not-allowed; }
         .owner-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; padding: 6px 14px; border-radius: 40px; font-weight: 800; font-size: 13px; display: inline-flex; margin-left: 10px; box-shadow: 0 0 12px rgba(251,191,36,0.5); }
         .status-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); border-radius: 20px; padding: 12px 16px; margin: 15px 0; }
-        .balance-card { background: rgba(0,0,0,0.6); border-radius: 20px; padding: 18px; text-align: center; margin-bottom: 20px; border: 1px solid #10b981; }
-        .balance-amount { font-size: 42px; font-weight: 900; color: #10b981; text-shadow: 0 0 12px rgba(16,185,129,0.4); }
+        .balance-card { background: rgba(0,0,0,0.6); border-radius: 20px; padding: 18px; text-align: center; margin-bottom: 20px; border: 1px solid var(--accent); }
+        .balance-amount { font-size: 42px; font-weight: 900; color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
         .flip-options { display: flex; gap: 12px; margin: 15px 0; }
         .flip-choice { flex: 1; background: #1e293b; text-align: center; padding: 12px; border-radius: 16px; cursor: pointer; }
-        .flip-choice.selected { background: #10b981; color: #000; }
-        .toast-msg { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; backdrop-filter: blur(16px); padding: 12px 20px; border-radius: 50px; border-left: 4px solid #10b981; font-size: 14px; font-weight: bold; z-index: 1100; pointer-events: none; transition: opacity 0.3s; opacity: 0; }
+        .flip-choice.selected { background: var(--accent); color: #000; }
+        .toast-msg { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; backdrop-filter: blur(16px); padding: 12px 20px; border-radius: 50px; border-left: 4px solid var(--accent); font-size: 14px; font-weight: bold; z-index: 1100; pointer-events: none; transition: opacity 0.3s; opacity: 0; }
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-overlay.active { display: flex; }
-        .modal-content { background: rgba(15,23,42,0.6); backdrop-filter: blur(30px); max-width: 340px; padding: 30px; border-radius: 35px; border: 1px solid #10b981; text-align: center; }
-        .bank-box { background: #000; padding: 18px; border-radius: 20px; margin: 20px 0; font-family: monospace; border: 1px solid #10b981; color: #10b981; }
-        .close-btn { color: #94a3b8; float: right; font-size: 22px; cursor: pointer; }
+        .modal-content { background: rgba(15,23,42,0.6); backdrop-filter: blur(30px); max-width: 340px; padding: 30px; border-radius: 35px; border: 1px solid var(--accent); text-align: center; }
+        .bank-box { background: #000; padding: 18px; border-radius: 20px; margin: 20px 0; font-family: monospace; border: 1px solid var(--accent); color: var(--accent); }
+        .close-btn { color: var(--text-dim); float: right; font-size: 22px; cursor: pointer; }
         .hidden-pay-btn { display: none; }
-        .error-screen { text-align: center; padding: 40px; background: rgba(0,0,0,0.7); border-radius: 30px; }
+        .app-hidden { display: none; }
     </style>
 </head>
 <body>
 <div class="bg-shape shape-1"></div>
 <div class="bg-shape shape-2"></div>
 <div class="container" id="app-container">
-    <!-- Сюда будет вставлен интерфейс, если авторизация успешна -->
+    <!-- Сначала блок логина -->
+    <div class="card" id="login-card">
+        <h2>SAYLAR SHOP</h2>
+        <div class="login-box">
+            <label>👤 Введите ваш Telegram username</label>
+            <input type="text" id="login-username" placeholder="@username" autocomplete="off">
+            <div id="login-error" class="error-msg"></div>
+            <button class="btn btn-main" id="login-btn">Войти / Зарегистрироваться</button>
+        </div>
+        <div class="pros-box">
+            <div><b>⚡</b> Быстрая выдача</div>
+            <div><b>🔒</b> 100% Безопасность</div>
+            <div><b>⭐</b> Гарантия от блокировок</div>
+        </div>
+        <a href="https://t.me/saylarreviews" style="display:block; text-align:center; color:var(--accent); margin-top:20px;" target="_blank">ОТЗЫВЫ</a>
+    </div>
+
+    <!-- Основное приложение (скрыто до логина) -->
+    <div id="main-app" class="app-hidden">
+        <div class="card" id="main-card">
+            <h2>SAYLAR SHOP</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="stars">ЗВЁЗДЫ</div>
+                <div class="tab" data-tab="premium">PREMIUM</div>
+                <div class="tab" data-tab="profile">ПРОФИЛЬ</div>
+            </div>
+            <div id="stars-section" class="section active">
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex:1"><label>Кол-во звёзд</label><input type="number" id="stars-input" placeholder="50"></div>
+                    <div style="flex:1"><label>Сумма в рублях</label><input type="number" id="rub-input" placeholder="70"></div>
+                </div>
+                <p style="font-size:10px;">* Минимальный заказ — 70₽ (50 звёзд)</p>
+                <div class="price-display"><span id="res-stars">0 ₽</span></div>
+            </div>
+            <div id="premium-section" class="section">
+                <div class="premium-option" data-months="3" data-price="1000"><span>3 Месяца</span> <b>1000 ₽</b></div>
+                <div class="premium-option" data-months="6" data-price="1320"><span>6 Месяцев</span> <b>1320 ₽</b></div>
+                <div class="premium-option" data-months="12" data-price="2400"><span>12 Месяцев</span> <b>2400 ₽</b></div>
+                <div class="price-display"><span id="res-prem">0 ₽</span></div>
+            </div>
+            <div id="profile-section" class="section">
+                <div class="status-row"><span>👤 <span id="profile-name"></span></span><span id="status-badge"></span></div>
+                <div class="balance-card"><h3>🏦 S-COINS БАЛАНС</h3><div class="balance-amount" id="balance-display">0</div><div style="font-size:11px;">За покупки бонус вручную</div></div>
+                <button class="btn btn-main" id="daily-bonus-btn">🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10)</button>
+                <div id="bonus-timer" style="font-size:11px; text-align:center;"></div>
+                <div style="border-top:1px solid var(--border); margin:15px 0; padding-top:12px;">
+                    <h4>🎲 КОИНФЛИП</h4>
+                    <input type="number" id="bet-amount" placeholder="Ставка (S-Coins)">
+                    <div class="flip-options"><div class="flip-choice" data-choice="0">🦅 ОРЁЛ</div><div class="flip-choice" data-choice="1">🪙 РЕШКА</div></div>
+                    <button class="btn btn-main" id="flip-btn">КИНУТЬ МОНЕТКУ</button>
+                    <div id="flip-result"></div>
+                </div>
+            </div>
+            <div class="pros-box">
+                <div><b>⚡</b> Быстрая выдача</div>
+                <div><b>🔒</b> 100% Безопасность</div>
+                <div><b>⭐</b> Гарантия от блокировок</div>
+            </div>
+            <button class="btn btn-main" id="pay-btn" disabled>Оформить заказ</button>
+            <a href="https://t.me/saylarreviews" style="display:block; text-align:center; color:var(--accent); margin-top:20px;" target="_blank">ОТЗЫВЫ</a>
+        </div>
+    </div>
+</div>
+<div id="modal" class="modal-overlay">
+    <div class="modal-content"><span class="close-btn">✕</span><h3>ИТОГО К ОПЛАТЕ:</h3><div class="final-price" id="modal-sum">0 ₽</div><div class="bank-box">2200 7019 4219 4652<br>+7 966 349 22 74</div><p>Дамир О.</p><button class="btn btn-main" id="confirm-btn">Я ОПЛАТИЛ</button></div>
+</div>
+<div id="success-modal" class="modal-overlay">
+    <div class="modal-content"><h3 style="color:var(--accent);">ЗАЯВКА ПРИНЯТА</h3><p>Отправьте скриншот чека в поддержку @saylar_support. Бонус начислят после проверки.</p><button class="btn btn-main" id="close-success">ОК</button></div>
 </div>
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    (function() {
-        // ---------- КОНФИГИ ----------
+    (function(){
         const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Проверяем, запущено ли в Telegram и есть ли данные пользователя
-        let tgUser = null;
-        let tgId = null;
-        let tgUsername = null;
-        let tgFirstName = null;
-        
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-            tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-            if (tgUser && tgUser.id) {
-                tgId = tgUser.id;
-                tgUsername = tgUser.username || null;
-                tgFirstName = tgUser.first_name || '';
-            }
-        }
-        
-        if (!tgId) {
-            // Если нет данных Telegram - показываем ошибку и не даём пользоваться магазином
-            document.getElementById('app-container').innerHTML = `
-                <div class="error-screen">
-                    <h3>❌ Ошибка авторизации</h3>
-                    <p>Пожалуйста, откройте это приложение <strong>через Telegram</strong>.</p>
-                    <p style="font-size:12px; margin-top:20px;">Убедитесь, что вы зашли через официальный клиент Telegram.</p>
-                </div>
-            `;
-            throw new Error('Not in Telegram');
-        }
-        
-        // Глобальное состояние
-        let currentUser = null; // { id, telegram_id, display_name, coins, last_bonus, status }
+        let currentUser = null; // { id, display_name, coins, last_bonus, status }
         let currentMode = 'stars';
         let selectedPremiumMonths = 0, selectedPremiumPrice = 0, totalSum = 0;
         const RATE = 1.4;
         let selectedFlipChoice = null;
         
-        // DOM элементы будут созданы динамически после загрузки пользователя
+        // DOM элементы главного приложения
         let starsInput, rubInput, resStarsSpan, resPremSpan, payBtn, mainCard;
         let modal, modalSumSpan, confirmBtn, successModal;
         let betAmount, flipResult, dailyBonusBtn, bonusTimerDiv;
@@ -149,79 +214,79 @@
             setTimeout(() => toast.style.opacity = '0', 3000);
         }
         
-        // Функция рендеринга интерфейса (после авторизации)
-        function renderUI() {
-            const container = document.getElementById('app-container');
-            container.innerHTML = `
-            <div class="card" id="main-card">
-                <h2>SAYLAR SHOP</h2>
-                <div class="tabs">
-                    <div class="tab active" data-tab="stars">ЗВЁЗДЫ</div>
-                    <div class="tab" data-tab="premium">PREMIUM</div>
-                    <div class="tab" data-tab="profile">ПРОФИЛЬ</div>
-                </div>
-                <div id="stars-section" class="section active">
-                    <div style="display: flex; gap: 10px;">
-                        <div style="flex:1"><label>Кол-во звёзд</label><input type="number" id="stars-input" placeholder="50"></div>
-                        <div style="flex:1"><label>Сумма в рублях</label><input type="number" id="rub-input" placeholder="70"></div>
-                    </div>
-                    <p style="font-size:10px;">* Минимальный заказ — 70₽ (50 звёзд)</p>
-                    <div class="price-display"><span id="res-stars">0 ₽</span></div>
-                </div>
-                <div id="premium-section" class="section">
-                    <div class="premium-option" data-months="3" data-price="1000"><span>3 Месяца</span> <b>1000 ₽</b></div>
-                    <div class="premium-option" data-months="6" data-price="1320"><span>6 Месяцев</span> <b>1320 ₽</b></div>
-                    <div class="premium-option" data-months="12" data-price="2400"><span>12 Месяцев</span> <b>2400 ₽</b></div>
-                    <div class="price-display"><span id="res-prem">0 ₽</span></div>
-                </div>
-                <div id="profile-section" class="section">
-                    <div class="status-row">
-                        <span>👤 <span id="profile-name">${currentUser.display_name || tgUsername || tgFirstName}</span></span>
-                        <span id="status-badge"></span>
-                    </div>
-                    <div class="balance-card">
-                        <h3>🏦 S-COINS БАЛАНС</h3>
-                        <div class="balance-amount" id="balance-display">${currentUser.coins}</div>
-                        <div style="font-size: 11px;">За покупки бонус вручную</div>
-                    </div>
-                    <button class="btn btn-main" id="daily-bonus-btn">🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10)</button>
-                    <div id="bonus-timer" style="font-size:11px; text-align:center;"></div>
-                    <div style="border-top:1px solid var(--border); margin:15px 0; padding-top:12px;">
-                        <h4>🎲 КОИНФЛИП</h4>
-                        <input type="number" id="bet-amount" placeholder="Ставка (S-Coins)">
-                        <div class="flip-options"><div class="flip-choice" data-choice="0">🦅 ОРЁЛ</div><div class="flip-choice" data-choice="1">🪙 РЕШКА</div></div>
-                        <button class="btn btn-main" id="flip-btn">КИНУТЬ МОНЕТКУ</button>
-                        <div id="flip-result"></div>
-                    </div>
-                </div>
-                <div class="pros-box">
-                    <div><b>⚡</b> Быстрая выдача</div>
-                    <div><b>🔒</b> 100% Безопасность</div>
-                    <div><b>⭐</b> Гарантия от блокировок</div>
-                </div>
-                <button class="btn btn-main" id="pay-btn" disabled>Оформить заказ</button>
-                <a href="https://t.me/saylarreviews" style="display:block; text-align:center; color:var(--accent); margin-top:20px;" target="_blank">ОТЗЫВЫ</a>
-            </div>
-            <div id="modal" class="modal-overlay">
-                <div class="modal-content">
-                    <span class="close-btn">✕</span>
-                    <h3>ИТОГО К ОПЛАТЕ:</h3>
-                    <div class="final-price" id="modal-sum">0 ₽</div>
-                    <div class="bank-box">2200 7019 4219 4652<br>+7 966 349 22 74</div>
-                    <p>Дамир О.</p>
-                    <button class="btn btn-main" id="confirm-btn">Я ОПЛАТИЛ</button>
-                </div>
-            </div>
-            <div id="success-modal" class="modal-overlay">
-                <div class="modal-content">
-                    <h3 style="color:var(--accent);">ЗАЯВКА ПРИНЯТА</h3>
-                    <p>Отправьте скриншот чека в поддержку @saylar_support. Бонус начислят после проверки.</p>
-                    <button class="btn btn-main" id="close-success">ОК</button>
-                </div>
-            </div>
-            `;
+        // --- Логика входа / регистрации ---
+        const loginInput = document.getElementById('login-username');
+        const loginBtnElem = document.getElementById('login-btn');
+        const loginError = document.getElementById('login-error');
+        const loginCard = document.getElementById('login-card');
+        const mainAppDiv = document.getElementById('main-app');
+        
+        async function handleLogin() {
+            let raw = loginInput.value.trim();
+            if (!raw.startsWith('@')) {
+                loginError.innerText = 'Username должен начинаться с @';
+                loginError.style.display = 'block';
+                return;
+            }
+            const username = raw.slice(1); // без @
+            if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) {
+                loginError.innerText = 'Только латиница, цифры и _, минимум 3 символа';
+                loginError.style.display = 'block';
+                return;
+            }
+            loginError.style.display = 'none';
+            loginBtnElem.disabled = true;
+            loginBtnElem.innerText = 'Загрузка...';
             
-            // Инициализация ссылок на DOM элементы
+            try {
+                // Ищем пользователя по полю display_name (будем хранить без @, но отображать с @)
+                let { data, error } = await sb
+                    .from('users')
+                    .select('*')
+                    .eq('display_name', username)
+                    .maybeSingle();
+                if (error) throw error;
+                if (data) {
+                    currentUser = data;
+                } else {
+                    // Новый пользователь
+                    const newUser = {
+                        display_name: username,
+                        coins: 0,
+                        last_bonus: null,
+                        status: (username === 'SAYLAR' ? 'owner' : 'user')
+                    };
+                    const { data: inserted, error: insertError } = await sb
+                        .from('users')
+                        .insert([newUser])
+                        .select()
+                        .single();
+                    if (insertError) throw insertError;
+                    currentUser = inserted;
+                }
+                // Скрываем логин, показываем приложение
+                loginCard.style.display = 'none';
+                mainAppDiv.classList.remove('app-hidden');
+                // Инициализируем интерфейс и данные
+                initAppUI();
+                updateProfileUI();
+                updateBonusUI();
+                validateAndCalculate();
+            } catch (err) {
+                console.error(err);
+                loginError.innerText = 'Ошибка сервера, попробуйте позже';
+                loginError.style.display = 'block';
+            } finally {
+                loginBtnElem.disabled = false;
+                loginBtnElem.innerText = 'Войти / Зарегистрироваться';
+            }
+        }
+        
+        loginBtnElem.addEventListener('click', handleLogin);
+        loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+        
+        // --- Инициализация элементов основного приложения ---
+        function initAppUI() {
             starsInput = document.getElementById('stars-input');
             rubInput = document.getElementById('rub-input');
             resStarsSpan = document.getElementById('res-stars');
@@ -240,11 +305,6 @@
             statusBadgeSpan = document.getElementById('status-badge');
             balanceSpan = document.getElementById('balance-display');
             
-            // Обновляем UI с данными пользователя
-            updateProfileUI();
-            updateBonusUI();
-            
-            // Вешаем обработчики
             starsInput.addEventListener('input', calcFromStars);
             rubInput.addEventListener('input', calcFromRub);
             document.querySelectorAll('.premium-option').forEach(opt => {
@@ -255,8 +315,7 @@
             payBtn.addEventListener('click', openPay);
             confirmBtn.addEventListener('click', finishOrder);
             document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closePay));
-            const closeSuccess = document.getElementById('close-success');
-            if (closeSuccess) closeSuccess.addEventListener('click', closeAll);
+            document.getElementById('close-success')?.addEventListener('click', closeAll);
             dailyBonusBtn.addEventListener('click', claimDailyBonus);
             document.getElementById('flip-btn').addEventListener('click', placeFlipBet);
             document.querySelectorAll('.flip-choice').forEach(choice => {
@@ -269,30 +328,9 @@
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => switchTab(tab.dataset.tab));
             });
-            
-            validateAndCalculate();
-            if (currentMode === 'profile') {
-                payBtn.classList.add('hidden-pay-btn');
-            }
         }
         
-        // Обновление интерфейса профиля
-        function updateProfileUI() {
-            if (!currentUser) return;
-            if (profileNameSpan) profileNameSpan.innerText = currentUser.display_name || tgUsername || tgFirstName;
-            if (balanceSpan) balanceSpan.innerText = currentUser.coins;
-            let statusText = '', statusClass = '';
-            switch (currentUser.status) {
-                case 'owner': statusText = '👑 ВЛАДЕЛЕЦ'; statusClass = 'owner-badge'; break;
-                case 'vip': statusText = '💎 VIP'; statusClass = 'owner-badge'; break;
-                case 'frequent': statusText = '🔥 ЧАСТЫЙ КЛИЕНТ'; statusClass = 'owner-badge'; break;
-                default: statusText = '👤 Обычный юзер'; statusClass = '';
-            }
-            if (statusBadgeSpan) {
-                statusBadgeSpan.innerHTML = `<span class="${statusClass}" style="background:${currentUser.status === 'owner' ? 'linear-gradient(135deg,#fbbf24,#f59e0b)' : '#1e293b'}; padding:4px 12px; border-radius:30px; font-size:12px;">${statusText}</span>`;
-            }
-        }
-        
+        // --- Функции работы с пользователем и бонусами ---
         async function updateUserInDB(updates) {
             if (!currentUser) return false;
             try {
@@ -315,39 +353,33 @@
             }
         }
         
-        async function loadOrCreateUser() {
-            try {
-                let { data, error } = await sb
-                    .from('users')
-                    .select('*')
-                    .eq('telegram_id', tgId)
-                    .maybeSingle();
-                if (error) throw error;
-                if (data) {
-                    currentUser = data;
-                } else {
-                    // Создаём
-                    const displayName = tgUsername ? `@${tgUsername}` : (tgFirstName || `User${tgId}`);
-                    const newUser = {
-                        telegram_id: tgId,
-                        display_name: displayName,
-                        coins: 0,
-                        last_bonus: null,
-                        status: (tgUsername === 'SAYLAR' ? 'owner' : 'user')
-                    };
-                    const { data: inserted, error: insertError } = await sb
-                        .from('users')
-                        .insert([newUser])
-                        .select()
-                        .single();
-                    if (insertError) throw insertError;
-                    currentUser = inserted;
-                }
-                // После успешной загрузки отрисовываем UI
-                renderUI();
-            } catch (err) {
-                console.error(err);
-                document.getElementById('app-container').innerHTML = `<div class="error-screen"><h3>❌ Ошибка базы данных</h3><p>Попробуйте позже или свяжитесь с поддержкой.</p></div>`;
+        function updateProfileUI() {
+            if (!currentUser) return;
+            profileNameSpan.innerText = '@' + currentUser.display_name;
+            balanceSpan.innerText = currentUser.coins;
+            let statusText = '', statusClass = '';
+            switch (currentUser.status) {
+                case 'owner': statusText = '👑 ВЛАДЕЛЕЦ'; statusClass = 'owner-badge'; break;
+                case 'vip': statusText = '💎 VIP'; statusClass = 'owner-badge'; break;
+                case 'frequent': statusText = '🔥 ЧАСТЫЙ КЛИЕНТ'; statusClass = 'owner-badge'; break;
+                default: statusText = '👤 Обычный юзер'; statusClass = '';
+            }
+            statusBadgeSpan.innerHTML = `<span class="${statusClass}" style="background:${currentUser.status === 'owner' ? 'linear-gradient(135deg,#fbbf24,#f59e0b)' : '#1e293b'}; padding:4px 12px; border-radius:30px; font-size:12px;">${statusText}</span>`;
+        }
+        
+        function updateBonusUI() {
+            if (!currentUser) return;
+            const today = new Date().toISOString().slice(0,10);
+            if (currentUser.last_bonus === today) {
+                dailyBonusBtn.disabled = true;
+                dailyBonusBtn.style.opacity = '0.6';
+                dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
+                bonusTimerDiv.innerText = "Завтра будет новый";
+            } else {
+                dailyBonusBtn.disabled = false;
+                dailyBonusBtn.style.opacity = '1';
+                dailyBonusBtn.innerText = "🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)";
+                bonusTimerDiv.innerText = "Доступен!";
             }
         }
         
@@ -360,34 +392,15 @@
             }
             const newCoins = currentUser.coins + 10;
             const success = await updateUserInDB({ coins: newCoins, last_bonus: today });
-            if (success) {
-                showToast("🎉 +10 S-Coins! Ежедневный бонус получен.");
-                updateBonusUI();
-            }
-        }
-        
-        function updateBonusUI() {
-            if (!currentUser || !dailyBonusBtn) return;
-            const today = new Date().toISOString().slice(0,10);
-            if (currentUser.last_bonus === today) {
-                dailyBonusBtn.disabled = true;
-                dailyBonusBtn.style.opacity = '0.6';
-                dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
-                if (bonusTimerDiv) bonusTimerDiv.innerText = "Завтра будет новый";
-            } else {
-                dailyBonusBtn.disabled = false;
-                dailyBonusBtn.style.opacity = '1';
-                dailyBonusBtn.innerText = "🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)";
-                if (bonusTimerDiv) bonusTimerDiv.innerText = "Доступен!";
-            }
+            if (success) showToast("🎉 +10 S-Coins!");
         }
         
         async function placeFlipBet() {
-            if (!currentUser) { showToast("Ошибка"); return; }
+            if (!currentUser) return;
             let bet = parseInt(betAmount.value);
-            if (isNaN(bet) || bet <= 0) { showToast("Ставка >0"); return; }
+            if (isNaN(bet) || bet <= 0) { showToast("Ставка должна быть больше 0"); return; }
             if (bet > currentUser.coins) { showToast("Не хватает монет"); return; }
-            if (selectedFlipChoice === null) { showToast("Выберите орёл/решку"); return; }
+            if (selectedFlipChoice === null) { showToast("Выберите орёл или решку"); return; }
             const result = Math.random() < 0.5 ? 0 : 1;
             const win = (result === selectedFlipChoice);
             const resultText = result === 0 ? "ОРЁЛ" : "РЕШКА";
@@ -400,7 +413,7 @@
             showToast(win ? `+${bet}` : `-${bet}`);
         }
         
-        // Магазин
+        // --- Магазин ---
         function validateAndCalculate() {
             if (!currentUser) return;
             if (currentMode === 'stars') {
@@ -454,7 +467,7 @@
             let itemDesc = '';
             if (currentMode === 'stars') itemDesc = starsInput.value + " звёзд";
             else itemDesc = "Премиум (" + selectedPremiumMonths + " мес.)";
-            const msg = `💎 НОВЫЙ ЗАКАЗ (ОЖИДАЕТ ПРОВЕРКИ)\n👤 ${currentUser.display_name} (tg:${tgId})\n📦 ${itemDesc}\n💵 ${totalSum} ₽\n❗️ Бонус не начислен, проверьте оплату вручную.`;
+            const msg = `💎 НОВЫЙ ЗАКАЗ\n👤 ${currentUser.display_name}\n📦 ${itemDesc}\n💵 ${totalSum} ₽\n❗️ Бонус не начислен (проверьте оплату вручную)`;
             const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
             const chatId = '1717982615';
             fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
@@ -469,7 +482,6 @@
             successModal.classList.remove('active');
             if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.close();
         }
-        
         function switchTab(tabId) {
             currentMode = tabId;
             document.querySelectorAll('.tab').forEach(tab => {
@@ -480,19 +492,21 @@
             document.getElementById(tabId + '-section').classList.add('active');
             if (tabId === 'profile') {
                 payBtn.classList.add('hidden-pay-btn');
-                if (currentUser) {
-                    updateProfileUI();
-                    updateBonusUI();
-                }
+                updateProfileUI();
+                updateBonusUI();
             } else {
                 payBtn.classList.remove('hidden-pay-btn');
                 validateAndCalculate();
             }
         }
         
-        // Запуск
-        if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.expand();
-        loadOrCreateUser();
+        // Если в Telegram WebApp, можно предзаполнить поле логина @username (но не автоматически входить)
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe?.user) {
+            const tg = window.Telegram.WebApp.initDataUnsafe.user;
+            if (tg && tg.username) {
+                loginInput.value = '@' + tg.username;
+            }
+        }
     })();
 </script>
 </body>
