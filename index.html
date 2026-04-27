@@ -9,7 +9,7 @@
     <style>
         /* ========== ПОЛНЫЙ ОРИГИНАЛЬНЫЙ СТИЛЬ ========== */
         :root {
-            --accent: #10b981; 
+            --accent: #10b981;
             --accent-glow: rgba(16, 185, 129, 0.4);
             --bg-black: #020617;
             --border: rgba(255, 255, 255, 0.15);
@@ -41,12 +41,14 @@
             animation: float 8s infinite alternate ease-in-out;
         }
         .shape-1 {
-            width: 300px; height: 300px;
+            width: 300px;
+            height: 300px;
             background: #10b981;
             top: 5%; left: 10%;
         }
         .shape-2 {
-            width: 400px; height: 400px;
+            width: 400px;
+            height: 400px;
             background: #0ea5e9;
             bottom: 10%; right: 5%;
             animation-delay: -4s;
@@ -111,7 +113,7 @@
         }
 
         .tab.active { 
-            background: var(--accent); 
+            background: var(--accent);
             color: #000; 
             box-shadow: 0 0 15px var(--accent-glow);
         }
@@ -127,10 +129,12 @@
         label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
 
         input {
-            width: 100%; padding: 16px; background: rgba(0,0,0,0.6);
+            width: 100%;
+            padding: 16px; background: rgba(0,0,0,0.6);
             border: 1px solid var(--border); border-radius: 14px;
             color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; 
-            outline: none; transition: all 0.3s ease;
+            outline: none;
+            transition: all 0.3s ease;
         }
 
         input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
@@ -156,7 +160,7 @@
         }
 
         .premium-option.selected { 
-            border-color: var(--accent); 
+            border-color: var(--accent);
             background: rgba(16, 185, 129, 0.15); 
         }
 
@@ -183,14 +187,15 @@
         .pros-box b { color: var(--accent); }
 
         .btn {
-            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            width: 100%;
+            padding: 18px; border-radius: 18px; border: none;
             font-size: 15px; font-weight: 900; text-transform: uppercase; 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
         }
 
         .btn-main { 
-            background: var(--accent); 
+            background: var(--accent);
             color: #000; 
             box-shadow: 0 10px 25px var(--accent-glow);
         }
@@ -201,7 +206,7 @@
         }
 
         .btn-main:disabled { 
-            background: #1e293b; 
+            background: #1e293b;
             color: #475569; 
             box-shadow: none; 
             opacity: 0.7;
@@ -342,7 +347,6 @@
 <div class="bg-shape shape-1"></div>
 <div class="bg-shape shape-2"></div>
 <div class="container" id="app-container">
-    <!-- Блок логина -->
     <div class="card" id="login-card">
         <h2>SAYLAR SHOP</h2>
         <div class="login-box">
@@ -359,7 +363,6 @@
         <a href="https://t.me/saylarreviews" style="display:block; text-align:center; color:var(--accent); margin-top:20px;" target="_blank">ОТЗЫВЫ</a>
     </div>
 
-    <!-- Основное приложение (скрыто до логина) -->
     <div id="main-app" class="app-hidden">
         <div class="card" id="main-card">
             <h2>SAYLAR SHOP</h2>
@@ -409,7 +412,7 @@
     <div class="modal-content"><span class="close-btn">✕</span><h3>ИТОГО К ОПЛАТЕ:</h3><div class="final-price" id="modal-sum">0 ₽</div><div class="bank-box">2200 7019 4219 4652<br>+7 966 349 22 74</div><p>Дамир О.</p><button class="btn btn-main" id="confirm-btn">Я ОПЛАТИЛ</button></div>
 </div>
 <div id="success-modal" class="modal-overlay">
-    <div class="modal-content"><h3 style="color:var(--accent);">ЗАЯВКА ПРИНЯТА</h3><p>Отправьте скриншот чека в поддержку @saylar_support. Бонус начислят после проверки.</p><button class="btn btn-main" id="close-success">ОК</button></div>
+    <div class="modal-content"><h3 style="color:var(--accent);">УСПЕШНО</h3><p style="font-weight:bold; font-size: 16px;">Ваш заказ скоро будет выдан!</p></div>
 </div>
 <div id="toast-msg" class="toast-msg"></div>
 
@@ -419,21 +422,23 @@
         const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         // Проверка и создание необходимых колонок в таблице users (если их нет)
         try {
             // Проверим существование таблицы users — если нет, создадим
             const { error: tableError } = await sb.from('users').select('id').limit(1);
             if (tableError && tableError.message.includes('relation "users" does not exist')) {
-                await sb.rpc('create_users_table_if_not_exists'); // Но у нас нет RPC, лучше через SQL, но в браузере нельзя. Поэтому просто предложим админу выполнить SQL.
+                await sb.rpc('create_users_table_if_not_exists');
+                // Но у нас нет RPC, лучше через SQL, но в браузере нельзя. Поэтому просто предложим админу выполнить SQL.
                 console.warn('Таблица users не найдена, выполните SQL');
             } else {
-                // Убедимся, что колонки есть (если нет - добавим через ALTER, но это требует прав). На всякий случай проигнорируем.
+                // Убедимся, что колонки есть (если нет - добавим через ALTER, но это требует прав).
+                // На всякий случай проигнорируем.
             }
         } catch(e) { console.warn(e); }
 
         // Глобальные переменные
-        let currentUser = null; // { id, display_name, coins, last_bonus, status }
+        let currentUser = null;
+        // { id, display_name, coins, last_bonus, status }
         let currentMode = 'stars';
         let selectedPremiumMonths = 0, selectedPremiumPrice = 0, totalSum = 0;
         const RATE = 1.4;
@@ -494,7 +499,7 @@
 
         function updateBonusUI() {
             if (!currentUser) return;
-            const today = new Date().toISOString().slice(0,10);
+            const today = new Date().toLocaleDateString('ru-RU');
             if (currentUser.last_bonus === today) {
                 dailyBonusBtn.disabled = true;
                 dailyBonusBtn.style.opacity = '0.6';
@@ -510,7 +515,7 @@
 
         async function claimDailyBonus() {
             if (!currentUser) { showToast("Сначала войдите"); return; }
-            const today = new Date().toISOString().slice(0,10);
+            const today = new Date().toLocaleDateString('ru-RU');
             if (currentUser.last_bonus === today) {
                 showToast("❌ Вы уже получали бонус сегодня!");
                 return;
@@ -530,13 +535,13 @@
         async function handleLogin() {
             let raw = loginInput.value.trim();
             if (!raw.startsWith('@')) {
-                loginError.innerText = '❌ Username должен начинаться с @';
+                loginError.innerText = '❌ Ник должен обязательно начинаться с @';
                 loginError.style.display = 'block';
                 return;
             }
-            const username = raw.slice(1); // убираем @
-            if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) {
-                loginError.innerText = '❌ Только латиница, цифры и _, минимум 3 символа';
+            const username = raw.slice(1);
+            if (username.length < 1 || !/^[a-zA-Z0-9]+$/.test(username)) {
+                loginError.innerText = '❌ Можно использовать только английские буквы и цифры!';
                 loginError.style.display = 'block';
                 return;
             }
@@ -618,7 +623,6 @@
             payBtn.addEventListener('click', openPay);
             confirmBtn.addEventListener('click', finishOrder);
             document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closePay));
-            document.getElementById('close-success')?.addEventListener('click', closeAll);
             dailyBonusBtn.addEventListener('click', claimDailyBonus);
             document.getElementById('flip-btn').addEventListener('click', placeFlipBet);
             document.querySelectorAll('.flip-choice').forEach(choice => {
@@ -707,20 +711,24 @@
             let itemDesc = '';
             if (currentMode === 'stars') itemDesc = starsInput.value + " звёзд";
             else itemDesc = "Премиум (" + selectedPremiumMonths + " мес.)";
-            const msg = `💎 НОВЫЙ ЗАКАЗ\n👤 ${currentUser.display_name}\n📦 ${itemDesc}\n💵 ${totalSum} ₽\n❗️ Бонус не начислен (проверьте оплату вручную)`;
+            const msg = `💎 НОВЫЙ ЗАКАЗ\n👤 @${currentUser.display_name}\n📦 ${itemDesc}\n💵 ${totalSum} ₽\n❗️ Бонус не начислен (проверьте оплату вручную)`;
             const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
             const chatId = '1717982615';
             fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
                 .then(() => {
                     modal.classList.remove('active');
                     successModal.classList.add('active');
+                    setTimeout(() => {
+                        if (window.Telegram && window.Telegram.WebApp) {
+                            window.Telegram.WebApp.close();
+                        } else {
+                            successModal.classList.remove('active');
+                            location.reload();
+                        }
+                    }, 3000);
                 })
                 .catch(() => showToast("Ошибка отправки"))
                 .finally(() => { confirmBtn.disabled = false; confirmBtn.innerText = "Я ОПЛАТИЛ"; });
-        }
-        function closeAll() {
-            successModal.classList.remove('active');
-            if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.close();
         }
         function switchTab(tabId) {
             currentMode = tabId;
