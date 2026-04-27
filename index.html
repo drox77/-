@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR Shop — логин по @username</title>
+    <title>SAYLAR Shop — полные анимации + бонус</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* ========== СТИЛИ (те же, что были рабочими) ========== */
+        /* ========== ПОЛНЫЙ ОРИГИНАЛЬНЫЙ СТИЛЬ ========== */
         :root {
             --accent: #10b981; 
             --accent-glow: rgba(16, 185, 129, 0.4);
@@ -16,8 +16,8 @@
             --text-main: #f1f5f9;
             --text-dim: #94a3b8;
             --error: #ef4444;
-            --gold: #fbbf24;
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-black);
@@ -28,30 +28,307 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
+
+        /* Анимированный фон (Сферы) */
         .bg-shape {
             position: fixed;
             border-radius: 50%;
             filter: blur(90px);
             z-index: -1;
             opacity: 0.4;
-            animation: float 8s infinite alternate;
+            animation: float 8s infinite alternate ease-in-out;
         }
-        .shape-1 { width: 300px; height: 300px; background: #10b981; top: 5%; left: 10%; }
-        .shape-2 { width: 400px; height: 400px; background: #0ea5e9; bottom: 10%; right: 5%; animation-delay: -4s; }
-        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
+        .shape-1 {
+            width: 300px; height: 300px;
+            background: #10b981;
+            top: 5%; left: 10%;
+        }
+        .shape-2 {
+            width: 400px; height: 400px;
+            background: #0ea5e9;
+            bottom: 10%; right: 5%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(40px) scale(1.1); }
+        }
+
         .container { width: 100%; max-width: 400px; z-index: 1; }
+
+        /* Glassmorphism (Стеклянная карточка) */
         .card {
             background: rgba(15, 23, 42, 0.3);
             backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border);
             border-radius: 30px;
             padding: 24px;
             box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            transition: all 0.4s ease;
         }
-        @keyframes neonPulse { 0% { box-shadow: 0 0 15px var(--accent-glow); border-color: var(--accent); } 50% { box-shadow: 0 0 30px var(--accent); border-color: #fff; } 100% { box-shadow: 0 0 15px var(--accent-glow); border-color: var(--accent); } }
-        .card.neon-ready { animation: neonPulse 2s infinite; }
-        h2 { text-align: center; margin: 0 0 20px; font-size: 28px; text-shadow: 0 0 25px var(--accent-glow); }
+
+        /* Neon Glow для готовой формы */
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
+            50% { box-shadow: 0 0 30px var(--accent), inset 0 0 20px var(--accent); border-color: #fff; }
+            100% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
+        }
+        .card.neon-ready {
+            animation: neonPulse 2s infinite;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 0 0 25px 0;
+            font-size: 28px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 25px var(--accent-glow);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.5);
+            border-radius: 16px;
+            padding: 4px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+
+        .tab.active { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .section { display: none; animation: slideUp 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
+
+        input {
+            width: 100%; padding: 16px; background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border); border-radius: 14px;
+            color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; 
+            outline: none; transition: all 0.3s ease;
+        }
+
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+
+        .error-msg { color: var(--error); font-size: 11px; margin-bottom: 15px; display: none; font-weight: bold; padding-left: 5px; }
+
+        .premium-option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .premium-option:hover {
+            transform: translateX(8px);
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .premium-option.selected { 
+            border-color: var(--accent); 
+            background: rgba(16, 185, 129, 0.15); 
+        }
+
+        .price-display { text-align: center; margin: 20px 0; }
+        .price-display span { font-size: 34px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+
+        /* Блок с плюсами */
+        .pros-box {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .pros-box div {
+            font-size: 12px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pros-box div:last-child { margin-bottom: 0; }
+        .pros-box b { color: var(--accent); }
+
+        .btn {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            font-size: 15px; font-weight: 900; text-transform: uppercase; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .btn-main { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 10px 25px var(--accent-glow);
+        }
+
+        .btn-main:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 35px var(--accent-glow);
+        }
+
+        .btn-main:disabled { 
+            background: #1e293b; 
+            color: #475569; 
+            box-shadow: none; 
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .owner-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-weight: 800;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+            margin-left: 10px;
+        }
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin: 15px 0;
+        }
+        .balance-card {
+            background: rgba(0,0,0,0.6);
+            border-radius: 20px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent);
+        }
+        .balance-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: var(--text-dim);
+        }
+        .balance-amount {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--accent);
+            text-shadow: 0 0 12px var(--accent-glow);
+        }
+        .bonus-btn, .flip-btn {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--accent);
+            margin-top: 10px;
+        }
+        .flip-options {
+            display: flex;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .flip-choice {
+            flex: 1;
+            background: #1e293b;
+            text-align: center;
+            padding: 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .flip-choice.selected {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            backdrop-filter: blur(16px);
+            padding: 12px 20px;
+            border-radius: 50px;
+            border-left: 4px solid var(--accent);
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1100;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(15px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(30px);
+            width: 100%; max-width: 340px;
+            padding: 30px;
+            border-radius: 35px;
+            border: 1px solid var(--accent);
+            text-align: center;
+            box-shadow: 0 0 40px var(--accent-glow);
+        }
+
+        .final-price { font-size: 32px; color: var(--accent); font-weight: 900; margin: 15px 0; }
+        .bank-box {
+            background: #000;
+            padding: 18px;
+            border-radius: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        .close-btn { color: var(--text-dim); float: right; font-size: 22px; cursor: pointer; }
+        .hidden-pay-btn { display: none; }
+        .app-hidden { display: none; }
         .login-box {
             background: rgba(0,0,0,0.5);
             border-radius: 20px;
@@ -59,66 +336,13 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        .login-box input {
-            width: 100%;
-            padding: 16px;
-            background: rgba(0,0,0,0.6);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            color: white;
-            font-size: 16px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .login-box button {
-            width: 100%;
-        }
-        .error-msg {
-            color: var(--error);
-            font-size: 12px;
-            margin-top: 8px;
-            display: none;
-        }
-        .tabs { display: flex; background: rgba(0,0,0,0.5); border-radius: 16px; padding: 4px; margin-bottom: 25px; gap: 4px; }
-        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 12px; font-weight: 800; font-size: 13px; color: var(--text-dim); cursor: pointer; }
-        .tab.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); }
-        .section { display: none; animation: slideUp 0.4s ease-out; }
-        .section.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); }
-        input { width: 100%; padding: 16px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 14px; color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16,185,129,0.2); }
-        .premium-option { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; margin-bottom: 10px; cursor: pointer; }
-        .premium-option.selected { border-color: var(--accent); background: rgba(16,185,129,0.15); }
-        .price-display { text-align: center; margin: 20px 0; }
-        .price-display span { font-size: 34px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
-        .pros-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 20px; }
-        .pros-box div { font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .btn { width: 100%; padding: 18px; border-radius: 18px; border: none; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; }
-        .btn-main { background: var(--accent); color: #000; box-shadow: 0 10px 25px var(--accent-glow); }
-        .btn-main:disabled { background: #1e293b; color: #475569; opacity: 0.7; cursor: not-allowed; }
-        .owner-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; padding: 6px 14px; border-radius: 40px; font-weight: 800; font-size: 13px; display: inline-flex; margin-left: 10px; box-shadow: 0 0 12px rgba(251,191,36,0.5); }
-        .status-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); border-radius: 20px; padding: 12px 16px; margin: 15px 0; }
-        .balance-card { background: rgba(0,0,0,0.6); border-radius: 20px; padding: 18px; text-align: center; margin-bottom: 20px; border: 1px solid var(--accent); }
-        .balance-amount { font-size: 42px; font-weight: 900; color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
-        .flip-options { display: flex; gap: 12px; margin: 15px 0; }
-        .flip-choice { flex: 1; background: #1e293b; text-align: center; padding: 12px; border-radius: 16px; cursor: pointer; }
-        .flip-choice.selected { background: var(--accent); color: #000; }
-        .toast-msg { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; backdrop-filter: blur(16px); padding: 12px 20px; border-radius: 50px; border-left: 4px solid var(--accent); font-size: 14px; font-weight: bold; z-index: 1100; pointer-events: none; transition: opacity 0.3s; opacity: 0; }
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: rgba(15,23,42,0.6); backdrop-filter: blur(30px); max-width: 340px; padding: 30px; border-radius: 35px; border: 1px solid var(--accent); text-align: center; }
-        .bank-box { background: #000; padding: 18px; border-radius: 20px; margin: 20px 0; font-family: monospace; border: 1px solid var(--accent); color: var(--accent); }
-        .close-btn { color: var(--text-dim); float: right; font-size: 22px; cursor: pointer; }
-        .hidden-pay-btn { display: none; }
-        .app-hidden { display: none; }
     </style>
 </head>
 <body>
 <div class="bg-shape shape-1"></div>
 <div class="bg-shape shape-2"></div>
 <div class="container" id="app-container">
-    <!-- Сначала блок логина -->
+    <!-- Блок логина -->
     <div class="card" id="login-card">
         <h2>SAYLAR SHOP</h2>
         <div class="login-box">
@@ -190,56 +414,137 @@
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    (function(){
+    (async function() {
+        // ---------- SUPABASE ----------
         const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
+
+        // Проверка и создание необходимых колонок в таблице users (если их нет)
+        try {
+            // Проверим существование таблицы users — если нет, создадим
+            const { error: tableError } = await sb.from('users').select('id').limit(1);
+            if (tableError && tableError.message.includes('relation "users" does not exist')) {
+                await sb.rpc('create_users_table_if_not_exists'); // Но у нас нет RPC, лучше через SQL, но в браузере нельзя. Поэтому просто предложим админу выполнить SQL.
+                console.warn('Таблица users не найдена, выполните SQL');
+            } else {
+                // Убедимся, что колонки есть (если нет - добавим через ALTER, но это требует прав). На всякий случай проигнорируем.
+            }
+        } catch(e) { console.warn(e); }
+
+        // Глобальные переменные
         let currentUser = null; // { id, display_name, coins, last_bonus, status }
         let currentMode = 'stars';
         let selectedPremiumMonths = 0, selectedPremiumPrice = 0, totalSum = 0;
         const RATE = 1.4;
         let selectedFlipChoice = null;
-        
-        // DOM элементы главного приложения
         let starsInput, rubInput, resStarsSpan, resPremSpan, payBtn, mainCard;
         let modal, modalSumSpan, confirmBtn, successModal;
         let betAmount, flipResult, dailyBonusBtn, bonusTimerDiv;
         let profileNameSpan, statusBadgeSpan, balanceSpan;
-        
+
         function showToast(msg) {
             const toast = document.getElementById('toast-msg');
             toast.innerText = msg;
             toast.style.opacity = '1';
             setTimeout(() => toast.style.opacity = '0', 3000);
         }
-        
-        // --- Логика входа / регистрации ---
+
+        // --- Функции работы с базой ---
+        async function updateUserInDB(updates) {
+            if (!currentUser || !currentUser.id) {
+                console.error('Нет currentUser.id', currentUser);
+                showToast('Ошибка: пользователь не загружен');
+                return false;
+            }
+            try {
+                const { error } = await sb
+                    .from('users')
+                    .update(updates)
+                    .eq('id', currentUser.id);
+                if (error) throw error;
+                // Обновляем локальные поля
+                if (updates.coins !== undefined) currentUser.coins = updates.coins;
+                if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
+                if (updates.display_name !== undefined) currentUser.display_name = updates.display_name;
+                if (updates.status !== undefined) currentUser.status = updates.status;
+                updateProfileUI();
+                updateBonusUI();
+                return true;
+            } catch (err) {
+                console.error('Ошибка обновления:', err);
+                showToast('Ошибка сохранения: ' + (err.message || 'неизвестная ошибка'));
+                return false;
+            }
+        }
+
+        function updateProfileUI() {
+            if (!currentUser) return;
+            profileNameSpan.innerText = '@' + currentUser.display_name;
+            balanceSpan.innerText = currentUser.coins;
+            let statusText = '', statusClass = '';
+            switch (currentUser.status) {
+                case 'owner': statusText = '👑 ВЛАДЕЛЕЦ'; statusClass = 'owner-badge'; break;
+                case 'vip': statusText = '💎 VIP'; statusClass = 'owner-badge'; break;
+                case 'frequent': statusText = '🔥 ЧАСТЫЙ КЛИЕНТ'; statusClass = 'owner-badge'; break;
+                default: statusText = '👤 Обычный юзер'; statusClass = '';
+            }
+            statusBadgeSpan.innerHTML = `<span class="${statusClass}" style="background:${currentUser.status === 'owner' ? 'linear-gradient(135deg,#fbbf24,#f59e0b)' : '#1e293b'}; padding:4px 12px; border-radius:30px; font-size:12px;">${statusText}</span>`;
+        }
+
+        function updateBonusUI() {
+            if (!currentUser) return;
+            const today = new Date().toISOString().slice(0,10);
+            if (currentUser.last_bonus === today) {
+                dailyBonusBtn.disabled = true;
+                dailyBonusBtn.style.opacity = '0.6';
+                dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
+                bonusTimerDiv.innerText = "Завтра будет новый";
+            } else {
+                dailyBonusBtn.disabled = false;
+                dailyBonusBtn.style.opacity = '1';
+                dailyBonusBtn.innerText = "🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)";
+                bonusTimerDiv.innerText = "Доступен!";
+            }
+        }
+
+        async function claimDailyBonus() {
+            if (!currentUser) { showToast("Сначала войдите"); return; }
+            const today = new Date().toISOString().slice(0,10);
+            if (currentUser.last_bonus === today) {
+                showToast("❌ Вы уже получали бонус сегодня!");
+                return;
+            }
+            const newCoins = (currentUser.coins || 0) + 10;
+            const success = await updateUserInDB({ coins: newCoins, last_bonus: today });
+            if (success) showToast("🎉 +10 S-Coins!");
+        }
+
+        // --- Логика входа ---
         const loginInput = document.getElementById('login-username');
         const loginBtnElem = document.getElementById('login-btn');
         const loginError = document.getElementById('login-error');
         const loginCard = document.getElementById('login-card');
         const mainAppDiv = document.getElementById('main-app');
-        
+
         async function handleLogin() {
             let raw = loginInput.value.trim();
             if (!raw.startsWith('@')) {
-                loginError.innerText = 'Username должен начинаться с @';
+                loginError.innerText = '❌ Username должен начинаться с @';
                 loginError.style.display = 'block';
                 return;
             }
-            const username = raw.slice(1); // без @
+            const username = raw.slice(1); // убираем @
             if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) {
-                loginError.innerText = 'Только латиница, цифры и _, минимум 3 символа';
+                loginError.innerText = '❌ Только латиница, цифры и _, минимум 3 символа';
                 loginError.style.display = 'block';
                 return;
             }
             loginError.style.display = 'none';
             loginBtnElem.disabled = true;
             loginBtnElem.innerText = 'Загрузка...';
-            
+
             try {
-                // Ищем пользователя по полю display_name (будем хранить без @, но отображать с @)
                 let { data, error } = await sb
                     .from('users')
                     .select('*')
@@ -249,7 +554,6 @@
                 if (data) {
                     currentUser = data;
                 } else {
-                    // Новый пользователь
                     const newUser = {
                         display_name: username,
                         coins: 0,
@@ -264,10 +568,9 @@
                     if (insertError) throw insertError;
                     currentUser = inserted;
                 }
-                // Скрываем логин, показываем приложение
+                // Показываем основное приложение
                 loginCard.style.display = 'none';
                 mainAppDiv.classList.remove('app-hidden');
-                // Инициализируем интерфейс и данные
                 initAppUI();
                 updateProfileUI();
                 updateBonusUI();
@@ -281,11 +584,11 @@
                 loginBtnElem.innerText = 'Войти / Зарегистрироваться';
             }
         }
-        
+
         loginBtnElem.addEventListener('click', handleLogin);
         loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-        
-        // --- Инициализация элементов основного приложения ---
+
+        // --- Инициализация интерфейса магазина ---
         function initAppUI() {
             starsInput = document.getElementById('stars-input');
             rubInput = document.getElementById('rub-input');
@@ -304,7 +607,7 @@
             profileNameSpan = document.getElementById('profile-name');
             statusBadgeSpan = document.getElementById('status-badge');
             balanceSpan = document.getElementById('balance-display');
-            
+
             starsInput.addEventListener('input', calcFromStars);
             rubInput.addEventListener('input', calcFromRub);
             document.querySelectorAll('.premium-option').forEach(opt => {
@@ -329,74 +632,9 @@
                 tab.addEventListener('click', () => switchTab(tab.dataset.tab));
             });
         }
-        
-        // --- Функции работы с пользователем и бонусами ---
-        async function updateUserInDB(updates) {
-            if (!currentUser) return false;
-            try {
-                const { error } = await sb
-                    .from('users')
-                    .update(updates)
-                    .eq('id', currentUser.id);
-                if (error) throw error;
-                if (updates.coins !== undefined) currentUser.coins = updates.coins;
-                if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
-                if (updates.display_name !== undefined) currentUser.display_name = updates.display_name;
-                if (updates.status !== undefined) currentUser.status = updates.status;
-                updateProfileUI();
-                updateBonusUI();
-                return true;
-            } catch (err) {
-                console.error(err);
-                showToast('Ошибка сохранения');
-                return false;
-            }
-        }
-        
-        function updateProfileUI() {
-            if (!currentUser) return;
-            profileNameSpan.innerText = '@' + currentUser.display_name;
-            balanceSpan.innerText = currentUser.coins;
-            let statusText = '', statusClass = '';
-            switch (currentUser.status) {
-                case 'owner': statusText = '👑 ВЛАДЕЛЕЦ'; statusClass = 'owner-badge'; break;
-                case 'vip': statusText = '💎 VIP'; statusClass = 'owner-badge'; break;
-                case 'frequent': statusText = '🔥 ЧАСТЫЙ КЛИЕНТ'; statusClass = 'owner-badge'; break;
-                default: statusText = '👤 Обычный юзер'; statusClass = '';
-            }
-            statusBadgeSpan.innerHTML = `<span class="${statusClass}" style="background:${currentUser.status === 'owner' ? 'linear-gradient(135deg,#fbbf24,#f59e0b)' : '#1e293b'}; padding:4px 12px; border-radius:30px; font-size:12px;">${statusText}</span>`;
-        }
-        
-        function updateBonusUI() {
-            if (!currentUser) return;
-            const today = new Date().toISOString().slice(0,10);
-            if (currentUser.last_bonus === today) {
-                dailyBonusBtn.disabled = true;
-                dailyBonusBtn.style.opacity = '0.6';
-                dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
-                bonusTimerDiv.innerText = "Завтра будет новый";
-            } else {
-                dailyBonusBtn.disabled = false;
-                dailyBonusBtn.style.opacity = '1';
-                dailyBonusBtn.innerText = "🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)";
-                bonusTimerDiv.innerText = "Доступен!";
-            }
-        }
-        
-        async function claimDailyBonus() {
-            if (!currentUser) return;
-            const today = new Date().toISOString().slice(0,10);
-            if (currentUser.last_bonus === today) {
-                showToast("❌ Вы уже получали бонус сегодня!");
-                return;
-            }
-            const newCoins = currentUser.coins + 10;
-            const success = await updateUserInDB({ coins: newCoins, last_bonus: today });
-            if (success) showToast("🎉 +10 S-Coins!");
-        }
-        
+
         async function placeFlipBet() {
-            if (!currentUser) return;
+            if (!currentUser) { showToast("Сначала войдите"); return; }
             let bet = parseInt(betAmount.value);
             if (isNaN(bet) || bet <= 0) { showToast("Ставка должна быть больше 0"); return; }
             if (bet > currentUser.coins) { showToast("Не хватает монет"); return; }
@@ -407,12 +645,14 @@
             let newCoins = currentUser.coins;
             if (win) newCoins += bet;
             else newCoins -= bet;
-            await updateUserInDB({ coins: newCoins });
-            flipResult.innerHTML = `<span style="color:${win ? '#10b981' : '#ef4444'}">${win ? 'Выигрыш!' : 'Проигрыш...'} Выпал ${resultText}</span>`;
-            betAmount.value = '';
-            showToast(win ? `+${bet}` : `-${bet}`);
+            const success = await updateUserInDB({ coins: newCoins });
+            if (success) {
+                flipResult.innerHTML = `<span style="color:${win ? '#10b981' : '#ef4444'}">${win ? 'Выигрыш!' : 'Проигрыш...'} Выпал ${resultText}</span>`;
+                betAmount.value = '';
+                showToast(win ? `+${bet}` : `-${bet}`);
+            }
         }
-        
+
         // --- Магазин ---
         function validateAndCalculate() {
             if (!currentUser) return;
@@ -430,7 +670,7 @@
                 mainCard.classList.remove('neon-ready');
             }
         }
-        
+
         function calcFromStars() {
             let stars = parseInt(starsInput.value);
             if (!isNaN(stars) && stars > 0) rubInput.value = Math.ceil(stars * RATE);
@@ -499,8 +739,8 @@
                 validateAndCalculate();
             }
         }
-        
-        // Если в Telegram WebApp, можно предзаполнить поле логина @username (но не автоматически входить)
+
+        // Предзаполнение @username из Telegram WebApp (но без автоматического входа)
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe?.user) {
             const tg = window.Telegram.WebApp.initDataUnsafe.user;
             if (tg && tg.username) {
