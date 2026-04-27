@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR Shop — Telegram Auth</title>
+    <title>SAYLAR Shop — Telegram + Browser</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* (твой полный стиль скопируй из предыдущего ответа, он не меняется) */
+        /* ========== ПОЛНЫЕ СТИЛИ (как в рабочей версии до изменений) ========== */
         :root {
             --accent: #10b981; 
             --accent-glow: rgba(16, 185, 129, 0.4);
@@ -17,28 +17,355 @@
             --text-dim: #94a3b8;
             --error: #ef4444;
             --gold: #fbbf24;
+            --gold-glow: rgba(251, 191, 36, 0.5);
         }
-        /* ... весь твой CSS из предыдущего кода ... */
-        /* Для краткости я вставлю полный стиль из последней рабочей версии, но ты можешь взять свой */
-        /* 👇 ВСТАВЬ СВОИ СТИЛИ ОТСЮДА */
-        body { font-family: 'Inter', sans-serif; background: var(--bg-black); ... }
-        /* ... */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-black);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-shape {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 8s infinite alternate ease-in-out;
+        }
+        .shape-1 {
+            width: 300px; height: 300px;
+            background: #10b981;
+            top: 5%; left: 10%;
+        }
+        .shape-2 {
+            width: 400px; height: 400px;
+            background: #0ea5e9;
+            bottom: 10%; right: 5%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(40px) scale(1.1); }
+        }
+
+        .container { width: 100%; max-width: 400px; z-index: 1; }
+
+        .card {
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            transition: all 0.4s ease;
+        }
+
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
+            50% { box-shadow: 0 0 30px var(--accent), inset 0 0 20px var(--accent); border-color: #fff; }
+            100% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
+        }
+        .card.neon-ready {
+            animation: neonPulse 2s infinite;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 0 0 25px 0;
+            font-size: 28px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 25px var(--accent-glow);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.5);
+            border-radius: 16px;
+            padding: 4px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            gap: 4px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+
+        .tab.active { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .section { display: none; animation: slideUp 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
+
+        input {
+            width: 100%; padding: 16px; background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border); border-radius: 14px;
+            color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; 
+            outline: none; transition: all 0.3s ease;
+        }
+
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+
+        .error-msg { color: var(--error); font-size: 11px; margin-bottom: 15px; display: none; font-weight: bold; padding-left: 5px; }
+
+        .premium-option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .premium-option:hover {
+            transform: translateX(8px);
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .premium-option.selected { 
+            border-color: var(--accent); 
+            background: rgba(16, 185, 129, 0.15); 
+        }
+
+        .price-display { text-align: center; margin: 20px 0; }
+        .price-display span { font-size: 34px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+
+        .pros-box {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .pros-box div {
+            font-size: 12px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pros-box div:last-child { margin-bottom: 0; }
+        .pros-box b { color: var(--accent); }
+
+        .btn {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            font-size: 15px; font-weight: 900; text-transform: uppercase; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .btn-main { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 10px 25px var(--accent-glow);
+        }
+
+        .btn-main:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 35px var(--accent-glow);
+        }
+
+        .btn-main:disabled { 
+            background: #1e293b; 
+            color: #475569; 
+            box-shadow: none; 
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .owner-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-weight: 800;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 12px var(--gold-glow);
+            margin-left: 10px;
+        }
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin: 15px 0;
+        }
+        .balance-card {
+            background: rgba(0,0,0,0.6);
+            border-radius: 20px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent);
+        }
+        .balance-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: var(--text-dim);
+        }
+        .balance-amount {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--accent);
+            text-shadow: 0 0 12px var(--accent-glow);
+        }
+        .bonus-btn, .flip-btn {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--accent);
+            margin-top: 10px;
+        }
+        .flip-options {
+            display: flex;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .flip-choice {
+            flex: 1;
+            background: #1e293b;
+            text-align: center;
+            padding: 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .flip-choice.selected {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            backdrop-filter: blur(16px);
+            padding: 12px 20px;
+            border-radius: 50px;
+            border-left: 4px solid var(--accent);
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1100;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(15px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(30px);
+            width: 100%; max-width: 340px;
+            padding: 30px;
+            border-radius: 35px;
+            border: 1px solid var(--accent);
+            text-align: center;
+            box-shadow: 0 0 40px var(--accent-glow);
+        }
+
+        .final-price { font-size: 32px; color: var(--accent); font-weight: 900; margin: 15px 0; }
+        .bank-box {
+            background: #000;
+            padding: 18px;
+            border-radius: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        .close-btn { color: var(--text-dim); float: right; font-size: 22px; cursor: pointer; }
+        .hidden-pay-btn { display: none; }
+        .login-panel {
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .inline-btn {
+            display: inline-block;
+            width: auto;
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
+
+<div class="bg-shape shape-1"></div>
+<div class="bg-shape shape-2"></div>
+
 <div class="container">
     <div class="card" id="main-card">
         <h2>SAYLAR SHOP</h2>
+
         <div class="tabs">
             <div class="tab active" data-tab="stars">ЗВЁЗДЫ</div>
             <div class="tab" data-tab="premium">PREMIUM</div>
             <div class="tab" data-tab="profile">ПРОФИЛЬ</div>
         </div>
 
-        <!-- Здесь больше нет поля для ввода ника! -->
+        <!-- Панель логина (показывается только если нет Telegram ID и нет активного пользователя) -->
+        <div id="login-panel" class="login-panel" style="display: none;">
+            <label>👤 Введите никнейм (латиница)</label>
+            <input type="text" id="manual-username" placeholder="Nickname">
+            <div id="manual-error" class="error-msg" style="display: none;">Только английские буквы и цифры</div>
+            <button id="login-btn" class="btn btn-main inline-btn">Войти / Зарегистрироваться</button>
+        </div>
 
         <div id="stars-section" class="section active">
-            <!-- ... тот же контент ... -->
             <div style="display: flex; gap: 10px;">
                 <div style="flex:1"><label>Кол-во звёзд</label><input type="number" id="stars-input" placeholder="50"></div>
                 <div style="flex:1"><label>Сумма в рублях</label><input type="number" id="rub-input" placeholder="70"></div>
@@ -56,7 +383,7 @@
 
         <div id="profile-section" class="section">
             <div class="status-row">
-                <span>👤 <span id="profile-name">Загрузка...</span></span>
+                <span>👤 <span id="profile-name">—</span></span>
                 <span id="status-badge"></span>
             </div>
             <div class="balance-card">
@@ -86,42 +413,53 @@
     </div>
 </div>
 
-<!-- Модалки те же -->
-<div id="modal" class="modal-overlay">...</div>
-<div id="success-modal" class="modal-overlay">...</div>
+<div id="modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-btn">✕</span>
+        <h3>ИТОГО К ОПЛАТЕ:</h3>
+        <div class="final-price" id="modal-sum">0 ₽</div>
+        <div class="bank-box">2200 7019 4219 4652<br>+7 966 349 22 74</div>
+        <p>Дамир О.</p>
+        <button class="btn btn-main" id="confirm-btn">Я ОПЛАТИЛ</button>
+    </div>
+</div>
+
+<div id="success-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 style="color:var(--accent);">ЗАЯВКА ПРИНЯТА</h3>
+        <p>Отправьте скриншот чека в поддержку @saylar_support. Бонус начислят после проверки.</p>
+        <button class="btn btn-main" id="close-success">ОК</button>
+    </div>
+</div>
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    (function() {
+    (function(){
         // ---------- SUPABASE ----------
         const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // ---------- ПОЛУЧАЕМ ДАННЫЕ ИЗ TELEGRAM ----------
+        // ---------- ДАННЫЕ TELEGRAM ----------
         let tgUser = null;
+        let tgId = null;
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
             tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+            if (tgUser && tgUser.id) tgId = tgUser.id;
         }
-        
-        if (!tgUser || !tgUser.id) {
-            // Если запущено не в Telegram или нет данных
-            document.body.innerHTML = '<div style="padding:40px; text-align:center;">❌ Пожалуйста, откройте приложение через Telegram</div>';
-            return;
-        }
-        
-        const telegramId = tgUser.id;
-        let displayName = tgUser.username || (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : ''));
-        if (!displayName) displayName = `User${telegramId}`;
         
         // Глобальное состояние
-        let currentUser = null; // { telegram_id, display_name, coins, last_bonus, status }
+        let currentUser = null; // { id, telegram_id, display_name, coins, last_bonus, status }
         let currentMode = 'stars';
         let selectedPremiumMonths = 0, selectedPremiumPrice = 0, totalSum = 0;
         const RATE = 1.4;
         let selectedFlipChoice = null;
         
         // DOM элементы
+        const loginPanel = document.getElementById('login-panel');
+        const manualUsername = document.getElementById('manual-username');
+        const manualError = document.getElementById('manual-error');
+        const loginBtn = document.getElementById('login-btn');
         const profileNameSpan = document.getElementById('profile-name');
         const statusBadgeSpan = document.getElementById('status-badge');
         const balanceSpan = document.getElementById('balance-display');
@@ -147,61 +485,15 @@
             setTimeout(() => toast.style.opacity = '0', 3000);
         }
         
-        // Загрузка/создание пользователя по telegram_id
-        async function loadOrCreateUser() {
-            try {
-                // Ищем пользователя
-                let { data, error } = await sb
-                    .from('users')
-                    .select('*')
-                    .eq('telegram_id', telegramId)
-                    .maybeSingle();
-                
-                if (error) throw error;
-                
-                if (data) {
-                    currentUser = {
-                        telegram_id: data.telegram_id,
-                        display_name: data.display_name,
-                        coins: data.coins,
-                        last_bonus: data.last_bonus,
-                        status: data.status
-                    };
-                } else {
-                    // Создаём нового
-                    const newUser = {
-                        telegram_id: telegramId,
-                        display_name: displayName,
-                        coins: 0,
-                        last_bonus: null,
-                        status: 'user'
-                    };
-                    const { data: inserted, error: insertError } = await sb
-                        .from('users')
-                        .insert([newUser])
-                        .select()
-                        .single();
-                    if (insertError) throw insertError;
-                    currentUser = {
-                        telegram_id: inserted.telegram_id,
-                        display_name: inserted.display_name,
-                        coins: inserted.coins,
-                        last_bonus: inserted.last_bonus,
-                        status: inserted.status
-                    };
-                }
-                updateProfileUI();
-                updateBonusUI();
-            } catch (err) {
-                console.error(err);
-                showToast('Ошибка авторизации. Перезагрузите.');
-            }
-        }
-        
+        // Обновить UI профиля
         function updateProfileUI() {
-            if (!currentUser) return;
-            profileNameSpan.innerText = currentUser.display_name;
-            // статус
+            if (!currentUser) {
+                profileNameSpan.innerText = "Не авторизован";
+                statusBadgeSpan.innerHTML = '';
+                balanceSpan.innerText = "0";
+                return;
+            }
+            profileNameSpan.innerText = currentUser.display_name || (currentUser.telegram_id ? `User${currentUser.telegram_id}` : 'Гость');
             let statusText = '', statusClass = '';
             switch (currentUser.status) {
                 case 'owner': statusText = '👑 ВЛАДЕЛЕЦ'; statusClass = 'owner-badge'; break;
@@ -235,7 +527,7 @@
                 const { error } = await sb
                     .from('users')
                     .update(updates)
-                    .eq('telegram_id', currentUser.telegram_id);
+                    .eq('id', currentUser.id);
                 if (error) throw error;
                 if (updates.coins !== undefined) currentUser.coins = updates.coins;
                 if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
@@ -251,20 +543,120 @@
             }
         }
         
-        async function claimDailyBonus() {
-            if (!currentUser) return;
-            const today = new Date().toISOString().slice(0,10);
-            if (currentUser.last_bonus === today) {
-                showToast("Уже получали сегодня");
-                return;
+        // Загрузить или создать пользователя по telegram_id или по имени (fallback)
+        async function loadOrCreateUserByTelegram(tid, nameFromTg) {
+            try {
+                let { data, error } = await sb
+                    .from('users')
+                    .select('*')
+                    .eq('telegram_id', tid)
+                    .maybeSingle();
+                if (error) throw error;
+                if (data) {
+                    currentUser = data;
+                    updateProfileUI();
+                    updateBonusUI();
+                    return true;
+                } else {
+                    // Создаём через Telegram
+                    const newUser = {
+                        telegram_id: tid,
+                        display_name: nameFromTg,
+                        coins: 0,
+                        last_bonus: null,
+                        status: (nameFromTg === 'SAYLAR' ? 'owner' : 'user')
+                    };
+                    const { data: inserted, error: insertError } = await sb
+                        .from('users')
+                        .insert([newUser])
+                        .select()
+                        .single();
+                    if (insertError) throw insertError;
+                    currentUser = inserted;
+                    updateProfileUI();
+                    updateBonusUI();
+                    return true;
+                }
+            } catch(err) {
+                console.error(err);
+                showToast('Ошибка авторизации через Telegram');
+                return false;
             }
+        }
+        
+        async function loadOrCreateUserByUsername(username) {
+            if (!username || username.length < 3) return false;
+            if (/[а-яА-ЯёЁ]/.test(username)) {
+                manualError.style.display = 'block';
+                return false;
+            }
+            manualError.style.display = 'none';
+            try {
+                let { data, error } = await sb
+                    .from('users')
+                    .select('*')
+                    .eq('display_name', username)
+                    .maybeSingle();
+                if (error) throw error;
+                if (data) {
+                    currentUser = data;
+                } else {
+                    // Создаём без telegram_id
+                    const newUser = {
+                        telegram_id: null,
+                        display_name: username,
+                        coins: 0,
+                        last_bonus: null,
+                        status: (username === 'SAYLAR' ? 'owner' : 'user')
+                    };
+                    const { data: inserted, error: insertError } = await sb
+                        .from('users')
+                        .insert([newUser])
+                        .select()
+                        .single();
+                    if (insertError) throw insertError;
+                    currentUser = inserted;
+                }
+                updateProfileUI();
+                updateBonusUI();
+                loginPanel.style.display = 'none';
+                return true;
+            } catch(err) {
+                console.error(err);
+                showToast('Ошибка при входе');
+                return false;
+            }
+        }
+        
+        // Основной вход: если есть Telegram ID — используем его, иначе показываем панель логина
+        async function initAuth() {
+            if (tgId) {
+                let name = tgUser.username || (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : ''));
+                if (!name) name = `User${tgId}`;
+                const ok = await loadOrCreateUserByTelegram(tgId, name);
+                if (ok) {
+                    loginPanel.style.display = 'none';
+                } else {
+                    // fallback на ручной ввод
+                    loginPanel.style.display = 'block';
+                }
+            } else {
+                loginPanel.style.display = 'block';
+            }
+        }
+        
+        // ---------- Действия ----------
+        async function claimDailyBonus() {
+            if (!currentUser) { showToast("Сначала войдите"); return; }
+            const today = new Date().toISOString().slice(0,10);
+            if (currentUser.last_bonus === today) { showToast("Уже получали"); return; }
             const newCoins = currentUser.coins + 10;
             await updateUserInDB({ coins: newCoins, last_bonus: today });
             showToast("+10 S-Coins!");
         }
         
         async function placeFlipBet() {
-            if (!currentUser) { showToast("Ошибка"); return; }
+            if (!currentUser) { showToast("Сначала войдите"); return; }
             let bet = parseInt(betAmount.value);
             if (isNaN(bet) || bet <= 0) { showToast("Ставка >0"); return; }
             if (bet > currentUser.coins) { showToast("Не хватает монет"); return; }
@@ -278,18 +670,18 @@
             await updateUserInDB({ coins: newCoins });
             flipResult.innerHTML = `<span style="color:${win ? '#10b981' : '#ef4444'}">${win ? 'Выигрыш!' : 'Проигрыш...'} Выпал ${resultText}</span>`;
             betAmount.value = '';
-            showToast(win ? `+${bet} монет` : `-${bet} монет`);
+            showToast(win ? `+${bet}` : `-${bet}`);
         }
         
-        // Логика магазина (как раньше)
+        // Магазин
         function validateAndCalculate() {
             if (currentMode === 'stars') {
                 let rub = parseInt(rubInput.value);
                 totalSum = (rub >= 70) ? rub : 0;
                 resStarsSpan.innerText = totalSum + " ₽";
-                payBtn.disabled = !(totalSum >= 70);
+                payBtn.disabled = !(totalSum >= 70 && currentUser);
             } else if (currentMode === 'premium') {
-                payBtn.disabled = !(selectedPremiumPrice > 0);
+                payBtn.disabled = !(selectedPremiumPrice > 0 && currentUser);
             }
             if (!payBtn.disabled && currentMode !== 'profile') {
                 mainCard.classList.add('neon-ready');
@@ -319,6 +711,7 @@
             validateAndCalculate();
         }
         function openPay() {
+            if (!currentUser) { showToast("Сначала войдите"); return; }
             if (currentMode === 'stars') totalSum = parseInt(rubInput.value) || 0;
             else totalSum = selectedPremiumPrice;
             if (totalSum < 70 && currentMode === 'stars') return;
@@ -333,7 +726,7 @@
             let itemDesc = '';
             if (currentMode === 'stars') itemDesc = starsInput.value + " звёзд";
             else itemDesc = "Премиум (" + selectedPremiumMonths + " мес.)";
-            const msg = `💎 НОВЫЙ ЗАКАЗ (ОЖИДАЕТ ПРОВЕРКИ)\n👤 ${currentUser.display_name} (tg:${telegramId})\n📦 ${itemDesc}\n💵 ${totalSum} ₽`;
+            const msg = `💎 НОВЫЙ ЗАКАЗ (ОЖИДАЕТ ПРОВЕРКИ)\n👤 ${currentUser.display_name || 'Пользователь'} (id:${currentUser.id})\n📦 ${itemDesc}\n💵 ${totalSum} ₽`;
             const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
             const chatId = '1717982615';
             fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
@@ -359,20 +752,32 @@
             document.getElementById(tabId + '-section').classList.add('active');
             if (tabId === 'profile') {
                 payBtn.classList.add('hidden-pay-btn');
-                updateProfileUI();
-                updateBonusUI();
+                if (currentUser) {
+                    updateProfileUI();
+                    updateBonusUI();
+                }
             } else {
                 payBtn.classList.remove('hidden-pay-btn');
                 validateAndCalculate();
             }
         }
         
-        // Инициализация
-        async function init() {
+        // Ручной логин
+        async function onManualLogin() {
+            const username = manualUsername.value.trim();
+            if (username.length < 3) {
+                manualError.style.display = 'block';
+                manualError.innerText = 'Минимум 3 символа';
+                return;
+            }
+            await loadOrCreateUserByUsername(username);
+        }
+        
+        // Инициализация событий
+        function init() {
             if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.expand();
-            // Загружаем пользователя
-            await loadOrCreateUser();
-            // Обработчики
+            initAuth();
+            
             starsInput.addEventListener('input', calcFromStars);
             rubInput.addEventListener('input', calcFromRub);
             document.querySelectorAll('.premium-option').forEach(opt => {
@@ -396,7 +801,8 @@
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => switchTab(tab.dataset.tab));
             });
-            // Устанавливаем стартовую вкладку
+            loginBtn.addEventListener('click', onManualLogin);
+            
             switchTab('stars');
         }
         init();
