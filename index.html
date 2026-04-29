@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR Shop — Stealth Edition</title>
+    <title>SAYLAR Shop — TON + Аккаунты Telegram</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* ========== ПОЛНЫЙ СТИЛЬ (НИЧЕГО НЕ УКОРОЧЕНО) ========== */
+        /* ===== ПОЛНЫЙ ОРИГИНАЛЬНЫЙ СТИЛЬ (НИЧЕГО НЕ УРЕЗАНО) ===== */
         :root {
             --accent: #10b981; 
             --accent-glow: rgba(16, 185, 129, 0.4);
@@ -16,10 +15,7 @@
             --text-main: #f1f5f9;
             --text-dim: #94a3b8;
             --error: #ef4444;
-            --gold: #fbbf24;
-            --gold-glow: rgba(251, 191, 36, 0.5);
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-black);
@@ -32,7 +28,6 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
         .bg-shape {
             position: fixed;
             border-radius: 50%;
@@ -52,14 +47,11 @@
             bottom: 10%; right: 5%;
             animation-delay: -4s;
         }
-
         @keyframes float {
             0% { transform: translateY(0px) scale(1); }
             100% { transform: translateY(40px) scale(1.1); }
         }
-
         .container { width: 100%; max-width: 400px; z-index: 1; }
-
         .card {
             background: rgba(15, 23, 42, 0.3);
             backdrop-filter: blur(30px);
@@ -70,7 +62,6 @@
             box-shadow: 0 25px 60px rgba(0,0,0,0.5);
             transition: all 0.4s ease;
         }
-
         @keyframes neonPulse {
             0% { box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow); border-color: var(--accent); }
             50% { box-shadow: 0 0 30px var(--accent), inset 0 0 20px var(--accent); border-color: #fff; }
@@ -79,7 +70,6 @@
         .card.neon-ready {
             animation: neonPulse 2s infinite;
         }
-
         h2 {
             text-align: center;
             margin: 0 0 25px 0;
@@ -87,7 +77,6 @@
             letter-spacing: 3px;
             text-shadow: 0 0 25px var(--accent-glow);
         }
-
         .tabs {
             display: flex;
             background: rgba(0,0,0,0.5);
@@ -96,47 +85,40 @@
             margin-bottom: 25px;
             border: 1px solid var(--border);
             gap: 4px;
+            flex-wrap: wrap;
         }
-
         .tab {
             flex: 1;
-            padding: 12px;
+            min-width: 80px;
+            padding: 12px 4px;
             text-align: center;
             border-radius: 12px;
             transition: all 0.3s ease;
             font-weight: 800;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-dim);
             cursor: pointer;
         }
-
         .tab.active { 
             background: var(--accent); 
             color: #000; 
             box-shadow: 0 0 15px var(--accent-glow);
         }
-
         .section { display: none; animation: slideUp 0.4s ease-out; }
         .section.active { display: block; }
-
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
-
-        input {
+        input, select {
             width: 100%; padding: 16px; background: rgba(0,0,0,0.6);
             border: 1px solid var(--border); border-radius: 14px;
             color: #fff; font-size: 16px; margin-bottom: 5px; box-sizing: border-box; 
             outline: none; transition: all 0.3s ease;
         }
-
-        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
-
+        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
         .error-msg { color: var(--error); font-size: 11px; margin-bottom: 15px; display: none; font-weight: bold; padding-left: 5px; }
-
         .premium-option {
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
@@ -148,22 +130,17 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-
         .premium-option:hover {
             transform: translateX(8px);
             border-color: var(--accent);
             background: rgba(16, 185, 129, 0.05);
         }
-
         .premium-option.selected { 
             border-color: var(--accent); 
             background: rgba(16, 185, 129, 0.15); 
         }
-
         .price-display { text-align: center; margin: 20px 0; }
         .price-display span { font-size: 34px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
-
-        /* Блок с плюсами */
         .pros-box {
             background: rgba(0,0,0,0.4);
             border: 1px solid var(--border);
@@ -181,97 +158,27 @@
         }
         .pros-box div:last-child { margin-bottom: 0; }
         .pros-box b { color: var(--accent); }
-
         .btn {
             width: 100%; padding: 18px; border-radius: 18px; border: none;
             font-size: 15px; font-weight: 900; text-transform: uppercase; 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
         }
-
         .btn-main { 
             background: var(--accent); 
             color: #000; 
             box-shadow: 0 10px 25px var(--accent-glow);
         }
-
         .btn-main:hover:not(:disabled) {
             transform: translateY(-4px) scale(1.02);
             box-shadow: 0 15px 35px var(--accent-glow);
         }
-
         .btn-main:disabled { 
             background: #1e293b; 
             color: #475569; 
             box-shadow: none; 
             opacity: 0.7;
             cursor: not-allowed;
-        }
-        
-        .owner-badge {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            color: #000;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-weight: 800;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 0 12px var(--gold-glow);
-            margin-left: 10px;
-        }
-        .status-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0,0,0,0.5);
-            border-radius: 20px;
-            padding: 12px 16px;
-            margin: 15px 0;
-        }
-        .balance-card {
-            background: rgba(0,0,0,0.6);
-            border-radius: 20px;
-            padding: 18px;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 1px solid var(--accent);
-        }
-        .balance-card h3 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-            color: var(--text-dim);
-        }
-        .balance-amount {
-            font-size: 42px;
-            font-weight: 900;
-            color: var(--accent);
-            text-shadow: 0 0 12px var(--accent-glow);
-        }
-        .bonus-btn, .flip-btn {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--accent);
-            margin-top: 10px;
-        }
-        .flip-options {
-            display: flex;
-            gap: 12px;
-            margin: 15px 0;
-        }
-        .flip-choice {
-            flex: 1;
-            background: #1e293b;
-            text-align: center;
-            padding: 12px;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .flip-choice.selected {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 10px var(--accent-glow);
         }
         .toast-msg {
             position: fixed;
@@ -290,7 +197,6 @@
             transition: opacity 0.3s;
             opacity: 0;
         }
-
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -302,9 +208,7 @@
             z-index: 1000;
             padding: 20px;
         }
-
         .modal-overlay.active { display: flex; }
-
         .modal-content {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(30px);
@@ -315,7 +219,6 @@
             text-align: center;
             box-shadow: 0 0 40px var(--accent-glow);
         }
-
         .final-price { font-size: 32px; color: var(--accent); font-weight: 900; margin: 15px 0; }
         .bank-box {
             background: #000;
@@ -327,14 +230,35 @@
             color: var(--accent);
         }
         .close-btn { color: var(--text-dim); float: right; font-size: 22px; cursor: pointer; }
-        .hidden-pay-btn { display: none; }
-        .app-hidden { display: none; }
         .login-box {
             background: rgba(0,0,0,0.5);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
             text-align: center;
+        }
+        .app-hidden { display: none; }
+        .country-row {
+            margin-bottom: 15px;
+        }
+        .qty-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .qty-row input {
+            flex: 2;
+        }
+        .qty-row span {
+            flex: 1;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .ton-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
     </style>
 </head>
@@ -349,7 +273,7 @@
             <label>👤 Введите ваш Telegram username</label>
             <input type="text" id="login-username" placeholder="@username" autocomplete="off">
             <div id="login-error" class="error-msg"></div>
-            <button class="btn btn-main" id="login-btn">Войти / Зарегистрироваться</button>
+            <button class="btn btn-main" id="login-btn">Войти / Продолжить</button>
         </div>
         <div class="pros-box">
             <div><b>⚡</b> Быстрая выдача товара (1-5 мин)</div>
@@ -359,42 +283,58 @@
         <a href="https://t.me/saylarreviews" style="display:block; text-align:center; color:var(--accent); margin-top:20px; font-size:12px; text-decoration:none; font-weight:800;" target="_blank">ОТЗЫВЫ КЛИЕНТОВ (100+)</a>
     </div>
 
-    <!-- Основное приложение (скрыто до логина) -->
+    <!-- Основное приложение (показывается после логина) -->
     <div id="main-app" class="app-hidden">
         <div class="card" id="main-card">
             <h2>SAYLAR SHOP</h2>
             <div class="tabs">
                 <div class="tab active" data-tab="stars">ЗВЁЗДЫ</div>
                 <div class="tab" data-tab="premium">PREMIUM</div>
-                <div class="tab" data-tab="profile">ПРОФИЛЬ</div>
+                <div class="tab" data-tab="ton">TON</div>
+                <div class="tab" data-tab="accounts">АККАУНТЫ TG</div>
             </div>
+
+            <!-- Вкладка Звёзды (без изменений) -->
             <div id="stars-section" class="section active">
                 <div style="display: flex; gap: 10px;">
                     <div style="flex:1"><label>Кол-во звёзд</label><input type="number" id="stars-input" placeholder="50"></div>
                     <div style="flex:1"><label>Сумма в рублях</label><input type="number" id="rub-input" placeholder="70"></div>
                 </div>
-                <p style="font-size:10px; color: var(--text-dim); margin-top:5px;">* Минимальный заказ — 70₽ (50 звёзд)</p>
+                <p style="font-size:10px; color:var(--text-dim); margin-top:5px;">* Минимальный заказ — 70₽ (50 звёзд)</p>
                 <div class="price-display"><span id="res-stars">0 ₽</span></div>
             </div>
+
+            <!-- Вкладка Premium (без изменений) -->
             <div id="premium-section" class="section">
                 <div class="premium-option" data-months="3" data-price="1000"><span>3 Месяца</span> <b>1000 ₽</b></div>
                 <div class="premium-option" data-months="6" data-price="1320"><span>6 Месяцев</span> <b>1320 ₽</b></div>
                 <div class="premium-option" data-months="12" data-price="2400"><span>12 Месяцев</span> <b>2400 ₽</b></div>
                 <div class="price-display"><span id="res-prem">0 ₽</span></div>
             </div>
-            <div id="profile-section" class="section">
-                <div class="status-row"><span>👤 <span id="profile-name"></span></span><span id="status-badge"></span></div>
-                <div class="balance-card"><h3>🏦 S-COINS БАЛАНС</h3><div class="balance-amount" id="balance-display">0</div><div style="font-size:11px; margin-top:6px;">За покупки бонус начисляется вручную после проверки</div></div>
-                <button class="btn btn-main bonus-btn" id="daily-bonus-btn">🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)</button>
-                <div id="bonus-timer" style="font-size:11px; color: var(--text-dim); text-align:center; margin-top:8px;"></div>
-                <div style="border-top:1px solid var(--border); margin:15px 0; padding-top:12px;">
-                    <h4 style="margin:0 0 12px 0;">🎲 КОИНФЛИП (Орёл/Решка)</h4>
-                    <input type="number" id="bet-amount" placeholder="Ставка (S-Coins)" style="margin-bottom:12px;">
-                    <div class="flip-options"><div class="flip-choice" data-choice="0">🦅 ОРЁЛ</div><div class="flip-choice" data-choice="1">🪙 РЕШКА</div></div>
-                    <button class="btn btn-main flip-btn" id="flip-btn">КИНУТЬ МОНЕТКУ</button>
-                    <div id="flip-result" style="margin-top:15px; text-align:center; min-height:45px;"></div>
+
+            <!-- Вкладка TON -->
+            <div id="ton-section" class="section">
+                <div class="ton-row">
+                    <label>Количество TON (1 TON = 110 ₽)</label>
+                    <input type="number" id="ton-amount" placeholder="1" min="1" step="1" value="1">
+                    <div class="price-display"><span id="ton-total">110 ₽</span></div>
                 </div>
             </div>
+
+            <!-- Вкладка Аккаунты Telegram -->
+            <div id="accounts-section" class="section">
+                <div class="country-row">
+                    <label>Страна</label>
+                    <select id="account-country"></select>
+                </div>
+                <div class="qty-row">
+                    <label>Количество</label>
+                    <input type="number" id="account-qty" value="1" min="1" step="1">
+                    <span id="account-price-per">0 ₽ / шт</span>
+                </div>
+                <div class="price-display"><span id="account-total">0 ₽</span></div>
+            </div>
+
             <div class="pros-box">
                 <div><b>⚡</b> Быстрая выдача товара (1-5 мин)</div>
                 <div><b>🔒</b> 100% Безопасность аккаунта</div>
@@ -406,9 +346,10 @@
     </div>
 </div>
 
+<!-- Модалки -->
 <div id="modal" class="modal-overlay">
     <div class="modal-content">
-        <span class="close-btn">✕</span>
+        <span class="close-btn" onclick="closePayModal()">✕</span>
         <h3 style="margin:0;">ИТОГО К ОПЛАТЕ:</h3>
         <h3 style="margin:0;">Т-Банк</h3>
         <div class="final-price" id="modal-sum">0 ₽</div>
@@ -417,13 +358,13 @@
             +7 966 349 22 74
         </div>
         <p style="font-size:12px; color: var(--text-dim); margin-bottom:20px;">Дамир О.</p>
-        <button class="btn btn-main" id="confirm-btn">Я ОПЛАТИЛ</button>
+        <button class="btn btn-main" id="confirm-pay-btn">Я ОПЛАТИЛ</button>
     </div>
 </div>
 
 <div id="success-modal" class="modal-overlay">
     <div class="modal-content">
-        <h3 style="margin:0; color: var(--accent);">ЗАЯВКА ПРИНЯТА</h3>
+        <h3 style="margin:0; color: var(--accent);">ЗАКАЗ ПРИНЯТ</h3>
         <p style="margin: 20px 0; font-size: 15px; color: var(--text-main);">Ваш заказ скоро будет выдан.</p>
         <button class="btn btn-main" id="close-success">ОТЛИЧНО</button>
     </div>
@@ -431,339 +372,334 @@
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    (function(){
-        const SUPABASE_URL = 'https://eyxtqtvwexzcpshkifgh.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_RTtYTn3hVWbAGBXTjkVX3w_Laj4jGG7';
-        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        let currentUser = null; // { id, display_name, coins, last_bonus, status }
-        let currentMode = 'stars';
-        let selectedPremiumMonths = 0, selectedPremiumPrice = 0, totalSum = 0;
-        const RATE = 1.4;
-        let selectedFlipChoice = null;
-        
-        // DOM элементы (будут проинициализированы после входа)
-        let starsInput, rubInput, resStarsSpan, resPremSpan, payBtn, mainCard;
-        let modal, modalSumSpan, confirmBtn, successModal;
-        let betAmount, flipResult, dailyBonusBtn, bonusTimerDiv;
-        let profileNameSpan, statusBadgeSpan, balanceSpan;
-        
-        function showToast(msg) {
-            const toast = document.getElementById('toast-msg');
-            toast.innerText = msg;
-            toast.style.opacity = '1';
-            setTimeout(() => toast.style.opacity = '0', 3000);
+    // ---------- ДАННЫЕ АККАУНТОВ (закупочные цены из скринов, наценка +50%, округление вверх, минимум 60₽) ----------
+    const rawAccounts = [
+        { name: "Туркменистан", buy: 50.24 },
+        { name: "США (виртуальные)", buy: 62.56 },
+        { name: "Казахстан", buy: 263.73 },
+        { name: "Турция", buy: 292.66 },
+        { name: "Великобритания", buy: 103.14 },
+        { name: "Канада", buy: 41.85 },
+        { name: "Чили", buy: 48.52 },
+        { name: "США", buy: 167.51 },
+        { name: "Колумбия", buy: 42.19 },
+        { name: "Португалия", buy: 277.42 },
+        { name: "Египет", buy: 78.48 },
+        { name: "Марокко", buy: 42.70 },
+        { name: "Таджикистан", buy: 61.36 },
+        { name: "Германия", buy: 159.81 },
+        { name: "Кот д'Ивуар", buy: 40.99 },
+        { name: "Камерун", buy: 44.24 },
+        { name: "Алжир", buy: 42.53 },
+        { name: "Вьетнам", buy: 64.79 },
+        { name: "Танзания", buy: 47.50 },
+        { name: "Индия", buy: 78.48 },
+        { name: "Аргентина", buy: 42.02 },
+        { name: "Южная Африка", buy: 12.57 },
+        { name: "Кения", buy: 30.55 },
+        { name: "Бразилия", buy: 146.28 },
+        { name: "Греция", buy: 202.60 },
+        { name: "Австралия", buy: 196.44 },
+        { name: "Индонезия", buy: 55.72 },
+        { name: "Италия", buy: 71.81 },
+        { name: "Сенегал", buy: 33.63 },
+        { name: "Филиппины", buy: 78.48 },
+        { name: "Тунис", buy: 50.24 },
+        { name: "Перу", buy: 126.93 },
+        { name: "Сербия", buy: 101.43 },
+        { name: "Польша", buy: 367.98 },
+        { name: "Нидерланды", buy: 146.28 },
+        { name: "Мьянма", buy: 101.60 },
+        { name: "Малайзия", buy: 78.48 },
+        { name: "Грузия", buy: 78.48 },
+        { name: "Япония", buy: 261.33 },
+        { name: "Мексика", buy: 177.10 },
+        { name: "Того", buy: 67.36 },
+        { name: "Иран", buy: 112.72 },
+        { name: "Либерия", buy: 60.00 },
+        { name: "Швеция", buy: 216.64 },
+        { name: "Камбоджа", buy: 78.48 },
+        { name: "Украина", buy: 193.36 },
+        { name: "Таиланд", buy: 215.27 },
+        { name: "Бангладеш", buy: 81.91 },
+        { name: "Зимбабве", buy: 95.95 },
+        { name: "Гонконг", buy: 78.48 },
+        { name: "Молдова", buy: 124.20 },
+        { name: "Судан", buy: 75.75 },
+        { name: "Гана", buy: 90.13 },
+        { name: "Уганда", buy: 67.36 },
+        { name: "Бенин", buy: 67.36 },
+        { name: "Афганистан", buy: 78.48 },
+        { name: "Словения", buy: 172.99 },
+        { name: "Австрия", buy: 298.99 },
+        { name: "Мадагаскар", buy: 54.17 },
+        { name: "Гаити", buy: 67.36 },
+        { name: "Мали", buy: 90.13 },
+        { name: "Франция", buy: 414.04 },
+        { name: "Пакистан", buy: 78.48 },
+        { name: "Руанда", buy: 81.91 },
+        { name: "Нигерия", buy: 78.48 },
+        { name: "Непал", buy: 78.48 },
+        { name: "Буркина-Фасо", buy: 152.96 },
+        { name: "Азербайджан", buy: 78.48 },
+        { name: "Чехия", buy: 355.14 },
+        { name: "Румыния", buy: 403.94 },
+        { name: "Кыргызстан", buy: 78.48 },
+        { name: "Израиль", buy: 78.48 },
+        { name: "Дем.Конго", buy: 78.48 },
+        { name: "Гамбия", buy: 78.48 },
+        { name: "Йемен", buy: 78.48 },
+        { name: "Узбекистан", buy: 117.35 },
+        { name: "Чад", buy: 78.48 },
+        { name: "Албания", buy: 70 }     // не было, добавлю дефолт
+    ];
+
+    // Рассчитываем цену продажи: закуп * 1.5, округление вверх, минимум 60
+    const accounts = rawAccounts.map(acc => {
+        let price = Math.ceil(acc.buy * 1.5);
+        if (price < 60) price = 60;
+        return { name: acc.name, price: price };
+    }).sort((a,b) => a.name.localeCompare(b.name));
+
+    // ---------- Логика ----------
+    let currentUser = null;        // { username: "никбез@" }
+    let currentTab = 'stars';
+    let totalSum = 0;
+    const TON_RATE = 110;
+    let selectedPremiumMonths = 0, selectedPremiumPrice = 0;
+
+    // DOM элементы
+    let starsInput, rubInput, resStarsSpan, resPremSpan, payBtn, mainCard;
+    let modal, modalSumSpan, confirmBtn, successModal;
+    let tonAmount, tonTotalSpan;
+    let accountCountrySelect, accountQty, accountPricePerSpan, accountTotalSpan;
+
+    // Вход
+    const loginInput = document.getElementById('login-username');
+    const loginBtnElem = document.getElementById('login-btn');
+    const loginError = document.getElementById('login-error');
+    const loginCard = document.getElementById('login-card');
+    const mainAppDiv = document.getElementById('main-app');
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast-msg');
+        toast.innerText = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', 3000);
+    }
+
+    function handleLogin() {
+        let raw = loginInput.value.trim();
+        if (!raw.startsWith('@')) {
+            loginError.innerText = '❌ Username должен начинаться с @';
+            loginError.style.display = 'block';
+            return;
         }
-        
-        // --- Функции работы с базой ---
-        async function updateUserInDB(updates) {
-            if (!currentUser || !currentUser.id) {
-                console.error('Нет currentUser.id', currentUser);
-                showToast('Ошибка: пользователь не загружен');
-                return false;
-            }
-            try {
-                const { error } = await sb
-                    .from('users')
-                    .update(updates)
-                    .eq('id', currentUser.id);
-                if (error) throw error;
-                if (updates.coins !== undefined) currentUser.coins = updates.coins;
-                if (updates.last_bonus !== undefined) currentUser.last_bonus = updates.last_bonus;
-                if (updates.display_name !== undefined) currentUser.display_name = updates.display_name;
-                if (updates.status !== undefined) currentUser.status = updates.status;
-                updateProfileUI();
-                updateBonusUI();
-                return true;
-            } catch (err) {
-                console.error('Ошибка обновления:', err);
-                showToast('Ошибка сохранения: ' + (err.message || 'неизвестная ошибка'));
-                return false;
-            }
+        const username = raw.slice(1);
+        if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) {
+            loginError.innerText = '❌ Только латиница, цифры и _, минимум 3 символа. Русские буквы запрещены!';
+            loginError.style.display = 'block';
+            return;
         }
-        
-        function updateProfileUI() {
-            if (!currentUser) return;
-            profileNameSpan.innerText = '@' + currentUser.display_name;
-            balanceSpan.innerText = currentUser.coins;
-            let statusText = '', statusClass = '';
-            switch (currentUser.status) {
-                case 'owner': statusText = '👑 ВЛАДЕЛЕЦ'; statusClass = 'owner-badge'; break;
-                case 'vip': statusText = '💎 VIP'; statusClass = 'owner-badge'; break;
-                case 'frequent': statusText = '🔥 ЧАСТЫЙ КЛИЕНТ'; statusClass = 'owner-badge'; break;
-                default: statusText = '👤 Обычный юзер'; statusClass = '';
-            }
-            statusBadgeSpan.innerHTML = `<span class="${statusClass}" style="background:${currentUser.status === 'owner' ? 'linear-gradient(135deg,#fbbf24,#f59e0b)' : '#1e293b'}; padding:4px 12px; border-radius:30px; font-size:12px;">${statusText}</span>`;
-        }
-        
-        function updateBonusUI() {
-            if (!currentUser) return;
-            const today = new Date().toISOString().slice(0,10);
-            if (currentUser.last_bonus === today) {
-                dailyBonusBtn.disabled = true;
-                dailyBonusBtn.style.opacity = '0.6';
-                dailyBonusBtn.innerText = "✅ БОНУС ПОЛУЧЕН СЕГОДНЯ";
-                bonusTimerDiv.innerText = "✨ Возвращайтесь завтра за новым бонусом!";
-            } else {
-                dailyBonusBtn.disabled = false;
-                dailyBonusBtn.style.opacity = '1';
-                dailyBonusBtn.innerText = "🎁 ЕЖЕДНЕВНЫЙ БОНУС (+10 S-Coins)";
-                bonusTimerDiv.innerText = "⭐ Доступен! Заберите свои монеты.";
-            }
-        }
-        
-        async function claimDailyBonus() {
-            if (!currentUser) { showToast("Сначала войдите"); return; }
-            const today = new Date().toISOString().slice(0,10);
-            if (currentUser.last_bonus === today) {
-                showToast("❌ Вы уже получали бонус сегодня!");
-                return;
-            }
-            const newCoins = (currentUser.coins || 0) + 10;
-            const success = await updateUserInDB({ coins: newCoins, last_bonus: today });
-            if (success) showToast("🎉 +10 S-Coins! Ежедневный бонус получен.");
-        }
-        
-        // --- Логика входа ---
-        const loginInput = document.getElementById('login-username');
-        const loginBtnElem = document.getElementById('login-btn');
-        const loginError = document.getElementById('login-error');
-        const loginCard = document.getElementById('login-card');
-        const mainAppDiv = document.getElementById('main-app');
-        
-        async function handleLogin() {
-            let raw = loginInput.value.trim();
-            if (!raw.startsWith('@')) {
-                loginError.innerText = '❌ Username должен начинаться с @';
-                loginError.style.display = 'block';
-                return;
-            }
-            const username = raw.slice(1); // убираем @
-            if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) {
-                loginError.innerText = '❌ Только латиница, цифры и _, минимум 3 символа. Русские буквы запрещены!';
-                loginError.style.display = 'block';
-                return;
-            }
-            loginError.style.display = 'none';
-            loginBtnElem.disabled = true;
-            loginBtnElem.innerText = 'Загрузка...';
-            
-            try {
-                let { data, error } = await sb
-                    .from('users')
-                    .select('*')
-                    .eq('display_name', username)
-                    .maybeSingle();
-                if (error) throw error;
-                if (data) {
-                    currentUser = data;
-                } else {
-                    const newUser = {
-                        display_name: username,
-                        coins: 0,
-                        last_bonus: null,
-                        status: (username === 'SAYLAR' ? 'owner' : 'user')
-                    };
-                    const { data: inserted, error: insertError } = await sb
-                        .from('users')
-                        .insert([newUser])
-                        .select()
-                        .single();
-                    if (insertError) throw insertError;
-                    currentUser = inserted;
-                }
-                // Показываем основное приложение
-                loginCard.style.display = 'none';
-                mainAppDiv.classList.remove('app-hidden');
-                initAppUI();
-                updateProfileUI();
-                updateBonusUI();
-                validateAndCalculate();
-            } catch (err) {
-                console.error(err);
-                loginError.innerText = 'Ошибка сервера, попробуйте позже';
-                loginError.style.display = 'block';
-            } finally {
-                loginBtnElem.disabled = false;
-                loginBtnElem.innerText = 'Войти / Зарегистрироваться';
-            }
-        }
-        
-        loginBtnElem.addEventListener('click', handleLogin);
-        loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-        
-        // --- Инициализация интерфейса магазина ---
-        function initAppUI() {
-            starsInput = document.getElementById('stars-input');
-            rubInput = document.getElementById('rub-input');
-            resStarsSpan = document.getElementById('res-stars');
-            resPremSpan = document.getElementById('res-prem');
-            payBtn = document.getElementById('pay-btn');
-            mainCard = document.getElementById('main-card');
-            modal = document.getElementById('modal');
-            modalSumSpan = document.getElementById('modal-sum');
-            confirmBtn = document.getElementById('confirm-btn');
-            successModal = document.getElementById('success-modal');
-            betAmount = document.getElementById('bet-amount');
-            flipResult = document.getElementById('flip-result');
-            dailyBonusBtn = document.getElementById('daily-bonus-btn');
-            bonusTimerDiv = document.getElementById('bonus-timer');
-            profileNameSpan = document.getElementById('profile-name');
-            statusBadgeSpan = document.getElementById('status-badge');
-            balanceSpan = document.getElementById('balance-display');
-            
-            starsInput.addEventListener('input', calcFromStars);
-            rubInput.addEventListener('input', calcFromRub);
-            document.querySelectorAll('.premium-option').forEach(opt => {
-                opt.addEventListener('click', () => {
-                    selectPremium(parseInt(opt.dataset.months), parseInt(opt.dataset.price), opt);
-                });
+        loginError.style.display = 'none';
+        currentUser = { username: username };
+        sessionStorage.setItem('saylar_user', username);
+        loginCard.style.display = 'none';
+        mainAppDiv.classList.remove('app-hidden');
+        initAppUI();
+        updateTotal();
+    }
+
+    loginBtnElem.addEventListener('click', handleLogin);
+    loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+
+    // Проверяем, есть ли сохранённый пользователь
+    const savedUser = sessionStorage.getItem('saylar_user');
+    if (savedUser) {
+        currentUser = { username: savedUser };
+        loginCard.style.display = 'none';
+        mainAppDiv.classList.remove('app-hidden');
+    }
+
+    function initAppUI() {
+        starsInput = document.getElementById('stars-input');
+        rubInput = document.getElementById('rub-input');
+        resStarsSpan = document.getElementById('res-stars');
+        resPremSpan = document.getElementById('res-prem');
+        payBtn = document.getElementById('pay-btn');
+        mainCard = document.getElementById('main-card');
+        modal = document.getElementById('modal');
+        modalSumSpan = document.getElementById('modal-sum');
+        confirmBtn = document.getElementById('confirm-pay-btn');
+        successModal = document.getElementById('success-modal');
+        tonAmount = document.getElementById('ton-amount');
+        tonTotalSpan = document.getElementById('ton-total');
+        accountCountrySelect = document.getElementById('account-country');
+        accountQty = document.getElementById('account-qty');
+        accountPricePerSpan = document.getElementById('account-price-per');
+        accountTotalSpan = document.getElementById('account-total');
+
+        // Заполнение выбора стран
+        accounts.forEach(acc => {
+            let option = document.createElement('option');
+            option.value = acc.price;
+            option.textContent = `${acc.name} — ${acc.price} ₽/шт`;
+            accountCountrySelect.appendChild(option);
+        });
+        accountCountrySelect.addEventListener('change', updateAccountPrice);
+        accountQty.addEventListener('input', updateAccountPrice);
+        updateAccountPrice();
+
+        starsInput.addEventListener('input', calcFromStars);
+        rubInput.addEventListener('input', calcFromRub);
+        document.querySelectorAll('.premium-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                selectPremium(parseInt(opt.dataset.months), parseInt(opt.dataset.price), opt);
             });
-            payBtn.addEventListener('click', openPay);
-            confirmBtn.addEventListener('click', finishOrder);
-            document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closePay));
-            const closeSuccessBtn = document.getElementById('close-success');
-            if (closeSuccessBtn) closeSuccessBtn.addEventListener('click', closeAll);
-            dailyBonusBtn.addEventListener('click', claimDailyBonus);
-            document.getElementById('flip-btn').addEventListener('click', placeFlipBet);
-            document.querySelectorAll('.flip-choice').forEach(choice => {
-                choice.addEventListener('click', () => {
-                    document.querySelectorAll('.flip-choice').forEach(c => c.classList.remove('selected'));
-                    choice.classList.add('selected');
-                    selectedFlipChoice = parseInt(choice.dataset.choice);
-                });
-            });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-            });
-        }
-        
-        async function placeFlipBet() {
-            if (!currentUser) { showToast("Сначала войдите"); return; }
-            let bet = parseInt(betAmount.value);
-            if (isNaN(bet) || bet <= 0) { showToast("Ставка должна быть больше 0"); return; }
-            if (bet > currentUser.coins) { showToast("❌ Недостаточно S-Coins!"); return; }
-            if (selectedFlipChoice === null) { showToast("Выберите Орла или Решку!"); return; }
-            const result = Math.random() < 0.5 ? 0 : 1;
-            const win = (result === selectedFlipChoice);
-            const resultText = result === 0 ? "🦅 ОРЁЛ" : "🪙 РЕШКА";
-            let newCoins = currentUser.coins;
-            if (win) newCoins += bet;
-            else newCoins -= bet;
-            const success = await updateUserInDB({ coins: newCoins });
-            if (success) {
-                flipResult.innerHTML = `<span style="color:${win ? '#10b981' : '#ef4444'}">${win ? 'Выигрыш!' : 'Проигрыш...'} Выпал ${resultText}</span>`;
-                betAmount.value = '';
-                showToast(win ? `🎉 ВЫИГРЫШ! +${bet} S-Coins` : `💔 ПРОИГРЫШ... -${bet} S-Coins`);
-            }
-        }
-        
-        // --- Логика магазина ---
-        function validateAndCalculate() {
-            if (!currentUser) return;
-            if (currentMode === 'stars') {
-                let rub = parseInt(rubInput.value);
-                totalSum = (rub >= 70) ? rub : 0;
-                resStarsSpan.innerText = totalSum + " ₽";
-                payBtn.disabled = !(totalSum >= 70);
-            } else if (currentMode === 'premium') {
-                payBtn.disabled = !(selectedPremiumPrice > 0);
-            }
-            if (!payBtn.disabled && currentMode !== 'profile') {
-                mainCard.classList.add('neon-ready');
-            } else {
-                mainCard.classList.remove('neon-ready');
-            }
-        }
-        
-        function calcFromStars() {
-            let stars = parseInt(starsInput.value);
-            if (!isNaN(stars) && stars > 0) rubInput.value = Math.ceil(stars * RATE);
-            else rubInput.value = '';
-            validateAndCalculate();
-        }
-        function calcFromRub() {
-            let rub = parseInt(rubInput.value);
-            if (!isNaN(rub) && rub > 0) starsInput.value = Math.floor(rub / RATE);
-            else starsInput.value = '';
-            validateAndCalculate();
-        }
-        function selectPremium(months, price, el) {
-            selectedPremiumMonths = months;
-            selectedPremiumPrice = price;
-            document.querySelectorAll('.premium-option').forEach(opt => opt.classList.remove('selected'));
-            el.classList.add('selected');
-            resPremSpan.innerText = price + " ₽";
-            validateAndCalculate();
-        }
-        function openPay() {
-            if (!currentUser) return;
-            if (currentMode === 'stars') totalSum = parseInt(rubInput.value) || 0;
-            else totalSum = selectedPremiumPrice;
-            if (totalSum < 70 && currentMode === 'stars') return;
-            if (totalSum <= 0) return;
-            modalSumSpan.innerText = totalSum + " ₽";
-            modal.classList.add('active');
-        }
-        function closePay() { modal.classList.remove('active'); }
-        function finishOrder() {
-            confirmBtn.disabled = true;
-            confirmBtn.innerText = "ОТПРАВКА...";
-            let itemDesc = '';
-            if (currentMode === 'stars') itemDesc = starsInput.value + " звёзд";
-            else itemDesc = "Премиум (" + selectedPremiumMonths + " мес.)";
-            const msg = `💎 НОВЫЙ ЗАКАЗ (ОЖИДАЕТ ПРОВЕРКИ ОПЛАТЫ)\n\n👤 Клиент: ${currentUser.display_name}\n📦 Товар: ${itemDesc}\n💵 Сумма: ${totalSum} ₽\n❗️ Бонусные монеты НЕ начислены. Проверьте перевод и начислите вручную.`;
-            const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
-            const chatId = '1717982615';
-            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
-                .then(() => {
-                    modal.classList.remove('active');
-                    // Показываем модалку успеха с сообщением "Ваш заказ скоро будет выдан"
-                    const successModalContent = document.querySelector('#success-modal .modal-content p');
-                    if (successModalContent) successModalContent.innerText = 'Ваш заказ скоро будет выдан.';
-                    successModal.classList.add('active');
-                    // Через 3 секунды автоматически закрыть модалку
-                    setTimeout(() => {
-                        successModal.classList.remove('active');
-                        if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.close();
-                    }, 3000);
-                })
-                .catch(() => showToast("Ошибка отправки уведомления"))
-                .finally(() => {
-                    confirmBtn.disabled = false;
-                    confirmBtn.innerText = "Я ОПЛАТИЛ";
-                });
-        }
-        function closeAll() {
+        });
+        tonAmount.addEventListener('input', updateTonTotal);
+        payBtn.addEventListener('click', openPayModal);
+        confirmBtn.addEventListener('click', finishOrder);
+        document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closePayModal));
+        document.getElementById('close-success').addEventListener('click', () => {
             successModal.classList.remove('active');
             if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.close();
-        }
-        function switchTab(tabId) {
-            currentMode = tabId;
-            document.querySelectorAll('.tab').forEach(tab => {
-                if (tab.getAttribute('data-tab') === tabId) tab.classList.add('active');
-                else tab.classList.remove('active');
+        });
+
+        // Переключение вкладок
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                switchTab(tabId);
             });
-            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
-            document.getElementById(tabId + '-section').classList.add('active');
-            if (tabId === 'profile') {
-                payBtn.classList.add('hidden-pay-btn');
-                updateProfileUI();
-                updateBonusUI();
-            } else {
-                payBtn.classList.remove('hidden-pay-btn');
-                validateAndCalculate();
-            }
+        });
+        updateTotal();
+    }
+
+    function switchTab(tabId) {
+        currentTab = tabId;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(`${tabId}-section`).classList.add('active');
+        updateTotal();
+    }
+
+    // Функции расчёта для звёзд
+    const RATE = 1.4;
+    function calcFromStars() {
+        let stars = parseInt(starsInput.value);
+        if (!isNaN(stars) && stars > 0) rubInput.value = Math.ceil(stars * RATE);
+        else rubInput.value = '';
+        updateTotal();
+    }
+    function calcFromRub() {
+        let rub = parseInt(rubInput.value);
+        if (!isNaN(rub) && rub > 0) starsInput.value = Math.floor(rub / RATE);
+        else starsInput.value = '';
+        updateTotal();
+    }
+    function selectPremium(months, price, el) {
+        selectedPremiumMonths = months;
+        selectedPremiumPrice = price;
+        document.querySelectorAll('.premium-option').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+        resPremSpan.innerText = price + " ₽";
+        updateTotal();
+    }
+    function updateTonTotal() {
+        let tons = parseFloat(tonAmount.value);
+        if (isNaN(tons) || tons < 1) tons = 1;
+        let sum = Math.ceil(tons * TON_RATE);
+        tonTotalSpan.innerText = sum + " ₽";
+        updateTotal();
+    }
+    function updateAccountPrice() {
+        let pricePer = parseInt(accountCountrySelect.value);
+        let qty = parseInt(accountQty.value);
+        if (isNaN(qty) || qty < 1) qty = 1;
+        accountPricePerSpan.innerText = pricePer + " ₽ / шт";
+        let total = pricePer * qty;
+        accountTotalSpan.innerText = total + " ₽";
+        updateTotal();
+    }
+
+    function updateTotal() {
+        if (currentTab === 'stars') {
+            let rub = parseInt(rubInput.value);
+            totalSum = (rub >= 70) ? rub : 0;
+            resStarsSpan.innerText = totalSum + " ₽";
+            payBtn.disabled = !(totalSum >= 70 && currentUser);
+        } else if (currentTab === 'premium') {
+            totalSum = selectedPremiumPrice;
+            payBtn.disabled = !(totalSum > 0 && currentUser);
+        } else if (currentTab === 'ton') {
+            let tons = parseFloat(tonAmount.value);
+            if (isNaN(tons) || tons < 1) tons = 1;
+            totalSum = Math.ceil(tons * TON_RATE);
+            payBtn.disabled = !(totalSum >= TON_RATE && currentUser);
+        } else if (currentTab === 'accounts') {
+            let pricePer = parseInt(accountCountrySelect.value);
+            let qty = parseInt(accountQty.value);
+            if (isNaN(qty) || qty < 1) qty = 1;
+            totalSum = pricePer * qty;
+            payBtn.disabled = !(totalSum > 0 && currentUser);
         }
-        
-        // Предзаполнение @username из Telegram WebApp (если есть)
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe?.user) {
-            const tg = window.Telegram.WebApp.initDataUnsafe.user;
-            if (tg && tg.username) {
-                loginInput.value = '@' + tg.username;
-            }
+        if (!payBtn.disabled && currentUser) {
+            mainCard.classList.add('neon-ready');
+        } else {
+            mainCard.classList.remove('neon-ready');
         }
-    })();
+    }
+
+    function openPayModal() {
+        if (!currentUser) { showToast("Сначала войдите"); return; }
+        if (currentTab === 'stars' && totalSum < 70) return;
+        if (currentTab === 'ton' && totalSum < TON_RATE) return;
+        if (currentTab === 'accounts' && totalSum <= 0) return;
+        if (currentTab === 'premium' && totalSum <= 0) return;
+        modalSumSpan.innerText = totalSum + " ₽";
+        modal.classList.add('active');
+    }
+    function closePayModal() { modal.classList.remove('active'); }
+
+    function finishOrder() {
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "ОТПРАВКА...";
+        let itemDesc = '';
+        if (currentTab === 'stars') {
+            let stars = starsInput.value || '0';
+            itemDesc = `${stars} звёзд (${totalSum} ₽)`;
+        } else if (currentTab === 'premium') {
+            itemDesc = `Премиум ${selectedPremiumMonths} мес. (${totalSum} ₽)`;
+        } else if (currentTab === 'ton') {
+            let tons = parseFloat(tonAmount.value);
+            itemDesc = `${tons} TON (${totalSum} ₽)`;
+        } else if (currentTab === 'accounts') {
+            let countryName = accountCountrySelect.options[accountCountrySelect.selectedIndex]?.text.split('—')[0].trim();
+            let qty = accountQty.value;
+            itemDesc = `Аккаунт TG: ${countryName}, ${qty} шт. (${totalSum} ₽)`;
+        }
+        const msg = `💎 НОВЫЙ ЗАКАЗ\n👤 Клиент: @${currentUser.username}\n📦 Товар: ${itemDesc}\n💵 Сумма: ${totalSum} ₽\n❗️ Ждёт проверки оплаты.`;
+        const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
+        const chatId = '1717982615';
+        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
+            .then(() => {
+                modal.classList.remove('active');
+                successModal.classList.add('active');
+                setTimeout(() => {
+                    successModal.classList.remove('active');
+                    if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.close();
+                }, 3000);
+            })
+            .catch(() => showToast("Ошибка отправки"))
+            .finally(() => { confirmBtn.disabled = false; confirmBtn.innerText = "Я ОПЛАТИЛ"; });
+    }
+
+    // Если приложение уже показано (при сохранённом пользователе), инициализируем UI
+    if (currentUser && loginCard.style.display === 'none') {
+        initAppUI();
+    }
 </script>
 </body>
 </html>
