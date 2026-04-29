@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR Shop — TON + Аккаунты Telegram</title>
+    <title>SAYLAR Shop — TON + Аккаунты TG (от 150₽)</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* ===== ПОЛНЫЙ ОРИГИНАЛЬНЫЙ СТИЛЬ (НИЧЕГО НЕ УРЕЗАНО) ===== */
+        /* ===== ПОЛНЫЙ ОРИГИНАЛЬНЫЙ СТИЛЬ ===== */
         :root {
             --accent: #10b981; 
             --accent-glow: rgba(16, 185, 129, 0.4);
@@ -260,6 +260,15 @@
             flex-direction: column;
             gap: 10px;
         }
+        .warning-note {
+            font-size: 11px;
+            color: var(--text-dim);
+            background: rgba(0,0,0,0.4);
+            padding: 8px;
+            border-radius: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -294,7 +303,7 @@
                 <div class="tab" data-tab="accounts">АККАУНТЫ TG</div>
             </div>
 
-            <!-- Вкладка Звёзды (без изменений) -->
+            <!-- Звёзды -->
             <div id="stars-section" class="section active">
                 <div style="display: flex; gap: 10px;">
                     <div style="flex:1"><label>Кол-во звёзд</label><input type="number" id="stars-input" placeholder="50"></div>
@@ -304,7 +313,7 @@
                 <div class="price-display"><span id="res-stars">0 ₽</span></div>
             </div>
 
-            <!-- Вкладка Premium (без изменений) -->
+            <!-- Premium -->
             <div id="premium-section" class="section">
                 <div class="premium-option" data-months="3" data-price="1000"><span>3 Месяца</span> <b>1000 ₽</b></div>
                 <div class="premium-option" data-months="6" data-price="1320"><span>6 Месяцев</span> <b>1320 ₽</b></div>
@@ -312,7 +321,7 @@
                 <div class="price-display"><span id="res-prem">0 ₽</span></div>
             </div>
 
-            <!-- Вкладка TON -->
+            <!-- TON -->
             <div id="ton-section" class="section">
                 <div class="ton-row">
                     <label>Количество TON (1 TON = 110 ₽)</label>
@@ -321,7 +330,7 @@
                 </div>
             </div>
 
-            <!-- Вкладка Аккаунты Telegram -->
+            <!-- Аккаунты Telegram (только с ценой >= 150 ₽) -->
             <div id="accounts-section" class="section">
                 <div class="country-row">
                     <label>Страна</label>
@@ -333,6 +342,9 @@
                     <span id="account-price-per">0 ₽ / шт</span>
                 </div>
                 <div class="price-display"><span id="account-total">0 ₽</span></div>
+                <div class="warning-note">
+                    ⚠️ Если с аккаунтом возникнут проблемы — предоставим альтернативу.
+                </div>
             </div>
 
             <div class="pros-box">
@@ -372,7 +384,7 @@
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    // ---------- ДАННЫЕ АККАУНТОВ (закупочные цены из скринов, наценка +50%, округление вверх, минимум 60₽) ----------
+    // Базовые данные: название страны и закупочная цена (из ваших скринов)
     const rawAccounts = [
         { name: "Туркменистан", buy: 50.24 },
         { name: "США (виртуальные)", buy: 62.56 },
@@ -450,19 +462,19 @@
         { name: "Гамбия", buy: 78.48 },
         { name: "Йемен", buy: 78.48 },
         { name: "Узбекистан", buy: 117.35 },
-        { name: "Чад", buy: 78.48 },
-        { name: "Албания", buy: 70 }     // не было, добавлю дефолт
+        { name: "Чад", buy: 78.48 }
     ];
 
-    // Рассчитываем цену продажи: закуп * 1.5, округление вверх, минимум 60
-    const accounts = rawAccounts.map(acc => {
+    // Рассчитываем продажную цену (закуп * 1.5, округление вверх, минимум 60) и фильтруем >=150
+    const allAccounts = rawAccounts.map(acc => {
         let price = Math.ceil(acc.buy * 1.5);
         if (price < 60) price = 60;
         return { name: acc.name, price: price };
-    }).sort((a,b) => a.name.localeCompare(b.name));
+    });
+    const accounts = allAccounts.filter(acc => acc.price >= 150).sort((a,b) => a.name.localeCompare(b.name));
 
-    // ---------- Логика ----------
-    let currentUser = null;        // { username: "никбез@" }
+    // ---------- Логика приложения ----------
+    let currentUser = null;
     let currentTab = 'stars';
     let totalSum = 0;
     const TON_RATE = 110;
@@ -474,19 +486,20 @@
     let tonAmount, tonTotalSpan;
     let accountCountrySelect, accountQty, accountPricePerSpan, accountTotalSpan;
 
-    // Вход
-    const loginInput = document.getElementById('login-username');
-    const loginBtnElem = document.getElementById('login-btn');
-    const loginError = document.getElementById('login-error');
-    const loginCard = document.getElementById('login-card');
-    const mainAppDiv = document.getElementById('main-app');
-
+    // Функции
     function showToast(msg) {
         const toast = document.getElementById('toast-msg');
         toast.innerText = msg;
         toast.style.opacity = '1';
         setTimeout(() => toast.style.opacity = '0', 3000);
     }
+
+    // Вход
+    const loginInput = document.getElementById('login-username');
+    const loginBtnElem = document.getElementById('login-btn');
+    const loginError = document.getElementById('login-error');
+    const loginCard = document.getElementById('login-card');
+    const mainAppDiv = document.getElementById('main-app');
 
     function handleLogin() {
         let raw = loginInput.value.trim();
@@ -502,7 +515,7 @@
             return;
         }
         loginError.style.display = 'none';
-        currentUser = { username: username };
+        currentUser = { username };
         sessionStorage.setItem('saylar_user', username);
         loginCard.style.display = 'none';
         mainAppDiv.classList.remove('app-hidden');
@@ -513,7 +526,6 @@
     loginBtnElem.addEventListener('click', handleLogin);
     loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
-    // Проверяем, есть ли сохранённый пользователь
     const savedUser = sessionStorage.getItem('saylar_user');
     if (savedUser) {
         currentUser = { username: savedUser };
@@ -539,16 +551,21 @@
         accountPricePerSpan = document.getElementById('account-price-per');
         accountTotalSpan = document.getElementById('account-total');
 
-        // Заполнение выбора стран
+        // Заполнение селекта стран
         accounts.forEach(acc => {
             let option = document.createElement('option');
             option.value = acc.price;
             option.textContent = `${acc.name} — ${acc.price} ₽/шт`;
             accountCountrySelect.appendChild(option);
         });
-        accountCountrySelect.addEventListener('change', updateAccountPrice);
-        accountQty.addEventListener('input', updateAccountPrice);
-        updateAccountPrice();
+        if (accounts.length === 0) {
+            let option = document.createElement('option');
+            option.text = 'Нет доступных аккаунтов';
+            accountCountrySelect.appendChild(option);
+        }
+        accountCountrySelect.addEventListener('change', updateAccountTotal);
+        accountQty.addEventListener('input', updateAccountTotal);
+        updateAccountTotal();
 
         starsInput.addEventListener('input', calcFromStars);
         rubInput.addEventListener('input', calcFromRub);
@@ -585,7 +602,7 @@
         updateTotal();
     }
 
-    // Функции расчёта для звёзд
+    // Расчёты
     const RATE = 1.4;
     function calcFromStars() {
         let stars = parseInt(starsInput.value);
@@ -614,8 +631,9 @@
         tonTotalSpan.innerText = sum + " ₽";
         updateTotal();
     }
-    function updateAccountPrice() {
+    function updateAccountTotal() {
         let pricePer = parseInt(accountCountrySelect.value);
+        if (isNaN(pricePer)) pricePer = 0;
         let qty = parseInt(accountQty.value);
         if (isNaN(qty) || qty < 1) qty = 1;
         accountPricePerSpan.innerText = pricePer + " ₽ / шт";
@@ -641,9 +659,14 @@
         } else if (currentTab === 'accounts') {
             let pricePer = parseInt(accountCountrySelect.value);
             let qty = parseInt(accountQty.value);
-            if (isNaN(qty) || qty < 1) qty = 1;
-            totalSum = pricePer * qty;
-            payBtn.disabled = !(totalSum > 0 && currentUser);
+            if (isNaN(pricePer) || pricePer === 0) {
+                totalSum = 0;
+                payBtn.disabled = true;
+            } else {
+                if (isNaN(qty) || qty < 1) qty = 1;
+                totalSum = pricePer * qty;
+                payBtn.disabled = !(totalSum > 0 && currentUser);
+            }
         }
         if (!payBtn.disabled && currentUser) {
             mainCard.classList.add('neon-ready');
@@ -655,9 +678,9 @@
     function openPayModal() {
         if (!currentUser) { showToast("Сначала войдите"); return; }
         if (currentTab === 'stars' && totalSum < 70) return;
+        if (currentTab === 'premium' && totalSum <= 0) return;
         if (currentTab === 'ton' && totalSum < TON_RATE) return;
         if (currentTab === 'accounts' && totalSum <= 0) return;
-        if (currentTab === 'premium' && totalSum <= 0) return;
         modalSumSpan.innerText = totalSum + " ₽";
         modal.classList.add('active');
     }
@@ -676,7 +699,8 @@
             let tons = parseFloat(tonAmount.value);
             itemDesc = `${tons} TON (${totalSum} ₽)`;
         } else if (currentTab === 'accounts') {
-            let countryName = accountCountrySelect.options[accountCountrySelect.selectedIndex]?.text.split('—')[0].trim();
+            let selectedOption = accountCountrySelect.options[accountCountrySelect.selectedIndex];
+            let countryName = selectedOption ? selectedOption.text.split('—')[0].trim() : 'Неизвестно';
             let qty = accountQty.value;
             itemDesc = `Аккаунт TG: ${countryName}, ${qty} шт. (${totalSum} ₽)`;
         }
@@ -696,7 +720,6 @@
             .finally(() => { confirmBtn.disabled = false; confirmBtn.innerText = "Я ОПЛАТИЛ"; });
     }
 
-    // Если приложение уже показано (при сохранённом пользователе), инициализируем UI
     if (currentUser && loginCard.style.display === 'none') {
         initAppUI();
     }
