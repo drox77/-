@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAYLAR Shop — TON + Аккаунты TG (от 150₽)</title>
+    <title>SAYLAR Shop — TON + Аккаунты TG (США 240₽)</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* ===== ПОЛНЫЙ ОРИГИНАЛЬНЫЙ СТИЛЬ ===== */
+        /* ===== ПОЛНЫЙ ОРИГИНАЛЬНЫЙ СТИЛЬ (НИЧЕГО НЕ УРЕЗАНО) ===== */
         :root {
             --accent: #10b981; 
             --accent-glow: rgba(16, 185, 129, 0.4);
@@ -303,7 +303,7 @@
                 <div class="tab" data-tab="accounts">АККАУНТЫ TG</div>
             </div>
 
-            <!-- Звёзды -->
+            <!-- Вкладка Звёзды -->
             <div id="stars-section" class="section active">
                 <div style="display: flex; gap: 10px;">
                     <div style="flex:1"><label>Кол-во звёзд</label><input type="number" id="stars-input" placeholder="50"></div>
@@ -313,7 +313,7 @@
                 <div class="price-display"><span id="res-stars">0 ₽</span></div>
             </div>
 
-            <!-- Premium -->
+            <!-- Вкладка Premium -->
             <div id="premium-section" class="section">
                 <div class="premium-option" data-months="3" data-price="1000"><span>3 Месяца</span> <b>1000 ₽</b></div>
                 <div class="premium-option" data-months="6" data-price="1320"><span>6 Месяцев</span> <b>1320 ₽</b></div>
@@ -321,7 +321,7 @@
                 <div class="price-display"><span id="res-prem">0 ₽</span></div>
             </div>
 
-            <!-- TON -->
+            <!-- Вкладка TON -->
             <div id="ton-section" class="section">
                 <div class="ton-row">
                     <label>Количество TON (1 TON = 110 ₽)</label>
@@ -330,18 +330,18 @@
                 </div>
             </div>
 
-            <!-- Аккаунты Telegram (только с ценой >= 150 ₽) -->
+            <!-- Вкладка Аккаунты Telegram (только США, 240₽/шт) -->
             <div id="accounts-section" class="section">
                 <div class="country-row">
                     <label>Страна</label>
-                    <select id="account-country"></select>
+                    <input type="text" value="США (240 ₽/шт)" disabled style="background:#1e293b; color:white; opacity:0.8;">
                 </div>
                 <div class="qty-row">
                     <label>Количество</label>
                     <input type="number" id="account-qty" value="1" min="1" step="1">
-                    <span id="account-price-per">0 ₽ / шт</span>
+                    <span id="account-price-per">240 ₽ / шт</span>
                 </div>
-                <div class="price-display"><span id="account-total">0 ₽</span></div>
+                <div class="price-display"><span id="account-total">240 ₽</span></div>
                 <div class="warning-note">
                     ⚠️ Если с аккаунтом возникнут проблемы — предоставим альтернативу.
                 </div>
@@ -384,115 +384,19 @@
 <div id="toast-msg" class="toast-msg"></div>
 
 <script>
-    // Базовые данные: название страны и закупочная цена (из ваших скринов)
-    const rawAccounts = [
-        { name: "Туркменистан", buy: 50.24 },
-        { name: "США (виртуальные)", buy: 62.56 },
-        { name: "Казахстан", buy: 263.73 },
-        { name: "Турция", buy: 292.66 },
-        { name: "Великобритания", buy: 103.14 },
-        { name: "Канада", buy: 41.85 },
-        { name: "Чили", buy: 48.52 },
-        { name: "США", buy: 167.51 },
-        { name: "Колумбия", buy: 42.19 },
-        { name: "Португалия", buy: 277.42 },
-        { name: "Египет", buy: 78.48 },
-        { name: "Марокко", buy: 42.70 },
-        { name: "Таджикистан", buy: 61.36 },
-        { name: "Германия", buy: 159.81 },
-        { name: "Кот д'Ивуар", buy: 40.99 },
-        { name: "Камерун", buy: 44.24 },
-        { name: "Алжир", buy: 42.53 },
-        { name: "Вьетнам", buy: 64.79 },
-        { name: "Танзания", buy: 47.50 },
-        { name: "Индия", buy: 78.48 },
-        { name: "Аргентина", buy: 42.02 },
-        { name: "Южная Африка", buy: 12.57 },
-        { name: "Кения", buy: 30.55 },
-        { name: "Бразилия", buy: 146.28 },
-        { name: "Греция", buy: 202.60 },
-        { name: "Австралия", buy: 196.44 },
-        { name: "Индонезия", buy: 55.72 },
-        { name: "Италия", buy: 71.81 },
-        { name: "Сенегал", buy: 33.63 },
-        { name: "Филиппины", buy: 78.48 },
-        { name: "Тунис", buy: 50.24 },
-        { name: "Перу", buy: 126.93 },
-        { name: "Сербия", buy: 101.43 },
-        { name: "Польша", buy: 367.98 },
-        { name: "Нидерланды", buy: 146.28 },
-        { name: "Мьянма", buy: 101.60 },
-        { name: "Малайзия", buy: 78.48 },
-        { name: "Грузия", buy: 78.48 },
-        { name: "Япония", buy: 261.33 },
-        { name: "Мексика", buy: 177.10 },
-        { name: "Того", buy: 67.36 },
-        { name: "Иран", buy: 112.72 },
-        { name: "Либерия", buy: 60.00 },
-        { name: "Швеция", buy: 216.64 },
-        { name: "Камбоджа", buy: 78.48 },
-        { name: "Украина", buy: 193.36 },
-        { name: "Таиланд", buy: 215.27 },
-        { name: "Бангладеш", buy: 81.91 },
-        { name: "Зимбабве", buy: 95.95 },
-        { name: "Гонконг", buy: 78.48 },
-        { name: "Молдова", buy: 124.20 },
-        { name: "Судан", buy: 75.75 },
-        { name: "Гана", buy: 90.13 },
-        { name: "Уганда", buy: 67.36 },
-        { name: "Бенин", buy: 67.36 },
-        { name: "Афганистан", buy: 78.48 },
-        { name: "Словения", buy: 172.99 },
-        { name: "Австрия", buy: 298.99 },
-        { name: "Мадагаскар", buy: 54.17 },
-        { name: "Гаити", buy: 67.36 },
-        { name: "Мали", buy: 90.13 },
-        { name: "Франция", buy: 414.04 },
-        { name: "Пакистан", buy: 78.48 },
-        { name: "Руанда", buy: 81.91 },
-        { name: "Нигерия", buy: 78.48 },
-        { name: "Непал", buy: 78.48 },
-        { name: "Буркина-Фасо", buy: 152.96 },
-        { name: "Азербайджан", buy: 78.48 },
-        { name: "Чехия", buy: 355.14 },
-        { name: "Румыния", buy: 403.94 },
-        { name: "Кыргызстан", buy: 78.48 },
-        { name: "Израиль", buy: 78.48 },
-        { name: "Дем.Конго", buy: 78.48 },
-        { name: "Гамбия", buy: 78.48 },
-        { name: "Йемен", buy: 78.48 },
-        { name: "Узбекистан", buy: 117.35 },
-        { name: "Чад", buy: 78.48 }
-    ];
-
-    // Рассчитываем продажную цену (закуп * 1.5, округление вверх, минимум 60) и фильтруем >=150
-    const allAccounts = rawAccounts.map(acc => {
-        let price = Math.ceil(acc.buy * 1.5);
-        if (price < 60) price = 60;
-        return { name: acc.name, price: price };
-    });
-    const accounts = allAccounts.filter(acc => acc.price >= 150).sort((a,b) => a.name.localeCompare(b.name));
-
-    // ---------- Логика приложения ----------
-    let currentUser = null;
+    // ---------- Логика ----------
+    let currentUser = null;        // { username: "никбез@" }
     let currentTab = 'stars';
     let totalSum = 0;
     const TON_RATE = 110;
     let selectedPremiumMonths = 0, selectedPremiumPrice = 0;
+    const ACCOUNT_PRICE = 240;     // цена одного аккаунта США
 
     // DOM элементы
     let starsInput, rubInput, resStarsSpan, resPremSpan, payBtn, mainCard;
     let modal, modalSumSpan, confirmBtn, successModal;
     let tonAmount, tonTotalSpan;
-    let accountCountrySelect, accountQty, accountPricePerSpan, accountTotalSpan;
-
-    // Функции
-    function showToast(msg) {
-        const toast = document.getElementById('toast-msg');
-        toast.innerText = msg;
-        toast.style.opacity = '1';
-        setTimeout(() => toast.style.opacity = '0', 3000);
-    }
+    let accountQty, accountTotalSpan;
 
     // Вход
     const loginInput = document.getElementById('login-username');
@@ -500,6 +404,13 @@
     const loginError = document.getElementById('login-error');
     const loginCard = document.getElementById('login-card');
     const mainAppDiv = document.getElementById('main-app');
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast-msg');
+        toast.innerText = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', 3000);
+    }
 
     function handleLogin() {
         let raw = loginInput.value.trim();
@@ -515,7 +426,7 @@
             return;
         }
         loginError.style.display = 'none';
-        currentUser = { username };
+        currentUser = { username: username };
         sessionStorage.setItem('saylar_user', username);
         loginCard.style.display = 'none';
         mainAppDiv.classList.remove('app-hidden');
@@ -526,6 +437,7 @@
     loginBtnElem.addEventListener('click', handleLogin);
     loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
+    // Проверяем, есть ли сохранённый пользователь
     const savedUser = sessionStorage.getItem('saylar_user');
     if (savedUser) {
         currentUser = { username: savedUser };
@@ -546,26 +458,8 @@
         successModal = document.getElementById('success-modal');
         tonAmount = document.getElementById('ton-amount');
         tonTotalSpan = document.getElementById('ton-total');
-        accountCountrySelect = document.getElementById('account-country');
         accountQty = document.getElementById('account-qty');
-        accountPricePerSpan = document.getElementById('account-price-per');
         accountTotalSpan = document.getElementById('account-total');
-
-        // Заполнение селекта стран
-        accounts.forEach(acc => {
-            let option = document.createElement('option');
-            option.value = acc.price;
-            option.textContent = `${acc.name} — ${acc.price} ₽/шт`;
-            accountCountrySelect.appendChild(option);
-        });
-        if (accounts.length === 0) {
-            let option = document.createElement('option');
-            option.text = 'Нет доступных аккаунтов';
-            accountCountrySelect.appendChild(option);
-        }
-        accountCountrySelect.addEventListener('change', updateAccountTotal);
-        accountQty.addEventListener('input', updateAccountTotal);
-        updateAccountTotal();
 
         starsInput.addEventListener('input', calcFromStars);
         rubInput.addEventListener('input', calcFromRub);
@@ -575,6 +469,7 @@
             });
         });
         tonAmount.addEventListener('input', updateTonTotal);
+        accountQty.addEventListener('input', updateAccountTotal);
         payBtn.addEventListener('click', openPayModal);
         confirmBtn.addEventListener('click', finishOrder);
         document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closePayModal));
@@ -602,7 +497,7 @@
         updateTotal();
     }
 
-    // Расчёты
+    // Функции расчёта для звёзд
     const RATE = 1.4;
     function calcFromStars() {
         let stars = parseInt(starsInput.value);
@@ -632,12 +527,9 @@
         updateTotal();
     }
     function updateAccountTotal() {
-        let pricePer = parseInt(accountCountrySelect.value);
-        if (isNaN(pricePer)) pricePer = 0;
         let qty = parseInt(accountQty.value);
         if (isNaN(qty) || qty < 1) qty = 1;
-        accountPricePerSpan.innerText = pricePer + " ₽ / шт";
-        let total = pricePer * qty;
+        let total = ACCOUNT_PRICE * qty;
         accountTotalSpan.innerText = total + " ₽";
         updateTotal();
     }
@@ -657,16 +549,10 @@
             totalSum = Math.ceil(tons * TON_RATE);
             payBtn.disabled = !(totalSum >= TON_RATE && currentUser);
         } else if (currentTab === 'accounts') {
-            let pricePer = parseInt(accountCountrySelect.value);
             let qty = parseInt(accountQty.value);
-            if (isNaN(pricePer) || pricePer === 0) {
-                totalSum = 0;
-                payBtn.disabled = true;
-            } else {
-                if (isNaN(qty) || qty < 1) qty = 1;
-                totalSum = pricePer * qty;
-                payBtn.disabled = !(totalSum > 0 && currentUser);
-            }
+            if (isNaN(qty) || qty < 1) qty = 1;
+            totalSum = ACCOUNT_PRICE * qty;
+            payBtn.disabled = !(totalSum > 0 && currentUser);
         }
         if (!payBtn.disabled && currentUser) {
             mainCard.classList.add('neon-ready');
@@ -678,9 +564,9 @@
     function openPayModal() {
         if (!currentUser) { showToast("Сначала войдите"); return; }
         if (currentTab === 'stars' && totalSum < 70) return;
-        if (currentTab === 'premium' && totalSum <= 0) return;
         if (currentTab === 'ton' && totalSum < TON_RATE) return;
         if (currentTab === 'accounts' && totalSum <= 0) return;
+        if (currentTab === 'premium' && totalSum <= 0) return;
         modalSumSpan.innerText = totalSum + " ₽";
         modal.classList.add('active');
     }
@@ -699,10 +585,8 @@
             let tons = parseFloat(tonAmount.value);
             itemDesc = `${tons} TON (${totalSum} ₽)`;
         } else if (currentTab === 'accounts') {
-            let selectedOption = accountCountrySelect.options[accountCountrySelect.selectedIndex];
-            let countryName = selectedOption ? selectedOption.text.split('—')[0].trim() : 'Неизвестно';
             let qty = accountQty.value;
-            itemDesc = `Аккаунт TG: ${countryName}, ${qty} шт. (${totalSum} ₽)`;
+            itemDesc = `Аккаунт TG (США): ${qty} шт. (${totalSum} ₽)`;
         }
         const msg = `💎 НОВЫЙ ЗАКАЗ\n👤 Клиент: @${currentUser.username}\n📦 Товар: ${itemDesc}\n💵 Сумма: ${totalSum} ₽\n❗️ Ждёт проверки оплаты.`;
         const token = '8752951278:AAHkJDobhtUhxKgwsPhyH4qMfAVwtkQH0wo';
@@ -720,6 +604,7 @@
             .finally(() => { confirmBtn.disabled = false; confirmBtn.innerText = "Я ОПЛАТИЛ"; });
     }
 
+    // Если приложение уже показано (при сохранённом пользователе), инициализируем UI
     if (currentUser && loginCard.style.display === 'none') {
         initAppUI();
     }
