@@ -1,1049 +1,948 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>SAYLAR | Премиум магазин</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #080808;
-            font-family: 'Inter', sans-serif;
-            color: #f2f2f2;
-            overflow-x: hidden;
-        }
-
-        /* Фоновое изображение (watermark) */
-        .bg-watermark {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1600164318858-6932463e26bb?auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            filter: grayscale(100%);
-            opacity: 0.08;
-            z-index: -2;
-            pointer-events: none;
-        }
-
-        .bg-overlay {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at center, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.85) 100%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Частицы (лучи) */
-        #premium-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* HERO */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .hero-content {
-            max-width: 800px;
-            padding: 2rem;
-        }
-
-        .hero-title {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(3rem, 12vw, 6rem);
-            font-weight: 900;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: #fff;
-            margin-bottom: 1.8rem;
-            animation: titleReveal 1.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-            opacity: 0;
-            transform: scale(0.92);
-            filter: blur(10px);
-        }
-
-        @keyframes titleReveal {
-            0% {
-                opacity: 0;
-                transform: scale(0.92);
-                filter: blur(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-                filter: blur(0);
-            }
-        }
-
-        .btn-hero {
-            display: inline-block;
-            background: transparent;
-            border: 1.5px solid rgba(255,255,255,0.6);
-            padding: 12px 36px;
-            font-size: 0.85rem;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            font-weight: 600;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            text-decoration: none;
-            opacity: 0;
-            animation: fadeUp 1s ease 0.6s forwards;
-        }
-
-        .btn-hero:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: #fff;
-            letter-spacing: 0.3em;
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Блок отзывов */
-        .reviews-block {
-            text-align: center;
-            margin: 20px 0 40px;
-        }
-
-        .reviews-link {
-            font-family: 'Inter', monospace;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            color: #bbbbbb;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(255,255,255,0.25);
-            transition: color 0.2s, border-color 0.2s;
-        }
-
-        .reviews-link:hover {
-            color: white;
-            border-bottom-color: white;
-        }
-
-        /* Каталог и вкладки */
-        .catalog-section {
-            padding: 40px 0 80px;
-        }
-
-        .section-title {
-            font-family: 'Cinzel', serif;
-            font-size: 2rem;
-            font-weight: 500;
-            letter-spacing: 0.08em;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 1px;
-            background: rgba(255,255,255,0.25);
-            margin: 0.8rem auto 0;
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 32px;
-        }
-
-        .tab-btn {
-            background: rgba(20,20,30,0.5);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.12);
-            padding: 12px 32px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            cursor: pointer;
-            color: #ddd;
-            transition: all 0.25s;
-            border-radius: 40px;
-        }
-
-        .tab-btn.active {
-            background: rgba(255,255,255,0.12);
-            border-color: rgba(255,255,255,0.6);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeTab 0.3s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeTab {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Стеклянная карточка (общий контейнер) */
-        .glass-card {
-            background: rgba(18, 18, 22, 0.45);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 28px;
-            padding: 28px 26px;
-            transition: transform 0.25s ease, border-color 0.2s;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            font-size: 0.7rem;
-            letter-spacing: 1.8px;
-            text-transform: uppercase;
-            color: #aaa;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        input {
-            width: 100%;
-            background: rgba(0,0,0,0.55);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 20px;
-            padding: 14px 18px;
-            font-size: 1rem;
-            font-family: 'Inter', monospace;
-            color: white;
-            outline: none;
-            transition: border 0.2s;
-        }
-
-        input:focus {
-            border-color: rgba(255,255,255,0.5);
-        }
-
-        .error-msg {
-            font-size: 0.7rem;
-            color: #ff8a8a;
-            margin-top: 6px;
-            display: none;
-        }
-
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin: 20px 0 20px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .price-label {
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            color: #bbb;
-        }
-
-        .price-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .btn-pay {
-            width: 100%;
-            background: transparent;
-            border: 1.2px solid rgba(255,255,255,0.45);
-            padding: 14px 0;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-            border-radius: 40px;
-        }
-
-        .btn-pay:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-            border-color: rgba(255,255,255,0.2);
-        }
-
-        .btn-pay:not(:disabled):hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.9);
-            letter-spacing: 0.25em;
-        }
-
-        /* Premium карточки */
-        .premium-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 24px;
-            margin: 28px 0 20px;
-        }
-
-        .premium-card {
-            flex: 1;
-            min-width: 200px;
-            background: rgba(0, 0, 0, 0.45);
-            border-radius: 24px;
-            padding: 22px 16px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.2s;
-        }
-
-        .premium-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(255,255,255,0.25);
-        }
-
-        .premium-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-            white-space: nowrap;
-        }
-
-        .premium-price {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin: 12px 0 20px;
-            color: #ffffff;
-        }
-
-        .premium-card .btn-pay {
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        /* Аккаунты */
-        .account-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.35);
-            border-radius: 20px;
-            padding: 16px 20px;
-            margin-bottom: 16px;
-        }
-
-        .account-info {
-            display: flex;
-            gap: 12px;
-            align-items: baseline;
-            flex-wrap: wrap;
-        }
-
-        .account-country {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .account-price {
-            font-weight: 700;
-            color: #ddd;
-        }
-
-        .small-pay {
-            width: auto;
-            padding: 8px 20px;
-            font-size: 0.75rem;
-        }
-
-        /* Анимация при скролле */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(35px);
-            transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.7s ease;
-        }
-
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Модальное окно */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(18px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
-        }
-
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .modal-card {
-            background: rgba(10,10,12,0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 32px;
-            max-width: 480px;
-            width: 90%;
-            padding: 28px 24px;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 18px;
-            right: 22px;
-            font-size: 28px;
-            cursor: pointer;
-            color: #aaa;
-            transition: color 0.2s;
-        }
-
-        .modal-close:hover {
-            color: white;
-        }
-
-        .bank-header {
-            font-size: 1.55rem;
-            font-weight: 700;
-            background: rgba(255,255,255,0.05);
-            display: inline-block;
-            padding: 4px 20px;
-            border-radius: 50px;
-            margin-bottom: 24px;
-        }
-
-        .bank-detail {
-            background: rgba(0,0,0,0.45);
-            border-radius: 24px;
-            padding: 14px 18px;
-            margin: 16px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .copy-btn {
-            background: none;
-            border: none;
-            color: #ccc;
-            cursor: pointer;
-            padding: 5px 12px;
-            border-radius: 40px;
-            transition: 0.2s;
-        }
-
-        .copy-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        .modal-message {
-            margin: 12px 0 0;
-            font-size: 0.8rem;
-            text-align: center;
-            color: #bbffbb;
-            display: none;
-        }
-
-        .toast-msg {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1c1c1e;
-            border: 1px solid rgba(255,255,255,0.25);
-            backdrop-filter: blur(12px);
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            color: white;
-            z-index: 1100;
-            opacity: 0;
-            transition: 0.2s;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px 20px 30px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: 30px;
-            font-size: 0.7rem;
-            color: #777;
-        }
-
-        @media (max-width: 760px) {
-            .container {
-                padding: 0 20px;
-            }
-
-            .glass-card {
-                padding: 22px 18px;
-            }
-
-            .premium-grid {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .premium-card {
-                min-width: auto;
-            }
-
-            .premium-title {
-                white-space: normal;
-                font-size: 1.2rem;
-            }
-
-            .account-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-
-            .small-pay {
-                width: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SAYLAR — Telegram Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════ RESET & BASE */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#f8f8f6;--off:#d4d0c8;--mid:#888680;--dim:#3a3836;--dark:#141210;--black:#0a0908;
+  --glass:rgba(248,248,246,.04);--glass2:rgba(248,248,246,.08);
+  --border:rgba(248,248,246,.1);--border2:rgba(248,248,246,.18);
+  --accent:#f8f8f6;--glow:rgba(248,248,246,.06);
+  --radius:18px;--radius-sm:12px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--black);color:var(--white);
+  font-family:'DM Mono',monospace;
+  min-height:100vh;overflow-x:hidden;
+}
+::selection{background:rgba(248,248,246,.2)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
+
+/* ═══════════════════════════════════════════ PARTICLES CANVAS */
+#canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
+
+/* ═══════════════════════════════════════════ LAYOUT */
+.site{position:relative;z-index:1}
+
+/* ═══════════════════════════════════════════ HERO */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  padding:40px 24px;
+}
+.hero-noise{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.6;
+}
+.hero-line-h{
+  position:absolute;top:50%;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(248,248,246,.06),transparent);
+  transform:translateY(-1px);
+}
+.hero-line-v{
+  position:absolute;left:50%;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,transparent,rgba(248,248,246,.04),transparent);
+}
+
+.hero-content{position:relative;z-index:2;text-align:center}
+
+/* SAYLAR main title */
+.hero-eyebrow{
+  font-family:'DM Mono',monospace;font-size:11px;letter-spacing:5px;
+  color:var(--mid);text-transform:uppercase;margin-bottom:32px;
+  opacity:0;transform:translateY(10px);
+  animation:revealUp .8s cubic-bezier(.22,1,.36,1) .2s forwards;
+}
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(80px,18vw,160px);font-weight:300;
+  letter-spacing:-4px;line-height:.9;
+  color:var(--white);
+  position:relative;
+  opacity:0;
+  animation:heroReveal 1.4s cubic-bezier(.22,1,.36,1) .4s forwards;
+}
+@keyframes heroReveal{
+  0%{opacity:0;transform:scale(.94) translateY(20px);filter:blur(12px)}
+  100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}
+}
+.hero-title-inner{
+  display:inline-block;
+  background:linear-gradient(135deg,#fff 0%,#ccc 40%,#fff 70%,#aaa 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:200%;
+  animation:shimmer 4s linear 2s infinite;
+}
+@keyframes shimmer{
+  0%{background-position:0 50%}100%{background-position:200% 50%}
+}
+.hero-sub{
+  font-family:'DM Mono',monospace;font-size:12px;letter-spacing:3px;
+  color:var(--mid);text-transform:uppercase;margin-top:28px;
+  opacity:0;transform:translateY(10px);
+  animation:revealUp .8s cubic-bezier(.22,1,.36,1) 1.1s forwards;
+}
+@keyframes revealUp{
+  to{opacity:1;transform:translateY(0)}
+}
+
+.hero-actions{
+  margin-top:52px;display:flex;flex-direction:column;align-items:center;gap:18px;
+  opacity:0;transform:translateY(12px);
+  animation:revealUp .8s cubic-bezier(.22,1,.36,1) 1.4s forwards;
+}
+.btn-hero{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 40px;
+  border:1px solid var(--border2);border-radius:50px;
+  background:transparent;color:var(--white);
+  font-family:'DM Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;
+  transition:all .35s ease;
+  position:relative;overflow:hidden;
+}
+.btn-hero::before{
+  content:'';position:absolute;inset:0;
+  background:var(--glass2);opacity:0;transition:opacity .3s;
+}
+.btn-hero:hover::before{opacity:1}
+.btn-hero:hover{border-color:rgba(248,248,246,.35);letter-spacing:4px}
+.btn-hero svg{transition:transform .3s}
+.btn-hero:hover svg{transform:translateY(4px)}
+
+.reviews-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mid);text-decoration:none;
+  border:1px solid var(--border);border-radius:50px;
+  padding:9px 20px;
+  transition:all .3s;
+}
+.reviews-pill:hover{color:var(--white);border-color:var(--border2)}
+.reviews-dot{width:5px;height:5px;border-radius:50%;background:var(--mid);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* scroll indicator */
+.scroll-hint{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  opacity:0;animation:revealUp .8s .6s forwards;
+}
+.scroll-line{
+  width:1px;height:50px;background:linear-gradient(180deg,transparent,var(--mid));
+  margin:0 auto;animation:scrollPulse 2s infinite;
+}
+@keyframes scrollPulse{
+  0%{transform:scaleY(0);transform-origin:top;opacity:0}
+  50%{transform:scaleY(1);transform-origin:top;opacity:1}
+  100%{transform:scaleY(1);transform-origin:bottom;opacity:0}
+}
+
+/* ═══════════════════════════════════════════ SECTION WRAPPER */
+.shop-section{
+  padding:80px 24px 100px;
+  max-width:860px;margin:0 auto;
+}
+.section-label{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:5px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:48px;text-align:center;
+}
+
+/* ═══════════════════════════════════════════ TABS */
+.tabs-nav{
+  display:flex;gap:4px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:50px;
+  padding:5px;margin-bottom:48px;
+  flex-wrap:wrap;
+}
+.tab-btn{
+  flex:1;min-width:0;
+  padding:12px 8px;border-radius:50px;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mid);background:transparent;border:none;cursor:pointer;
+  transition:all .28s ease;white-space:nowrap;
+}
+.tab-btn:hover{color:var(--white)}
+.tab-btn.active{
+  background:rgba(248,248,246,.08);
+  border:1px solid var(--border2);color:var(--white);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+.tab-panel{display:none}
+.tab-panel.active{
+  display:block;
+  animation:panelIn .35s cubic-bezier(.22,1,.36,1);
+}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════════ GLASS CARD */
+.glass-card{
+  background:var(--glass);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:32px;position:relative;overflow:hidden;
+}
+.glass-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+}
+/* diagonal reflection */
+.glass-card::after{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(255,255,255,.03) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+
+/* ═══════════════════════════════════════════ FORM ELEMENTS */
+.field{margin-bottom:20px}
+.field-label{
+  display:block;font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--mid);margin-bottom:8px;
+}
+.field-input{
+  width:100%;padding:14px 18px;
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--white);font-family:'DM Mono',monospace;font-size:14px;
+  outline:none;transition:border-color .25s,box-shadow .25s;
+  -moz-appearance:textfield;
+}
+.field-input::-webkit-outer-spin-button,
+.field-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.field-input::placeholder{color:var(--dim);font-size:12px}
+.field-input:focus{
+  border-color:rgba(248,248,246,.3);
+  box-shadow:0 0 0 3px rgba(248,248,246,.04);
+}
+.field-input.err{border-color:rgba(255,100,100,.4)}
+
+.field-err{
+  font-size:10px;letter-spacing:1px;color:#e06060;
+  margin-top:6px;min-height:16px;display:block;
+}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.two-col{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════════════ TOTAL DISPLAY */
+.total-display{
+  display:flex;align-items:baseline;gap:8px;
+  margin:20px 0 24px;padding:16px 20px;
+  background:rgba(255,255,255,.02);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+}
+.total-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mid)}
+.total-amount{
+  font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;
+  background:linear-gradient(135deg,var(--white),var(--off));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ═══════════════════════════════════════════ PREMIUM CARDS */
+.premium-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;
+}
+@media(max-width:600px){.premium-grid{grid-template-columns:1fr}}
+
+.premium-card{
+  background:rgba(255,255,255,.025);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 20px;
+  position:relative;overflow:hidden;
+  transition:border-color .25s,transform .25s;cursor:default;
+}
+.premium-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+}
+.premium-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.prem-duration{
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mid);margin-bottom:10px;
+}
+.prem-price{
+  font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;
+  color:var(--white);white-space:nowrap;margin-bottom:20px;
+  background:linear-gradient(135deg,var(--white),var(--off));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.prem-desc{font-size:10px;color:var(--mid);margin-bottom:20px;letter-spacing:1px}
+
+/* ═══════════════════════════════════════════ ACCOUNT OPTIONS */
+.account-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+@media(max-width:480px){.account-opts{grid-template-columns:1fr}}
+.account-opt{
+  background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 20px;position:relative;overflow:hidden;transition:all .25s;
+}
+.account-opt::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+}
+.account-opt:hover{border-color:var(--border2);transform:translateY(-2px)}
+.acc-country{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
+.acc-flag{font-size:24px;margin-bottom:8px}
+.acc-price{
+  font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;
+  background:linear-gradient(135deg,var(--white),var(--off));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:18px;
+}
+
+/* ═══════════════════════════════════════════ TON SECTION */
+.ton-rate{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mid);
+  border:1px solid var(--border);border-radius:50px;padding:7px 16px;margin-bottom:20px;
+}
+
+/* ═══════════════════════════════════════════ BUTTON */
+.btn-pay{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:16px;
+  background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--white);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
+}
+.btn-pay::before{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.06);opacity:0;transition:opacity .3s;
+}
+.btn-pay:hover:not(:disabled)::before{opacity:1}
+.btn-pay:hover:not(:disabled){border-color:rgba(248,248,246,.4);letter-spacing:4px}
+.btn-pay:disabled{opacity:.3;cursor:not-allowed}
+
+.btn-pay-sm{
+  width:auto;padding:13px 24px;
+  font-size:10px;
+}
+
+/* ═══════════════════════════════════════════ SCROLL REVEAL */
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════════════════ DIVIDER */
+.section-divider{
+  width:1px;height:80px;background:linear-gradient(180deg,transparent,var(--dim),transparent);
+  margin:0 auto;
+}
+
+/* ═══════════════════════════════════════════ MODAL OVERLAY */
+.modal-overlay{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(8,7,6,.88);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal-box{
+  background:rgba(16,14,12,.96);
+  border:1px solid rgba(248,248,246,.14);
+  border-radius:24px;
+  width:100%;max-width:400px;
+  position:relative;overflow:hidden;
+  animation:modalSlide .38s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 40px 80px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.08);
+}
+@keyframes modalSlide{
+  from{transform:scale(.93) translateY(20px);opacity:0}
+  to{transform:scale(1) translateY(0);opacity:1}
+}
+.modal-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+}
+/* reflection */
+.modal-box::after{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:180px;height:180px;
+  background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+
+.modal-inner{padding:36px 32px 32px}
+
+.modal-close{
+  position:absolute;top:18px;right:18px;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  color:var(--mid);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;z-index:2;
+}
+.modal-close:hover{border-color:var(--border2);color:var(--white)}
+
+.modal-eyebrow{
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:6px;
+}
+.modal-title{
+  font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;
+  color:var(--white);margin-bottom:28px;
+}
+
+/* TBANK block */
+.tbank-block{
+  background:linear-gradient(135deg,rgba(255,220,0,.07) 0%,rgba(255,200,0,.03) 100%);
+  border:1.5px solid rgba(255,215,0,.3);
+  border-radius:16px;padding:22px 20px;
+  margin-bottom:10px;
+  position:relative;overflow:hidden;
+}
+.tbank-block::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,215,0,.5),transparent);
+}
+.tbank-block::after{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;
+  background:radial-gradient(circle,rgba(255,215,0,.06) 0%,transparent 70%);
+  border-radius:50%;
+}
+.tbank-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.tbank-badge{
+  background:#FFD700;color:#1a1a00;
+  font-family:'DM Mono',monospace;font-weight:500;font-size:14px;
+  padding:5px 13px;border-radius:8px;
+  box-shadow:0 4px 16px rgba(255,215,0,.25);
+  letter-spacing:-.5px;
+}
+.tbank-name{font-size:15px;font-weight:400;color:var(--white)}
+.tbank-caption{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,.5)}
+
+.copy-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.copy-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,.5);margin-bottom:3px}
+.copy-val{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:#FFD700;letter-spacing:2px}
+.copy-val-sm{font-size:13px;color:rgba(255,215,0,.7)}
+.copy-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);
+  cursor:pointer;transition:all .2s;color:rgba(255,215,0,.6);flex-shrink:0;
+}
+.copy-btn:hover{background:rgba(255,215,0,.18);color:#FFD700}
+
+.bank-recipient{
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);
+  margin-top:8px;
+}
+
+.modal-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:16px 0}
+
+.btn-paid{
+  width:100%;padding:16px;
+  background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--white);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
+  margin-top:16px;
+}
+.btn-paid::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.06);opacity:0;transition:opacity .3s}
+.btn-paid:hover::before{opacity:1}
+.btn-paid:hover{border-color:rgba(248,248,246,.4)}
+
+.modal-success{
+  text-align:center;padding:8px 0;
+}
+.modal-success-icon{font-size:40px;margin-bottom:12px}
+.modal-success-title{
+  font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;
+  color:var(--white);margin-bottom:8px;
+}
+.modal-success-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mid)}
+
+/* toast */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:rgba(14,12,10,.95);border:1px solid var(--border2);
+  border-radius:50px;padding:11px 22px;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--white);
+  z-index:10000;pointer-events:none;
+  opacity:0;transition:opacity .3s;
+  white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+}
+.toast.show{opacity:1}
+
+/* ═══════════════════════════════════════════ FOOTER */
+.footer{
+  padding:40px 24px;text-align:center;border-top:1px solid var(--border);
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);
+}
+</style>
 </head>
 <body>
-<div class="bg-watermark"></div>
-<div class="bg-overlay"></div>
-<canvas id="premium-particles"></canvas>
 
-<section class="hero">
+<!-- Particle canvas -->
+<canvas id="canvas"></canvas>
+
+<div class="site">
+
+  <!-- ══════════ HERO ══════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-noise"></div>
+    <div class="hero-line-h"></div>
+    <div class="hero-line-v"></div>
     <div class="hero-content">
-        <h1 class="hero-title">SAYLAR</h1>
-        <button class="btn-hero" id="scrollToCatalog">Перейти в магазин</button>
+      <div class="hero-eyebrow">Telegram Premium Shop</div>
+      <h1 class="hero-title"><span class="hero-title-inner">SAYLAR</span></h1>
+      <p class="hero-sub">Звёзды · Premium · TON · Аккаунты</p>
+      <div class="hero-actions">
+        <a href="#shop" class="btn-hero">
+          Перейти в магазин
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M6 1v10M1 6l5 5 5-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="https://t.me/saylarreviews" target="_blank" rel="noopener" class="reviews-pill">
+          <span class="reviews-dot"></span>
+          100+ отзывов
+        </a>
+      </div>
     </div>
-</section>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+    </div>
+  </section>
 
-<div class="container">
-    <div class="reviews-block fade-up">
-        <a href="https://t.me/saylarreviews" target="_blank" class="reviews-link">100+ отзывов →</a>
+  <!-- ══════════ SHOP ══════════ -->
+  <section class="shop-section" id="shop">
+    <p class="section-label reveal">— Каталог —</p>
+
+    <!-- TABS NAV -->
+    <div class="tabs-nav reveal">
+      <button class="tab-btn active" data-tab="stars">⭐ Звёзды</button>
+      <button class="tab-btn" data-tab="premium">👑 Premium</button>
+      <button class="tab-btn" data-tab="ton">💎 TON</button>
+      <button class="tab-btn" data-tab="accounts">📱 Аккаунты</button>
     </div>
 
-    <div class="catalog-section fade-up" id="catalog">
-        <h2 class="section-title">Каталог</h2>
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="stars">⭐ Звёзды</button>
-            <button class="tab-btn" data-tab="premium">👑 Premium</button>
-            <button class="tab-btn" data-tab="ton">💎 TON</button>
-            <button class="tab-btn" data-tab="accounts">📱 Аккаунты</button>
+    <!-- ──────── TAB: STARS ──────── -->
+    <div class="tab-panel active" id="tab-stars">
+      <div class="glass-card reveal">
+        <div class="two-col">
+          <div class="field">
+            <label class="field-label" for="stars-qty">Количество звёзд</label>
+            <input class="field-input" type="number" id="stars-qty" placeholder="50" min="50" step="1">
+          </div>
+          <div class="field">
+            <label class="field-label" for="stars-rub">Сумма в ₽</label>
+            <input class="field-input" type="number" id="stars-rub" placeholder="70" min="70" step="1">
+          </div>
         </div>
-
-        <!-- Таб Звёзды -->
-        <div id="tab-stars" class="tab-content active">
-            <div class="glass-card">
-                <div class="input-group">
-                    <label>USERNAME (обязательно @)</label>
-                    <input type="text" id="stars-username" placeholder="@username">
-                    <div class="error-msg" id="stars-error">Некорректный username (разрешены @, латиница, цифры, _)</div>
-                </div>
-                <div class="input-group">
-                    <label>Кол-во звёзд (≥50)</label>
-                    <input type="number" id="stars-qty" value="50" min="50" step="1">
-                </div>
-                <div class="input-group">
-                    <label>Сумма (₽)</label>
-                    <input type="number" id="stars-rub" value="70" step="1">
-                </div>
-                <div class="price-row">
-                    <span class="price-label">ИТОГО К ОПЛАТЕ</span>
-                    <span class="price-value" id="stars-total">70 ₽</span>
-                </div>
-                <button class="btn-pay" id="stars-pay">Оплатить</button>
-            </div>
+        <div class="total-display">
+          <span class="total-label">К оплате</span>
+          <span class="total-amount" id="stars-total">0 ₽</span>
         </div>
-
-        <!-- Таб Premium -->
-        <div id="tab-premium" class="tab-content">
-            <div class="glass-card">
-                <div class="input-group">
-                    <label>USERNAME @</label>
-                    <input type="text" id="premium-username" placeholder="@username">
-                    <div class="error-msg" id="premium-error">Некорректный username</div>
-                </div>
-                <div class="premium-grid">
-                    <div class="premium-card" data-prem="3" data-price="1050">
-                        <div class="premium-title">3 месяца</div>
-                        <div class="premium-price">1 050 ₽</div>
-                        <button class="btn-pay prem-pay">Оплатить</button>
-                    </div>
-                    <div class="premium-card" data-prem="6" data-price="1350">
-                        <div class="premium-title">6 месяцев</div>
-                        <div class="premium-price">1 350 ₽</div>
-                        <button class="btn-pay prem-pay">Оплатить</button>
-                    </div>
-                    <div class="premium-card" data-prem="12" data-price="2400">
-                        <div class="premium-title">12 месяцев</div>
-                        <div class="premium-price">2 400 ₽</div>
-                        <button class="btn-pay prem-pay">Оплатить</button>
-                    </div>
-                </div>
-            </div>
+        <div class="field">
+          <label class="field-label" for="stars-user">Username</label>
+          <input class="field-input" type="text" id="stars-user" placeholder="@username">
+          <span class="field-err" id="stars-user-err"></span>
         </div>
-
-        <!-- Таб TON -->
-        <div id="tab-ton" class="tab-content">
-            <div class="glass-card">
-                <div class="input-group">
-                    <label>USERNAME @</label>
-                    <input type="text" id="ton-username" placeholder="@username">
-                    <div class="error-msg" id="ton-error">Некорректный username</div>
-                </div>
-                <div class="input-group">
-                    <label>Количество TON (только целые)</label>
-                    <input type="number" id="ton-qty" value="1" min="1" step="1">
-                </div>
-                <div class="price-row">
-                    <span class="price-label">1 TON = 110 ₽</span>
-                    <span class="price-value" id="ton-total">110 ₽</span>
-                </div>
-                <button class="btn-pay" id="ton-pay">Оплатить</button>
-            </div>
-        </div>
-
-        <!-- Таб Аккаунты -->
-        <div id="tab-accounts" class="tab-content">
-            <div class="glass-card">
-                <div class="input-group">
-                    <label>USERNAME @</label>
-                    <input type="text" id="acc-username" placeholder="@username">
-                    <div class="error-msg" id="acc-error">Некорректный username</div>
-                </div>
-                <div class="account-row">
-                    <div class="account-info">
-                        <span class="account-country">🇺🇸 США</span>
-                        <span class="account-price">250 ₽</span>
-                    </div>
-                    <button class="btn-pay small-pay" data-account="usa" data-price="250">Оплатить</button>
-                </div>
-                <div class="account-row">
-                    <div class="account-info">
-                        <span class="account-country">🇬🇧 Великобритания</span>
-                        <span class="account-price">200 ₽</span>
-                    </div>
-                    <button class="btn-pay small-pay" data-account="uk" data-price="200">Оплатить</button>
-                </div>
-            </div>
-        </div>
+        <button class="btn-pay" id="stars-pay-btn" onclick="openModal('stars')">Оплатить</button>
+      </div>
     </div>
-    <footer>© SAYLAR — премиум уровень</footer>
+
+    <!-- ──────── TAB: PREMIUM ──────── -->
+    <div class="tab-panel" id="tab-premium">
+      <div class="premium-grid reveal">
+        <div class="premium-card">
+          <div class="prem-duration">3 месяца</div>
+          <div class="prem-price">1 050 ₽</div>
+          <div class="prem-desc">Premium подписка</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('premium',3,1050)">Оплатить</button>
+        </div>
+        <div class="premium-card">
+          <div class="prem-duration">6 месяцев</div>
+          <div class="prem-price">1 350 ₽</div>
+          <div class="prem-desc">Premium подписка</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('premium',6,1350)">Оплатить</button>
+        </div>
+        <div class="premium-card">
+          <div class="prem-duration">12 месяцев</div>
+          <div class="prem-price">2 400 ₽</div>
+          <div class="prem-desc">Лучшая цена 🔥</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('premium',12,2400)">Оплатить</button>
+        </div>
+      </div>
+      <div class="glass-card reveal">
+        <div class="field">
+          <label class="field-label" for="prem-user">Username</label>
+          <input class="field-input" type="text" id="prem-user" placeholder="@username">
+          <span class="field-err" id="prem-user-err"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────── TAB: TON ──────── -->
+    <div class="tab-panel" id="tab-ton">
+      <div class="glass-card reveal">
+        <div class="ton-rate">💎 &nbsp;1 TON = 110 ₽</div>
+        <div class="field">
+          <label class="field-label" for="ton-qty">Количество TON</label>
+          <input class="field-input" type="number" id="ton-qty" placeholder="1" min="1" step="1">
+        </div>
+        <div class="total-display">
+          <span class="total-label">К оплате</span>
+          <span class="total-amount" id="ton-total">0 ₽</span>
+        </div>
+        <div class="field">
+          <label class="field-label" for="ton-user">Username</label>
+          <input class="field-input" type="text" id="ton-user" placeholder="@username">
+          <span class="field-err" id="ton-user-err"></span>
+        </div>
+        <button class="btn-pay" id="ton-pay-btn" onclick="openModal('ton')">Оплатить</button>
+      </div>
+    </div>
+
+    <!-- ──────── TAB: ACCOUNTS ──────── -->
+    <div class="tab-panel" id="tab-accounts">
+      <div class="account-opts reveal">
+        <div class="account-opt">
+          <div class="acc-country">США</div>
+          <div class="acc-flag">🇺🇸</div>
+          <div class="acc-price">250 ₽</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('account','США',250)">Оплатить</button>
+        </div>
+        <div class="account-opt">
+          <div class="acc-country">Великобритания</div>
+          <div class="acc-flag">🇬🇧</div>
+          <div class="acc-price">200 ₽</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('account','Великобритания',200)">Оплатить</button>
+        </div>
+      </div>
+      <div class="glass-card reveal">
+        <div class="field">
+          <label class="field-label" for="acc-user">Username</label>
+          <input class="field-input" type="text" id="acc-user" placeholder="@username">
+          <span class="field-err" id="acc-user-err"></span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    © SAYLAR Shop &nbsp;·&nbsp; Telegram Premium
+  </footer>
 </div>
 
-<!-- Модальное окно (единое) -->
-<div id="paymentModal" class="modal-overlay">
-    <div class="modal-card">
-        <div class="modal-close" id="modalCloseBtn">&times;</div>
-        <div style="text-align: center;"><div class="bank-header">Т‑Банк</div></div>
-        <div class="bank-detail"><span>💳 Номер карты</span><span><strong>2200 7019 4219 4652</strong> <button class="copy-btn" data-copy="2200701942194652">📋</button></span></div>
-        <div class="bank-detail"><span>📞 Телефон</span><span><strong>+7 966 349 22 74</strong> <button class="copy-btn" data-copy="+79663492274">📋</button></span></div>
-        <div class="bank-detail"><span>👤 Получатель</span><span>Дамир О.</span></div>
-        <button class="btn-pay" id="confirmPaymentBtn">Я оплатил</button>
-        <div id="modalFeedback" class="modal-message"></div>
+<!-- ══════════ MODAL ══════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+    <button class="modal-close" onclick="closeModal()" title="Закрыть">✕</button>
+    <div class="modal-inner" id="modal-inner">
+      <!-- Content injected by JS -->
     </div>
+  </div>
 </div>
-<div id="toastMessage" class="toast-msg"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-    // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
-    function showToast(text, duration = 2800) {
-        const toast = document.getElementById('toastMessage');
-        toast.innerText = text;
-        toast.style.opacity = '1';
-        clearTimeout(toast._t);
-        toast._t = setTimeout(() => toast.style.opacity = '0', duration);
-    }
-
-    // Валидация username (правильное поведение: ошибка только если после @ запрещённый символ или поле пустое/только @)
-    function validateUsername(raw) {
-        if (!raw || raw.length === 0) return false;
-        if (!raw.startsWith('@')) return false;
-        const after = raw.slice(1);
-        if (after.length === 0) return false;
-        const allowed = /^[a-zA-Z0-9_]+$/;
-        return allowed.test(after);
-    }
-
-    function attachValidation(inputId, errorId, buttonId, customCheck = null) {
-        const input = document.getElementById(inputId);
-        const errorSpan = document.getElementById(errorId);
-        const btn = document.getElementById(buttonId);
-        function check() {
-            const value = input.value.trim();
-            const isValid = validateUsername(value);
-            if (value && !isValid) {
-                errorSpan.style.display = 'block';
-            } else {
-                errorSpan.style.display = 'none';
-            }
-            let extraOk = true;
-            if (customCheck) extraOk = customCheck();
-            if (btn) btn.disabled = !(isValid && extraOk);
-            return isValid;
+/* ═══════════════════════════════════════════ PARTICLES */
+(function(){
+  const c=document.getElementById('canvas');
+  const ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  resize();window.addEventListener('resize',()=>{resize();init()});
+  function Pt(){
+    this.x=Math.random()*W;this.y=Math.random()*H;
+    this.vx=(Math.random()-.5)*.18;this.vy=(Math.random()-.5)*.18;
+    this.r=Math.random()*1.2+.3;this.a=Math.random();
+  }
+  function init(){pts=[];for(let i=0;i<80;i++)pts.push(new Pt())}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;
+      if(p.y<0||p.y>H)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,196,190,${p.a*.4})`;ctx.fill();
+    });
+    // connections
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+        if(d<120){
+          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle=`rgba(160,156,148,${(.12*(1-d/120))})`;
+          ctx.lineWidth=.5;ctx.stroke();
         }
-        input.addEventListener('input', check);
-        return check;
+      }
     }
+    requestAnimationFrame(draw);
+  }
+  init();draw();
+})();
 
-    // ---------- ЗВЁЗДЫ (автопересчёт, кнопка открывает модалку) ----------
-    const starsUsername = document.getElementById('stars-username');
-    const starsQty = document.getElementById('stars-qty');
-    const starsRub = document.getElementById('stars-rub');
-    const starsTotalSpan = document.getElementById('stars-total');
-    const starsPayBtn = document.getElementById('stars-pay');
+/* ═══════════════════════════════════════════ SCROLL REVEAL */
+const revealEls=document.querySelectorAll('.reveal');
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}});
+},{threshold:.1});
+revealEls.forEach(el=>io.observe(el));
 
-    function recalcStars() {
-        let stars = parseInt(starsQty.value);
-        let rub = parseFloat(starsRub.value);
-        if (isNaN(stars)) stars = 50;
-        if (isNaN(rub)) rub = 70;
-        if (stars < 50) stars = 50;
-        let fromStars = Math.ceil(stars * 1.4);
-        let fromRub = Math.floor(rub / 1.4);
-        if (fromRub < 50) fromRub = 50;
-        if (document.activeElement === starsQty) {
-            starsRub.value = fromStars;
-        } else if (document.activeElement === starsRub) {
-            starsQty.value = fromRub;
-        } else {
-            starsRub.value = fromStars;
-            starsQty.value = fromRub;
-        }
-        let finalRub = parseInt(starsRub.value);
-        if (finalRub < 70 || starsQty.value < 50) finalRub = 0;
-        starsTotalSpan.innerText = finalRub ? finalRub + ' ₽' : '0 ₽';
-        const valid = validateUsername(starsUsername.value);
-        starsPayBtn.disabled = !(valid && finalRub >= 70);
-        return { amount: finalRub, stars: starsQty.value, rub: finalRub };
+/* ═══════════════════════════════════════════ TABS */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tab-'+this.dataset.tab).classList.add('active');
+    // re-run reveal for new panel
+    document.querySelectorAll('#tab-'+this.dataset.tab+' .reveal:not(.visible)').forEach(el=>{
+      el.classList.add('visible');
+    });
+  });
+});
+
+/* ═══════════════════════════════════════════ STARS CALC */
+const starsQtyEl=document.getElementById('stars-qty');
+const starsRubEl=document.getElementById('stars-rub');
+const starsTotalEl=document.getElementById('stars-total');
+let starsLock=false;
+const RATE=1.4;
+
+starsQtyEl.addEventListener('input',function(){
+  if(starsLock)return;starsLock=true;
+  const q=parseInt(this.value)||0;
+  if(q>0){starsRubEl.value=Math.ceil(q*RATE);}else{starsRubEl.value='';}
+  updateStarsTotal();starsLock=false;
+});
+starsRubEl.addEventListener('input',function(){
+  if(starsLock)return;starsLock=true;
+  const r=parseInt(this.value)||0;
+  if(r>0){starsQtyEl.value=Math.floor(r/RATE);}else{starsQtyEl.value='';}
+  updateStarsTotal();starsLock=false;
+});
+function updateStarsTotal(){
+  const r=parseInt(starsRubEl.value)||0;
+  starsTotalEl.textContent=r>0?r.toLocaleString('ru')+' ₽':'0 ₽';
+}
+
+/* ═══════════════════════════════════════════ TON CALC */
+const tonQtyEl=document.getElementById('ton-qty');
+const tonTotalEl=document.getElementById('ton-total');
+tonQtyEl.addEventListener('input',function(){
+  const t=parseInt(this.value)||0;
+  tonTotalEl.textContent=t>0?(t*110).toLocaleString('ru')+' ₽':'0 ₽';
+});
+
+/* ═══════════════════════════════════════════ USERNAME VALIDATION */
+function validateUser(val){
+  if(!val||val==='@')return{ok:false,err:''};// silent while typing @
+  if(!val.startsWith('@'))return{ok:false,err:'Должен начинаться с @'};
+  const after=val.slice(1);
+  if(after.length===0)return{ok:false,err:''};
+  if(!/^[a-zA-Z0-9_]+$/.test(after))return{ok:false,err:'Только латиница, цифры и _'};
+  if(after.length<3)return{ok:false,err:'Минимум 3 символа после @'};
+  return{ok:true,err:''};
+}
+function bindUserValidation(inputId,errId){
+  const inp=document.getElementById(inputId);
+  const err=document.getElementById(errId);
+  if(!inp||!err)return;
+  inp.addEventListener('input',function(){
+    const v=validateUser(this.value.trim());
+    err.textContent=v.err;
+    this.classList.toggle('err',!!v.err&&this.value.length>1);
+  });
+}
+bindUserValidation('stars-user','stars-user-err');
+bindUserValidation('prem-user','prem-user-err');
+bindUserValidation('ton-user','ton-user-err');
+bindUserValidation('acc-user','acc-user-err');
+
+/* ═══════════════════════════════════════════ MODAL STATE */
+let _modalData={};
+
+/* ═══════════════════════════════════════════ OPEN MODAL */
+function openModal(type, arg2, arg3){
+  // --- Gather data per type ---
+  let userFieldId, errFieldId;
+  let orderInfo={};
+
+  if(type==='stars'){
+    userFieldId='stars-user'; errFieldId='stars-user-err';
+    const qty=parseInt(starsQtyEl.value)||0;
+    const rub=parseInt(starsRubEl.value)||0;
+    if(qty<50||rub<70){
+      showToast('Минимум 50 звёзд / 70 ₽');return;
     }
-    starsQty.addEventListener('input', recalcStars);
-    starsRub.addEventListener('input', recalcStars);
-    attachValidation('stars-username', 'stars-error', 'stars-pay', () => {
-        const rub = parseInt(starsRub.value);
-        return rub >= 70;
+    orderInfo={tab:'Звёзды',desc:`${qty} звёзд — ${rub} ₽`,amount:rub};
+  } else if(type==='premium'){
+    userFieldId='prem-user'; errFieldId='prem-user-err';
+    const months=arg2, price=arg3;
+    orderInfo={tab:'Premium',desc:`${months} мес.`,amount:price};
+  } else if(type==='ton'){
+    userFieldId='ton-user'; errFieldId='ton-user-err';
+    const t=parseInt(tonQtyEl.value)||0;
+    if(t<1){showToast('Введите количество TON');return;}
+    orderInfo={tab:'TON',desc:`${t} TON`,amount:t*110};
+  } else if(type==='account'){
+    userFieldId='acc-user'; errFieldId='acc-user-err';
+    const country=arg2, price=arg3;
+    orderInfo={tab:'Аккаунт',desc:`Аккаунт TG (${country})`,amount:price};
+  }
+
+  // Validate username
+  const userEl=document.getElementById(userFieldId);
+  const errEl=document.getElementById(errFieldId);
+  const rawUser=(userEl?userEl.value.trim():'');
+  const uv=validateUser(rawUser);
+  if(!uv.ok){
+    if(errEl)errEl.textContent=uv.err||'Введите корректный @username';
+    if(userEl){userEl.classList.add('err');userEl.focus();}
+    showToast('Укажите @username');return;
+  }
+
+  orderInfo.username=rawUser;
+  _modalData=orderInfo;
+
+  // Render modal
+  renderModalContent();
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderModalContent(){
+  const d=_modalData;
+  document.getElementById('modal-inner').innerHTML=`
+    <div class="modal-eyebrow">Оплата заказа</div>
+    <div class="modal-title">${d.desc}</div>
+
+    <div class="tbank-block">
+      <div class="tbank-header">
+        <div class="tbank-badge">Т</div>
+        <div>
+          <div class="tbank-name">Т‑Банк</div>
+          <div class="tbank-caption">перевод по карте или номеру телефона</div>
+        </div>
+      </div>
+      <div class="copy-row">
+        <div>
+          <div class="copy-label">Номер карты</div>
+          <div class="copy-val">2200 7019 4219 4652</div>
+        </div>
+        <button class="copy-btn" onclick="copyText('2200701942194652','Номер карты скопирован')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <div class="copy-row">
+        <div>
+          <div class="copy-label">Телефон</div>
+          <div class="copy-val copy-val-sm">+7 966 349 22 74</div>
+        </div>
+        <button class="copy-btn" onclick="copyText('+79663492274','Телефон скопирован')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <div class="bank-recipient">Получатель: Дамир О.</div>
+    </div>
+
+    <div class="modal-divider"></div>
+
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--mid)">К переводу</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;background:linear-gradient(135deg,#f8f8f6,#d4d0c8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${(d.amount||0).toLocaleString('ru')} ₽</span>
+    </div>
+
+    <button class="btn-paid" id="btn-paid" onclick="handlePaid()">Я оплатил</button>
+  `;
+}
+
+/* ═══════════════════════════════════════════ HANDLE PAID */
+async function handlePaid(){
+  const btn=document.getElementById('btn-paid');
+  if(btn){btn.disabled=true;btn.textContent='Отправка...';}
+
+  const d=_modalData;
+  const text=`[${d.tab}] ${d.desc} | Username: ${d.username} | Оплачено: ${(d.amount||0)} ₽`;
+  const TOKEN='8701823510:AAHPyTTDnLAAFtd4cn8lj1mp3Vq-gGpYQlg';
+  const CHAT='1717982615';
+
+  try{
+    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:CHAT,text})
     });
-    recalcStars();
+    showSuccess();
+  } catch(e){
+    if(btn){btn.disabled=false;btn.textContent='Я оплатил';}
+    document.getElementById('modal-inner').insertAdjacentHTML('beforeend',
+      '<p style="color:#e06060;font-size:10px;letter-spacing:1.5px;text-align:center;margin-top:10px">Ошибка отправки, попробуйте снова</p>');
+  }
+}
 
-    // ----- PREMIUM (общий username, кнопки привязаны к карточкам) -----
-    const premiumUsername = document.getElementById('premium-username');
-    const premiumError = document.getElementById('premium-error');
-    function checkPremUsername() {
-        const valid = validateUsername(premiumUsername.value);
-        premiumError.style.display = (!valid && premiumUsername.value.trim() !== '') ? 'block' : 'none';
-        document.querySelectorAll('.prem-pay').forEach(btn => {
-            btn.disabled = !valid;
-        });
-        return valid;
-    }
-    premiumUsername.addEventListener('input', checkPremUsername);
-    // ----- TON -----
-    const tonUsername = document.getElementById('ton-username');
-    const tonQty = document.getElementById('ton-qty');
-    const tonTotalSpan = document.getElementById('ton-total');
-    const tonPayBtn = document.getElementById('ton-pay');
-    function updateTon() {
-        let qty = parseInt(tonQty.value);
-        if (isNaN(qty) || qty < 1) qty = 1;
-        tonQty.value = qty;
-        const total = qty * 110;
-        tonTotalSpan.innerText = total + ' ₽';
-        const valid = validateUsername(tonUsername.value);
-        tonPayBtn.disabled = !(valid && qty >= 1);
-        return { amount: total, qty };
-    }
-    tonUsername.addEventListener('input', updateTon);
-    tonQty.addEventListener('input', updateTon);
-    attachValidation('ton-username', 'ton-error', 'ton-pay', () => {
-        let qty = parseInt(tonQty.value);
-        return !isNaN(qty) && qty >= 1;
-    });
-    updateTon();
+function showSuccess(){
+  document.getElementById('modal-inner').innerHTML=`
+    <div class="modal-success">
+      <div class="modal-success-icon">✓</div>
+      <div class="modal-success-title">Заказ отправлен</div>
+      <div class="modal-success-sub">Скоро будет выдан · Ожидайте</div>
+    </div>
+  `;
+  // clear username
+  ['stars-user','prem-user','ton-user','acc-user'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  setTimeout(closeModal,3000);
+}
 
-    // ----- АККАУНТЫ -----
-    const accUsername = document.getElementById('acc-username');
-    const accError = document.getElementById('acc-error');
-    function checkAccButtons() {
-        const valid = validateUsername(accUsername.value);
-        accError.style.display = (!valid && accUsername.value.trim() !== '') ? 'block' : 'none';
-        document.querySelectorAll('#tab-accounts .small-pay').forEach(btn => {
-            btn.disabled = !valid;
-        });
-        return valid;
-    }
-    accUsername.addEventListener('input', checkAccButtons);
+/* ═══════════════════════════════════════════ CLOSE MODAL */
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function handleOverlayClick(e){
+  if(e.target===document.getElementById('modal-overlay'))closeModal();
+}
 
-    // ---------- ЕДИНАЯ МОДАЛКА И ОТПРАВКА В TELEGRAM ----------
-    const modal = document.getElementById('paymentModal');
-    const modalClose = document.getElementById('modalCloseBtn');
-    const confirmPayment = document.getElementById('confirmPaymentBtn');
-    const modalFeedback = document.getElementById('modalFeedback');
-    let currentOrder = null;
+/* ═══════════════════════════════════════════ COPY */
+function copyText(text,msg){
+  navigator.clipboard?.writeText(text).then(()=>showToast(msg)).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);showToast(msg);
+  });
+}
 
-    function openModal(order) {
-        currentOrder = order;
-        modalFeedback.style.display = 'none';
-        modalFeedback.innerText = '';
-        modal.classList.add('active');
-    }
+/* ═══════════════════════════════════════════ TOAST */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._tid);t._tid=setTimeout(()=>t.classList.remove('show'),2800);
+}
 
-    function closeModal() {
-        modal.classList.remove('active');
-        modalFeedback.style.display = 'none';
-        currentOrder = null;
-    }
-
-    modalClose.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-    async function sendOrderToBot(username, product, amount) {
-        const BOT_TOKEN = '8701823510:AAHPyTTDnLAAFtd4cn8lj1mp3Vq-gGpYQlg';
-        const CHAT_ID = '1717982615';
-        const text = `💎 НОВЫЙ ЗАКАЗ (ожидает проверки)\n👤 Клиент: @${username.replace('@','')}\n📦 Товар: ${product}\n💵 Сумма: ${amount} ₽\n⏳ Статус: ожидание оплаты`;
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
-        try {
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error();
-            modalFeedback.style.display = 'block';
-            modalFeedback.innerText = '✓ Ваш заказ отправлен, скоро будет выдан';
-            setTimeout(() => {
-                closeModal();
-                // Очистка username в активном табе
-                const activeTab = document.querySelector('.tab-content.active').id;
-                if (activeTab === 'tab-stars') starsUsername.value = '';
-                else if (activeTab === 'tab-premium') premiumUsername.value = '';
-                else if (activeTab === 'tab-ton') tonUsername.value = '';
-                else if (activeTab === 'tab-accounts') accUsername.value = '';
-                recalcStars(); updateTon(); checkPremUsername(); checkAccButtons();
-            }, 3000);
-        } catch (err) {
-            modalFeedback.style.display = 'block';
-            modalFeedback.style.color = '#ffaaaa';
-            modalFeedback.innerText = '❌ Ошибка отправки, попробуйте снова';
-            console.error(err);
-        }
-    }
-
-    confirmPayment.addEventListener('click', () => {
-        if (currentOrder) {
-            sendOrderToBot(currentOrder.username, currentOrder.product, currentOrder.amount);
-        }
-    });
-
-    // ----- ОБРАБОТЧИКИ КНОПОК «ОПЛАТИТЬ» (ВСЕ РАЗДЕЛЫ) -----
-    // 1. Звёзды
-    starsPayBtn.addEventListener('click', () => {
-        const username = starsUsername.value;
-        if (!validateUsername(username)) return;
-        const { amount, stars } = recalcStars();
-        if (amount < 70) return;
-        openModal({
-            username: username,
-            product: `Telegram Stars: ${stars} шт.`,
-            amount: amount
-        });
-    });
-    // 2. Premium
-    document.querySelectorAll('.prem-pay').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const username = premiumUsername.value;
-            if (!validateUsername(username)) return;
-            const card = btn.closest('.premium-card');
-            const months = card.getAttribute('data-prem');
-            const price = parseInt(card.getAttribute('data-price'));
-            let product = '';
-            if (months === '3') product = 'Telegram Premium 3 мес.';
-            else if (months === '6') product = 'Telegram Premium 6 мес.';
-            else product = 'Telegram Premium 12 мес.';
-            openModal({ username, product, amount: price });
-        });
-    });
-    // 3. TON
-    tonPayBtn.addEventListener('click', () => {
-        const username = tonUsername.value;
-        if (!validateUsername(username)) return;
-        const { amount, qty } = updateTon();
-        if (amount <= 0) return;
-        openModal({ username, product: `${qty} TON (криптовалюта)`, amount });
-    });
-    // 4. Аккаунты
-    document.querySelectorAll('#tab-accounts .small-pay').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const username = accUsername.value;
-            if (!validateUsername(username)) return;
-            const price = parseInt(btn.getAttribute('data-price'));
-            const country = btn.getAttribute('data-account') === 'usa' ? 'США' : 'Великобритания';
-            openModal({ username, product: `Telegram аккаунт (${country})`, amount: price });
-        });
-    });
-
-    // ---------- АНИМАЦИЯ ЛУЧЕЙ (ЧАСТИЦЫ) ----------
-    (function drawParticles() {
-        const canvas = document.getElementById('premium-particles');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        let width, height, cx, cy;
-        let rays = [];
-        const RAY_COUNT = 70;
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            cx = width / 2;
-            cy = height / 2;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-        class Ray {
-            constructor() {
-                this.init();
-                this.distance = Math.random() * (Math.max(width, height) / 2.2);
-            }
-            init() {
-                this.angle = Math.random() * Math.PI * 2;
-                this.distance = Math.random() * 70 + 15;
-                this.length = Math.random() * 130 + 40;
-                this.speed = Math.random() * 1.3 + 0.2;
-                this.alpha = 0;
-                this.maxAlpha = Math.random() * 0.12 + 0.02;
-                this.fadeRate = Math.random() * 0.006 + 0.0018;
-                this.state = 'fadingIn';
-            }
-            update() {
-                this.distance += this.speed;
-                if (this.state === 'fadingIn') {
-                    this.alpha += this.fadeRate;
-                    if (this.alpha >= this.maxAlpha) this.state = 'fadingOut';
-                } else if (this.state === 'fadingOut') {
-                    this.alpha -= this.fadeRate;
-                    if (this.alpha <= 0) this.init();
-                }
-            }
-            draw() {
-                const x1 = cx + Math.cos(this.angle) * this.distance;
-                const y1 = cy + Math.sin(this.angle) * this.distance;
-                const x2 = cx + Math.cos(this.angle) * (this.distance + this.length);
-                const y2 = cy + Math.sin(this.angle) * (this.distance + this.length);
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, this.alpha) * 0.6})`;
-                ctx.lineWidth = 1;
-                ctx.stroke();
-            }
-        }
-        for (let i = 0; i < RAY_COUNT; i++) rays.push(new Ray());
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            rays.forEach(r => { r.update(); r.draw(); });
-            requestAnimationFrame(animate);
-        }
-        animate();
-    })();
-
-    // Скролл к каталогу
-    document.getElementById('scrollToCatalog').addEventListener('click', () => {
-        document.getElementById('catalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-
-    // Анимация появления при скролле
-    const fadeElements = document.querySelectorAll('.fade-up');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-    }, { threshold: 0.15 });
-    fadeElements.forEach(el => observer.observe(el));
-
-    // Копирование в модалке
-    document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const text = btn.getAttribute('data-copy');
-            if (text) navigator.clipboard.writeText(text);
-            showToast('Скопировано');
-        });
-    });
-
-    // Переключение вкладок
-    const tabs = document.querySelectorAll('.tab-btn');
-    const contents = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const tabId = tab.getAttribute('data-tab');
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            contents.forEach(c => c.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            // Пересчёт состояний для активного таба
-            if (tabId === 'stars') recalcStars();
-            if (tabId === 'ton') updateTon();
-            if (tabId === 'premium') checkPremUsername();
-            if (tabId === 'accounts') checkAccButtons();
-        });
-    });
+/* ═══════════════════════════════════════════ KEYBOARD */
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 </script>
 </body>
 </html>
