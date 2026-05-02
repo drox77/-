@@ -1,32 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAYLAR | Premium Agency</title>
-    <!-- Premium Font: Cinzel for high-end luxury feel -->
+    <title>SAYLAR | ПРЕМИАЛЬНАЯ СЦЕНА</title>
+    <!-- Шрифт: Cinzel — идеальный для премиум-стиля -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
-    
     <style>
-        /* --- RESET & BASE --- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none; /* немного эстетики — не мешает выделению */
         }
 
         body, html {
             width: 100%;
-            height: 100%;
-            background-color: #050505; /* Deep charcoal/black base */
-            overflow-x: hidden;
+            min-height: 100vh;
+            background: #050505; /* абсолютно чёрный фон — только на крайний случай, его перекроет картинка */
             font-family: 'Cinzel', serif;
+            overflow-x: hidden;
         }
 
-        /* --- HERO CONTAINER --- */
-        .hero-section {
+        /* ГЛАВНЫЙ ЭКРАН — ПОЛНОЭКРАННЫЙ */
+        .hero {
             position: relative;
             width: 100vw;
             height: 100vh;
@@ -36,35 +35,33 @@
             overflow: hidden;
         }
 
-        /* --- BACKGROUND & WATERMARK INTEGRATION --- */
-        /* Slowly zooming background to act as the integrated file/watermark */
+        /* ФОНОВОЕ ИЗОБРАЖЕНИЕ (ЗАМЕНИТЕ ССЫЛКУ НА ВАШ ФАЙЛ) */
+        /* Здесь должна быть ваша картинка / логотип / водяной знак в чб стиле */
         .hero-bg {
             position: absolute;
-            inset: -5%; /* Prevent edge clipping during zoom */
+            inset: -5%;
             width: 110%;
             height: 110%;
-            /* Replace the URL below with your provided image/logo path */
             background-image: url('https://images.unsplash.com/photo-1600164318858-6932463e26bb?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
             filter: grayscale(100%);
-            opacity: 0.15; /* Subtle watermark blending */
+            opacity: 0.18;   /* очень прозрачный намёк на водяной знак */
             z-index: 1;
-            animation: slowZoom 25s linear infinite alternate;
+            animation: slowZoom 28s ease-in-out infinite alternate;
         }
 
-        /* Transparent dark gradient overlay for content readability */
+        /* ТЁМНЫЙ ПРОЗРАЧНЫЙ СЛОЙ ДЛЯ ЧИТАЕМОСТИ ТЕКСТА БЕЗ ПОТЕРИ ЭФИРНОСТИ */
         .hero-overlay {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
-            /* Very subtle glassmorphism to remove hard edges and blend the background */
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
+            background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 100%);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             z-index: 2;
         }
 
-        /* --- PARTICLES CANVAS --- */
+        /* Холст с лучами (анимация из твоего исходника) */
         #luxury-rays {
             position: absolute;
             top: 0;
@@ -72,47 +69,84 @@
             width: 100%;
             height: 100%;
             z-index: 3;
-            pointer-events: none; /* Let clicks pass through */
+            pointer-events: none;
         }
 
-        /* --- TYPOGRAPHY & ANIMATION --- */
-        .hero-title {
+        /* КОНТЕЙНЕР ДЛЯ ТЕКСТА И КНОПКИ — ЦЕНТР ПО ВЕРТИКАЛИ/ГОРИЗОНТАЛИ */
+        .hero-content {
             position: relative;
-            z-index: 4;
-            color: #ffffff;
-            font-size: clamp(3rem, 8vw, 7rem);
+            z-index: 5;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            transform: translateY(-5%);  /* легкий кинематографический офсет, остаётся в центре */
+        }
+
+        /* САМО ИМЯ — ТОЛЬКО ЧЁРНЫЙ/БЕЛЫЙ, ПРОЗРАЧНОСТЬ И ЭЛЕГАНТНОСТЬ */
+        .brand-name {
+            font-size: clamp(3rem, 10vw, 7rem);
             font-weight: 700;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            cursor: default;
-            user-select: none;
-            
-            /* Initial state for cinematic reveal */
+            color: #ffffff;
+            /* начальное состояние для анимации входа */
             opacity: 0;
             transform: scale(0.9);
             filter: blur(12px);
-            
-            /* Reveal Animation */
-            animation: cinematicReveal 2.2s cubic-bezier(0.19, 1, 0.22, 1) 0.3s forwards;
-            
-            /* Smooth transition for hover shimmer */
-            transition: text-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.6s ease;
+            /* появление */
+            animation: cinematicReveal 1.8s cubic-bezier(0.19, 1, 0.22, 1) 0.3s forwards;
+            transition: text-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: default;
+            text-shadow: none;
         }
 
-        /* Luxurious, colorless shimmer on hover */
-        .hero-title:hover {
-            color: #fcfcfc;
+        /* Чистое ч/б свечение при наведении — без цвета, только прозрачный свет */
+        .brand-name:hover {
             text-shadow: 
-                0 0 20px rgba(255, 255, 255, 0.4), 
-                0 0 40px rgba(255, 255, 255, 0.2), 
-                0 0 80px rgba(255, 255, 255, 0.1);
+                0 0 12px rgba(255,255,255,0.7),
+                0 0 28px rgba(255,255,255,0.4),
+                0 0 45px rgba(255,255,255,0.2);
+            transition: text-shadow 0.4s ease;
         }
 
-        /* --- KEYFRAMES --- */
+        /* ПРЕМИАЛЬНАЯ КНОПКА — без карточек, только прозрачная обводка и элегантность */
+        .enter-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.4);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.3rem;
+            padding: 0.9rem 2.4rem;
+            color: white;
+            text-transform: uppercase;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeUpBtn 0.8s ease-out 1.2s forwards;
+            text-decoration: none;
+            display: inline-block;
+            width: auto;
+        }
+
+        .enter-btn:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.9);
+            letter-spacing: 0.45rem;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 28px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05);
+        }
+
+        /* АНИМАЦИИ */
         @keyframes cinematicReveal {
             0% {
                 opacity: 0;
-                transform: scale(0.9);
+                transform: scale(0.92);
                 filter: blur(12px);
             }
             100% {
@@ -122,137 +156,151 @@
             }
         }
 
+        @keyframes fadeUpBtn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Анимация медленного зума фоновой картинки */
         @keyframes slowZoom {
             0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
+            100% { transform: scale(1.08); }
         }
-        
-        /* Optional mock content below to show scrolling */
-        .content-placeholder {
-            height: 100vh;
-            background: #050505;
+
+        /* ДОПОЛНИТЕЛЬНЫЙ КОНТЕНТ ПОСЛЕ ХЕРО — чтобы была возможность скроллить дальше */
+        .main-content {
+            background: #070707;
+            color: #eaeaea;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .main-content h2 {
+            font-weight: 400;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+        }
+
+        .main-content p {
+            max-width: 600px;
+            margin: 1rem auto 0;
+            color: #aaa;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
-    <header class="hero-section">
-        <!-- 1. Integrated Watermark / Background File -->
+    <section class="hero">
+        <!-- фоновое изображение (замените на свой файл) -->
         <div class="hero-bg"></div>
-        
-        <!-- 2. Dark Transparent Overlay & Glass Blur -->
         <div class="hero-overlay"></div>
-        
-        <!-- 3. Cinematic Outward Rays Canvas -->
         <canvas id="luxury-rays"></canvas>
         
-        <!-- 4. Centered Brand Name -->
-        <h1 class="hero-title">SAYLAR</h1>
-    </header>
+        <div class="hero-content">
+            <div class="brand-name">SAYLAR</div>
+            <a href="#" class="enter-btn" id="btn-enter">Перейти</a>
+        </div>
+    </section>
 
-    <!-- Underlying page content begins here -->
-    <main class="content-placeholder"></main>
+    <!-- это пример блока, куда потом вставишь основной сайт (магазин товаров) -->
+    <main class="main-content" id="shop-placeholder">
+        <h2>ТВОЙ БУДУЩИЙ ПРЕМИУМ МАГАЗИН</h2>
+        <p>Здесь появится интерфейс с продуктами, звёздами, TON и аккаунтами Telegram. <br> Вся эстетика останется чёрно-белой и минималистичной.</p>
+    </main>
 
     <script>
-        /**
-         * Premium Light Rays Effect (Vanilla JS + HTML5 Canvas)
-         * Creates elegant, transparent grayscale lines that ripple outward from the center.
-         */
-        const canvas = document.getElementById('luxury-rays');
-        const ctx = canvas.getContext('2d');
-        
-        let width, height, cx, cy;
-        let rays = [];
-        const RAY_COUNT = 80; // Number of simultaneous rays
+        // ======== АНИМАЦИЯ ЛУЧЕЙ (из твоего исходного кода, полностью сохранена) ========
+        (function() {
+            const canvas = document.getElementById('luxury-rays');
+            const ctx = canvas.getContext('2d');
+            let width, height, cx, cy;
+            let rays = [];
+            const RAY_COUNT = 80;
 
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            cx = width / 2;
-            cy = height / 2;
-        }
-
-        window.addEventListener('resize', resize);
-        resize();
-
-        class Ray {
-            constructor() {
-                this.init();
-                // Randomize initial states so they don't all spawn at once
-                this.distance = Math.random() * (Math.max(width, height) / 2);
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                cx = width / 2;
+                cy = height / 2;
             }
 
-            init() {
-                this.angle = Math.random() * Math.PI * 2;
-                // Start slightly away from the exact center
-                this.distance = Math.random() * 50 + 20; 
-                this.length = Math.random() * 150 + 50;
-                this.speed = Math.random() * 1.5 + 0.3;
-                
-                this.alpha = 0;
-                // Subtle grayscale transparency max limit
-                this.maxAlpha = Math.random() * 0.15 + 0.02; 
-                this.fadeRate = Math.random() * 0.005 + 0.002;
-                
-                this.state = 'fadingIn'; // fadingIn, active, fadingOut
-            }
+            window.addEventListener('resize', resize);
+            resize();
 
-            update() {
-                // Move outward
-                this.distance += this.speed;
-
-                // Handle fade in / out
-                if (this.state === 'fadingIn') {
-                    this.alpha += this.fadeRate;
-                    if (this.alpha >= this.maxAlpha) {
-                        this.state = 'fadingOut';
+            class Ray {
+                constructor() {
+                    this.init();
+                    this.distance = Math.random() * (Math.max(width, height) / 2);
+                }
+                init() {
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.distance = Math.random() * 50 + 20;
+                    this.length = Math.random() * 150 + 50;
+                    this.speed = Math.random() * 1.5 + 0.3;
+                    this.alpha = 0;
+                    this.maxAlpha = Math.random() * 0.15 + 0.02;
+                    this.fadeRate = Math.random() * 0.005 + 0.002;
+                    this.state = 'fadingIn';
+                }
+                update() {
+                    this.distance += this.speed;
+                    if (this.state === 'fadingIn') {
+                        this.alpha += this.fadeRate;
+                        if (this.alpha >= this.maxAlpha) {
+                            this.state = 'fadingOut';
+                        }
+                    } else if (this.state === 'fadingOut') {
+                        this.alpha -= this.fadeRate;
+                        if (this.alpha <= 0) {
+                            this.init();
+                        }
                     }
-                } else if (this.state === 'fadingOut') {
-                    this.alpha -= this.fadeRate;
-                    if (this.alpha <= 0) {
-                        this.init(); // Reset and respawn at center once faded out
-                    }
+                }
+                draw() {
+                    const x1 = cx + Math.cos(this.angle) * this.distance;
+                    const y1 = cy + Math.sin(this.angle) * this.distance;
+                    const x2 = cx + Math.cos(this.angle) * (this.distance + this.length);
+                    const y2 = cy + Math.sin(this.angle) * (this.distance + this.length);
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, this.alpha)})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
                 }
             }
 
-            draw() {
-                // Calculate start and end points based on angle and distance
-                const x1 = cx + Math.cos(this.angle) * this.distance;
-                const y1 = cy + Math.sin(this.angle) * this.distance;
-                const x2 = cx + Math.cos(this.angle) * (this.distance + this.length);
-                const y2 = cy + Math.sin(this.angle) * (this.distance + this.length);
-
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                
-                // Pure grayscale stroke
-                ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, this.alpha)})`;
-                ctx.lineWidth = 1;
-                ctx.stroke();
+            for (let i = 0; i < RAY_COUNT; i++) {
+                rays.push(new Ray());
             }
-        }
 
-        // Initialize rays
-        for (let i = 0; i < RAY_COUNT; i++) {
-            rays.push(new Ray());
-        }
+            function animateRays() {
+                ctx.clearRect(0, 0, width, height);
+                rays.forEach(ray => {
+                    ray.update();
+                    ray.draw();
+                });
+                requestAnimationFrame(animateRays);
+            }
+            animateRays();
+        })();
 
-        // Animation loop
-        function animate() {
-            // Clear canvas completely each frame for sharp, clean rendering
-            ctx.clearRect(0, 0, width, height);
-            
-            rays.forEach(ray => {
-                ray.update();
-                ray.draw();
+        // ПРОСТАЯ НАВИГАЦИЯ: по клику на кнопку переходим к основному контенту
+        const btn = document.getElementById('btn-enter');
+        if (btn) {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.getElementById('shop-placeholder');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             });
-            
-            requestAnimationFrame(animate);
         }
-
-        // Start animation
-        animate();
     </script>
 </body>
 </html>
