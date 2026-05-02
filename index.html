@@ -13,13 +13,15 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             background: #080808;
             font-family: 'Inter', sans-serif;
-            color: #f0f0f0;
+            color: #f2f2f2;
             overflow-x: hidden;
         }
-        /* Фоновое изображение (водяной знак) */
+
+        /* Фоновое изображение (watermark) */
         .bg-watermark {
             position: fixed;
             top: 0;
@@ -34,14 +36,16 @@
             z-index: -2;
             pointer-events: none;
         }
+
         .bg-overlay {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.85) 100%);
+            background: radial-gradient(circle at center, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.85) 100%);
             z-index: -1;
             pointer-events: none;
         }
-        /* Частицы/лучи */
+
+        /* Частицы (лучи) */
         #premium-particles {
             position: fixed;
             top: 0;
@@ -51,6 +55,7 @@
             pointer-events: none;
             z-index: 1;
         }
+
         .container {
             max-width: 1280px;
             margin: 0 auto;
@@ -58,6 +63,7 @@
             position: relative;
             z-index: 2;
         }
+
         /* HERO */
         .hero {
             min-height: 100vh;
@@ -66,10 +72,12 @@
             justify-content: center;
             text-align: center;
         }
+
         .hero-content {
             max-width: 800px;
             padding: 2rem;
         }
+
         .hero-title {
             font-family: 'Cinzel', serif;
             font-size: clamp(3rem, 12vw, 6rem);
@@ -83,10 +91,20 @@
             transform: scale(0.92);
             filter: blur(10px);
         }
+
         @keyframes titleReveal {
-            0% { opacity: 0; transform: scale(0.92); filter: blur(10px); }
-            100% { opacity: 1; transform: scale(1); filter: blur(0); }
+            0% {
+                opacity: 0;
+                transform: scale(0.92);
+                filter: blur(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
         }
+
         .btn-hero {
             display: inline-block;
             background: transparent;
@@ -103,20 +121,30 @@
             opacity: 0;
             animation: fadeUp 1s ease 0.6s forwards;
         }
+
         .btn-hero:hover {
             background: rgba(255,255,255,0.1);
             border-color: #fff;
             letter-spacing: 0.3em;
         }
+
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        /* Отзывы */
+
+        /* Блок отзывов */
         .reviews-block {
             text-align: center;
             margin: 20px 0 40px;
         }
+
         .reviews-link {
             font-family: 'Inter', monospace;
             font-size: 0.85rem;
@@ -126,14 +154,17 @@
             border-bottom: 1px solid rgba(255,255,255,0.25);
             transition: color 0.2s, border-color 0.2s;
         }
+
         .reviews-link:hover {
             color: white;
             border-bottom-color: white;
         }
+
         /* Каталог и вкладки */
         .catalog-section {
             padding: 40px 0 80px;
         }
+
         .section-title {
             font-family: 'Cinzel', serif;
             font-size: 2rem;
@@ -142,6 +173,7 @@
             text-align: center;
             margin-bottom: 2rem;
         }
+
         .section-title::after {
             content: '';
             display: block;
@@ -150,6 +182,7 @@
             background: rgba(255,255,255,0.25);
             margin: 0.8rem auto 0;
         }
+
         .tabs {
             display: flex;
             justify-content: center;
@@ -157,6 +190,7 @@
             flex-wrap: wrap;
             margin-bottom: 32px;
         }
+
         .tab-btn {
             background: rgba(20,20,30,0.5);
             backdrop-filter: blur(8px);
@@ -171,23 +205,34 @@
             transition: all 0.25s;
             border-radius: 40px;
         }
+
         .tab-btn.active {
             background: rgba(255,255,255,0.12);
             border-color: rgba(255,255,255,0.6);
             color: white;
         }
+
         .tab-content {
             display: none;
             animation: fadeTab 0.3s ease;
         }
+
         .tab-content.active {
             display: block;
         }
+
         @keyframes fadeTab {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        /* Стеклянная карточка (общий фон) */
+
+        /* Стеклянная карточка (общий контейнер) */
         .glass-card {
             background: rgba(18, 18, 22, 0.45);
             backdrop-filter: blur(14px);
@@ -196,9 +241,11 @@
             padding: 28px 26px;
             transition: transform 0.25s ease, border-color 0.2s;
         }
+
         .input-group {
             margin-bottom: 20px;
         }
+
         label {
             font-size: 0.7rem;
             letter-spacing: 1.8px;
@@ -207,6 +254,7 @@
             display: block;
             margin-bottom: 8px;
         }
+
         input {
             width: 100%;
             background: rgba(0,0,0,0.55);
@@ -219,15 +267,18 @@
             outline: none;
             transition: border 0.2s;
         }
+
         input:focus {
             border-color: rgba(255,255,255,0.5);
         }
+
         .error-msg {
             font-size: 0.7rem;
             color: #ff8a8a;
             margin-top: 6px;
             display: none;
         }
+
         .price-row {
             display: flex;
             justify-content: space-between;
@@ -236,16 +287,19 @@
             padding-top: 12px;
             border-top: 1px solid rgba(255,255,255,0.1);
         }
+
         .price-label {
             font-size: 0.75rem;
             letter-spacing: 1px;
             color: #bbb;
         }
+
         .price-value {
             font-size: 1.8rem;
             font-weight: 700;
             color: white;
         }
+
         .btn-pay {
             width: 100%;
             background: transparent;
@@ -260,16 +314,20 @@
             transition: 0.2s;
             border-radius: 40px;
         }
+
         .btn-pay:disabled {
             opacity: 0.35;
             cursor: not-allowed;
             border-color: rgba(255,255,255,0.2);
         }
+
         .btn-pay:not(:disabled):hover {
             background: rgba(255,255,255,0.08);
             border-color: rgba(255,255,255,0.9);
             letter-spacing: 0.25em;
         }
+
+        /* Premium карточки */
         .premium-grid {
             display: flex;
             flex-wrap: wrap;
@@ -277,6 +335,7 @@
             gap: 24px;
             margin: 28px 0 20px;
         }
+
         .premium-card {
             flex: 1;
             min-width: 200px;
@@ -287,31 +346,32 @@
             border: 1px solid rgba(255,255,255,0.1);
             transition: transform 0.2s;
         }
+
         .premium-card:hover {
             transform: translateY(-3px);
             border-color: rgba(255,255,255,0.25);
         }
+
         .premium-title {
             font-size: 1.4rem;
             font-weight: 600;
             letter-spacing: -0.3px;
             white-space: nowrap;
         }
+
         .premium-price {
             font-size: 1.8rem;
             font-weight: 800;
             margin: 12px 0 20px;
             color: #ffffff;
         }
+
         .premium-card .btn-pay {
             width: 100%;
             margin-top: 8px;
         }
-        .two-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
+
+        /* Аккаунты */
         .account-row {
             display: flex;
             justify-content: space-between;
@@ -321,35 +381,42 @@
             padding: 16px 20px;
             margin-bottom: 16px;
         }
+
         .account-info {
             display: flex;
             gap: 12px;
             align-items: baseline;
             flex-wrap: wrap;
         }
+
         .account-country {
             font-weight: 600;
             font-size: 1.1rem;
         }
+
         .account-price {
             font-weight: 700;
             color: #ddd;
         }
+
         .small-pay {
             width: auto;
             padding: 8px 20px;
             font-size: 0.75rem;
         }
+
         /* Анимация при скролле */
         .fade-up {
             opacity: 0;
             transform: translateY(35px);
-            transition: opacity 0.7s cubic-bezier(0.2,0.9,0.4,1.1), transform 0.7s ease;
+            transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.7s ease;
         }
+
         .fade-up.visible {
             opacity: 1;
             transform: translateY(0);
         }
+
         /* Модальное окно */
         .modal-overlay {
             position: fixed;
@@ -364,10 +431,12 @@
             opacity: 0;
             transition: 0.2s;
         }
+
         .modal-overlay.active {
             visibility: visible;
             opacity: 1;
         }
+
         .modal-card {
             background: rgba(10,10,12,0.95);
             backdrop-filter: blur(20px);
@@ -378,6 +447,7 @@
             padding: 28px 24px;
             position: relative;
         }
+
         .modal-close {
             position: absolute;
             top: 18px;
@@ -385,8 +455,13 @@
             font-size: 28px;
             cursor: pointer;
             color: #aaa;
+            transition: color 0.2s;
         }
-        .modal-close:hover { color: white; }
+
+        .modal-close:hover {
+            color: white;
+        }
+
         .bank-header {
             font-size: 1.55rem;
             font-weight: 700;
@@ -396,6 +471,7 @@
             border-radius: 50px;
             margin-bottom: 24px;
         }
+
         .bank-detail {
             background: rgba(0,0,0,0.45);
             border-radius: 24px;
@@ -406,6 +482,7 @@
             align-items: center;
             flex-wrap: wrap;
         }
+
         .copy-btn {
             background: none;
             border: none;
@@ -415,7 +492,20 @@
             border-radius: 40px;
             transition: 0.2s;
         }
-        .copy-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .modal-message {
+            margin: 12px 0 0;
+            font-size: 0.8rem;
+            text-align: center;
+            color: #bbffbb;
+            display: none;
+        }
+
         .toast-msg {
             position: fixed;
             bottom: 30px;
@@ -434,6 +524,7 @@
             pointer-events: none;
             white-space: nowrap;
         }
+
         footer {
             text-align: center;
             padding: 40px 20px 30px;
@@ -442,15 +533,39 @@
             font-size: 0.7rem;
             color: #777;
         }
+
         @media (max-width: 760px) {
-            .container { padding: 0 20px; }
-            .glass-card { padding: 22px 18px; }
-            .premium-grid { flex-direction: column; align-items: stretch; }
-            .premium-card { min-width: auto; }
-            .premium-title { white-space: normal; font-size: 1.2rem; }
-            .two-col { grid-template-columns: 1fr; gap: 12px; }
-            .account-row { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .small-pay { width: 100%; }
+            .container {
+                padding: 0 20px;
+            }
+
+            .glass-card {
+                padding: 22px 18px;
+            }
+
+            .premium-grid {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .premium-card {
+                min-width: auto;
+            }
+
+            .premium-title {
+                white-space: normal;
+                font-size: 1.2rem;
+            }
+
+            .account-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .small-pay {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -480,33 +595,31 @@
             <button class="tab-btn" data-tab="accounts">📱 Аккаунты</button>
         </div>
 
-        <!-- Звёзды -->
+        <!-- Таб Звёзды -->
         <div id="tab-stars" class="tab-content active">
             <div class="glass-card">
                 <div class="input-group">
                     <label>USERNAME (обязательно @)</label>
                     <input type="text" id="stars-username" placeholder="@username">
-                    <div class="error-msg" id="stars-error">Некорректный username (только @, латиница, цифры, _)</div>
+                    <div class="error-msg" id="stars-error">Некорректный username (разрешены @, латиница, цифры, _)</div>
                 </div>
-                <div class="two-col">
-                    <div class="input-group">
-                        <label>Кол-во звёзд (≥50)</label>
-                        <input type="number" id="stars-qty" value="50" min="50" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label>Сумма (₽)</label>
-                        <input type="number" id="stars-rub" value="70" step="1">
-                    </div>
+                <div class="input-group">
+                    <label>Кол-во звёзд (≥50)</label>
+                    <input type="number" id="stars-qty" value="50" min="50" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Сумма (₽)</label>
+                    <input type="number" id="stars-rub" value="70" step="1">
                 </div>
                 <div class="price-row">
                     <span class="price-label">ИТОГО К ОПЛАТЕ</span>
                     <span class="price-value" id="stars-total">70 ₽</span>
                 </div>
-                <button class="btn-pay" id="stars-pay" disabled>Оплатить</button>
+                <button class="btn-pay" id="stars-pay">Оплатить</button>
             </div>
         </div>
 
-        <!-- Premium -->
+        <!-- Таб Premium -->
         <div id="tab-premium" class="tab-content">
             <div class="glass-card">
                 <div class="input-group">
@@ -534,7 +647,7 @@
             </div>
         </div>
 
-        <!-- TON -->
+        <!-- Таб TON -->
         <div id="tab-ton" class="tab-content">
             <div class="glass-card">
                 <div class="input-group">
@@ -550,11 +663,11 @@
                     <span class="price-label">1 TON = 110 ₽</span>
                     <span class="price-value" id="ton-total">110 ₽</span>
                 </div>
-                <button class="btn-pay" id="ton-pay" disabled>Оплатить</button>
+                <button class="btn-pay" id="ton-pay">Оплатить</button>
             </div>
         </div>
 
-        <!-- Аккаунты -->
+        <!-- Таб Аккаунты -->
         <div id="tab-accounts" class="tab-content">
             <div class="glass-card">
                 <div class="input-group">
@@ -582,7 +695,7 @@
     <footer>© SAYLAR — премиум уровень</footer>
 </div>
 
-<!-- Модальное окно -->
+<!-- Модальное окно (единое) -->
 <div id="paymentModal" class="modal-overlay">
     <div class="modal-card">
         <div class="modal-close" id="modalCloseBtn">&times;</div>
@@ -590,13 +703,14 @@
         <div class="bank-detail"><span>💳 Номер карты</span><span><strong>2200 7019 4219 4652</strong> <button class="copy-btn" data-copy="2200701942194652">📋</button></span></div>
         <div class="bank-detail"><span>📞 Телефон</span><span><strong>+7 966 349 22 74</strong> <button class="copy-btn" data-copy="+79663492274">📋</button></span></div>
         <div class="bank-detail"><span>👤 Получатель</span><span>Дамир О.</span></div>
-        <button class="btn-pay" id="confirmPaymentBtn" style="margin-top: 20px;">Я оплатил</button>
+        <button class="btn-pay" id="confirmPaymentBtn">Я оплатил</button>
+        <div id="modalFeedback" class="modal-message"></div>
     </div>
 </div>
 <div id="toastMessage" class="toast-msg"></div>
 
 <script>
-    // ---------- Утилиты ----------
+    // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
     function showToast(text, duration = 2800) {
         const toast = document.getElementById('toastMessage');
         toast.innerText = text;
@@ -605,13 +719,12 @@
         toast._t = setTimeout(() => toast.style.opacity = '0', duration);
     }
 
-    // Валидация username (по новым правилам: @ + латиница/цифры/_, запрещены русские и др. символы, ошибка только при нарушении после @)
+    // Валидация username (правильное поведение: ошибка только если после @ запрещённый символ или поле пустое/только @)
     function validateUsername(raw) {
         if (!raw || raw.length === 0) return false;
         if (!raw.startsWith('@')) return false;
         const after = raw.slice(1);
-        if (after.length === 0) return false; // только @ – невалидно
-        // Разрешены: a-z A-Z 0-9 _
+        if (after.length === 0) return false;
         const allowed = /^[a-zA-Z0-9_]+$/;
         return allowed.test(after);
     }
@@ -637,12 +750,13 @@
         return check;
     }
 
-    // ----- ЗВЁЗДЫ -----
+    // ---------- ЗВЁЗДЫ (автопересчёт, кнопка открывает модалку) ----------
     const starsUsername = document.getElementById('stars-username');
     const starsQty = document.getElementById('stars-qty');
     const starsRub = document.getElementById('stars-rub');
     const starsTotalSpan = document.getElementById('stars-total');
     const starsPayBtn = document.getElementById('stars-pay');
+
     function recalcStars() {
         let stars = parseInt(starsQty.value);
         let rub = parseFloat(starsRub.value);
@@ -664,9 +778,8 @@
         if (finalRub < 70 || starsQty.value < 50) finalRub = 0;
         starsTotalSpan.innerText = finalRub ? finalRub + ' ₽' : '0 ₽';
         const valid = validateUsername(starsUsername.value);
-        const enough = finalRub >= 70;
-        starsPayBtn.disabled = !(valid && enough);
-        return { amount: finalRub, stars: starsQty.value };
+        starsPayBtn.disabled = !(valid && finalRub >= 70);
+        return { amount: finalRub, stars: starsQty.value, rub: finalRub };
     }
     starsQty.addEventListener('input', recalcStars);
     starsRub.addEventListener('input', recalcStars);
@@ -676,7 +789,7 @@
     });
     recalcStars();
 
-    // ----- PREMIUM -----
+    // ----- PREMIUM (общий username, кнопки привязаны к карточкам) -----
     const premiumUsername = document.getElementById('premium-username');
     const premiumError = document.getElementById('premium-error');
     function checkPremUsername() {
@@ -688,22 +801,6 @@
         return valid;
     }
     premiumUsername.addEventListener('input', checkPremUsername);
-    // кнопки премиум: собираем данные при клике
-    document.querySelectorAll('.prem-pay').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const valid = validateUsername(premiumUsername.value);
-            if (!valid) return;
-            const card = btn.closest('.premium-card');
-            const months = card.getAttribute('data-prem');
-            const price = parseInt(card.getAttribute('data-price'));
-            let product = '';
-            if (months === '3') product = 'Telegram Premium 3 мес.';
-            else if (months === '6') product = 'Telegram Premium 6 мес.';
-            else product = 'Telegram Premium 12 мес.';
-            openModal({ username: premiumUsername.value, product, amount: price });
-        });
-    });
-
     // ----- TON -----
     const tonUsername = document.getElementById('ton-username');
     const tonQty = document.getElementById('ton-qty');
@@ -726,13 +823,6 @@
         return !isNaN(qty) && qty >= 1;
     });
     updateTon();
-    tonPayBtn.addEventListener('click', () => {
-        const valid = validateUsername(tonUsername.value);
-        if (!valid) return;
-        const { amount, qty } = updateTon();
-        if (amount <= 0) return;
-        openModal({ username: tonUsername.value, product: `${qty} TON (криптовалюта)`, amount });
-    });
 
     // ----- АККАУНТЫ -----
     const accUsername = document.getElementById('acc-username');
@@ -746,29 +836,27 @@
         return valid;
     }
     accUsername.addEventListener('input', checkAccButtons);
-    document.querySelectorAll('#tab-accounts .small-pay').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (!validateUsername(accUsername.value)) return;
-            const price = parseInt(btn.getAttribute('data-price'));
-            const country = btn.getAttribute('data-account') === 'usa' ? 'США' : 'Великобритания';
-            openModal({ username: accUsername.value, product: `Telegram аккаунт (${country})`, amount: price });
-        });
-    });
 
-    // ----- МОДАЛКА И ОТПРАВКА В TELEGRAM -----
+    // ---------- ЕДИНАЯ МОДАЛКА И ОТПРАВКА В TELEGRAM ----------
     const modal = document.getElementById('paymentModal');
     const modalClose = document.getElementById('modalCloseBtn');
-    const confirmPayBtn = document.getElementById('confirmPaymentBtn');
+    const confirmPayment = document.getElementById('confirmPaymentBtn');
+    const modalFeedback = document.getElementById('modalFeedback');
     let currentOrder = null;
 
     function openModal(order) {
         currentOrder = order;
+        modalFeedback.style.display = 'none';
+        modalFeedback.innerText = '';
         modal.classList.add('active');
     }
+
     function closeModal() {
         modal.classList.remove('active');
+        modalFeedback.style.display = 'none';
         currentOrder = null;
     }
+
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
@@ -780,51 +868,80 @@
         try {
             const resp = await fetch(url);
             if (!resp.ok) throw new Error();
-            showToast('Заказ отправлен, ожидайте выдачи');
-            setTimeout(() => closeModal(), 3000);
-            // очистка username в активной вкладке (приятный UX)
-            const activeTab = document.querySelector('.tab-content.active').id;
-            if (activeTab === 'tab-stars') starsUsername.value = '';
-            else if (activeTab === 'tab-premium') premiumUsername.value = '';
-            else if (activeTab === 'tab-ton') tonUsername.value = '';
-            else if (activeTab === 'tab-accounts') accUsername.value = '';
-            recalcStars(); updateTon(); checkPremUsername(); checkAccButtons();
+            modalFeedback.style.display = 'block';
+            modalFeedback.innerText = '✓ Ваш заказ отправлен, скоро будет выдан';
+            setTimeout(() => {
+                closeModal();
+                // Очистка username в активном табе
+                const activeTab = document.querySelector('.tab-content.active').id;
+                if (activeTab === 'tab-stars') starsUsername.value = '';
+                else if (activeTab === 'tab-premium') premiumUsername.value = '';
+                else if (activeTab === 'tab-ton') tonUsername.value = '';
+                else if (activeTab === 'tab-accounts') accUsername.value = '';
+                recalcStars(); updateTon(); checkPremUsername(); checkAccButtons();
+            }, 3000);
         } catch (err) {
-            showToast('Ошибка соединения, попробуйте позже');
+            modalFeedback.style.display = 'block';
+            modalFeedback.style.color = '#ffaaaa';
+            modalFeedback.innerText = '❌ Ошибка отправки, попробуйте снова';
             console.error(err);
         }
     }
 
-    confirmPayBtn.addEventListener('click', () => {
+    confirmPayment.addEventListener('click', () => {
         if (currentOrder) {
             sendOrderToBot(currentOrder.username, currentOrder.product, currentOrder.amount);
         }
     });
 
-    // ----- Скролл к каталогу -----
-    document.getElementById('scrollToCatalog').addEventListener('click', () => {
-        document.getElementById('catalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // ----- ОБРАБОТЧИКИ КНОПОК «ОПЛАТИТЬ» (ВСЕ РАЗДЕЛЫ) -----
+    // 1. Звёзды
+    starsPayBtn.addEventListener('click', () => {
+        const username = starsUsername.value;
+        if (!validateUsername(username)) return;
+        const { amount, stars } = recalcStars();
+        if (amount < 70) return;
+        openModal({
+            username: username,
+            product: `Telegram Stars: ${stars} шт.`,
+            amount: amount
+        });
     });
-
-    // ----- Переключение вкладок -----
-    const tabs = document.querySelectorAll('.tab-btn');
-    const contents = document.querySelectorAll('.tab-content');
-    tabs.forEach(btn => {
+    // 2. Premium
+    document.querySelectorAll('.prem-pay').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const username = premiumUsername.value;
+            if (!validateUsername(username)) return;
+            const card = btn.closest('.premium-card');
+            const months = card.getAttribute('data-prem');
+            const price = parseInt(card.getAttribute('data-price'));
+            let product = '';
+            if (months === '3') product = 'Telegram Premium 3 мес.';
+            else if (months === '6') product = 'Telegram Premium 6 мес.';
+            else product = 'Telegram Premium 12 мес.';
+            openModal({ username, product, amount: price });
+        });
+    });
+    // 3. TON
+    tonPayBtn.addEventListener('click', () => {
+        const username = tonUsername.value;
+        if (!validateUsername(username)) return;
+        const { amount, qty } = updateTon();
+        if (amount <= 0) return;
+        openModal({ username, product: `${qty} TON (криптовалюта)`, amount });
+    });
+    // 4. Аккаунты
+    document.querySelectorAll('#tab-accounts .small-pay').forEach(btn => {
         btn.addEventListener('click', () => {
-            const tabId = btn.getAttribute('data-tab');
-            tabs.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            contents.forEach(c => c.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            // пересчёт состояний для активного таба
-            if (tabId === 'stars') recalcStars();
-            if (tabId === 'ton') updateTon();
-            if (tabId === 'premium') checkPremUsername();
-            if (tabId === 'accounts') checkAccButtons();
+            const username = accUsername.value;
+            if (!validateUsername(username)) return;
+            const price = parseInt(btn.getAttribute('data-price'));
+            const country = btn.getAttribute('data-account') === 'usa' ? 'США' : 'Великобритания';
+            openModal({ username, product: `Telegram аккаунт (${country})`, amount: price });
         });
     });
 
-    // ---------- ЧАСТИЦЫ (лучи) ----------
+    // ---------- АНИМАЦИЯ ЛУЧЕЙ (ЧАСТИЦЫ) ----------
     (function drawParticles() {
         const canvas = document.getElementById('premium-particles');
         if (!canvas) return;
@@ -835,7 +952,8 @@
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
-            cx = width / 2; cy = height / 2;
+            cx = width / 2;
+            cy = height / 2;
         }
         window.addEventListener('resize', resize);
         resize();
@@ -870,7 +988,8 @@
                 const x2 = cx + Math.cos(this.angle) * (this.distance + this.length);
                 const y2 = cy + Math.sin(this.angle) * (this.distance + this.length);
                 ctx.beginPath();
-                ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
                 ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, this.alpha) * 0.6})`;
                 ctx.lineWidth = 1;
                 ctx.stroke();
@@ -885,19 +1004,44 @@
         animate();
     })();
 
-    // анимация при скролле
+    // Скролл к каталогу
+    document.getElementById('scrollToCatalog').addEventListener('click', () => {
+        document.getElementById('catalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Анимация появления при скролле
     const fadeElements = document.querySelectorAll('.fade-up');
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
     }, { threshold: 0.15 });
     fadeElements.forEach(el => observer.observe(el));
 
-    // копирование в модалке
+    // Копирование в модалке
     document.querySelectorAll('.copy-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const text = btn.getAttribute('data-copy');
             if (text) navigator.clipboard.writeText(text);
             showToast('Скопировано');
+        });
+    });
+
+    // Переключение вкладок
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            contents.forEach(c => c.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            // Пересчёт состояний для активного таба
+            if (tabId === 'stars') recalcStars();
+            if (tabId === 'ton') updateTon();
+            if (tabId === 'premium') checkPremUsername();
+            if (tabId === 'accounts') checkAccButtons();
         });
     });
 </script>
