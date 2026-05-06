@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -805,7 +804,7 @@ function openModal(type, arg2, arg3){
     userFieldId='ton-user'; errFieldId='ton-user-err';
     const t=parseInt(tonQtyEl.value)||0;
     if(t<1){showToast('Введите количество TON');return;}
-    orderInfo={tab:'TON',desc:`${t} TON`,amount:t*110};
+    orderInfo={tab:'TON',desc:`${t} TON`,amount:t*200};
   } else if(type==='account'){
     userFieldId='acc-user'; errFieldId='acc-user-err';
     const country=arg2, price=arg3;
