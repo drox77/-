@@ -596,7 +596,7 @@ body{
     <!-- ──────── TAB: TON ──────── -->
     <div class="tab-panel" id="tab-ton">
       <div class="glass-card reveal">
-        <div class="ton-rate">💎 &nbsp;1 TON = 110 ₽</div>
+        <div class="ton-rate">💎 &nbsp;1 TON = 200 ₽</div>
         <div class="field">
           <label class="field-label" for="ton-qty">Количество TON</label>
           <input class="field-input" type="number" id="ton-qty" placeholder="1" min="1" step="1">
@@ -804,7 +804,7 @@ function openModal(type, arg2, arg3){
     userFieldId='ton-user'; errFieldId='ton-user-err';
     const t=parseInt(tonQtyEl.value)||0;
     if(t<1){showToast('Введите количество TON');return;}
-    orderInfo={tab:'TON',desc:`${t} TON`,amount:t*200};
+    orderInfo={tab:'TON',desc:`${t} TON`,amount:t*110};
   } else if(type==='account'){
     userFieldId='acc-user'; errFieldId='acc-user-err';
     const country=arg2, price=arg3;
