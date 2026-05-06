@@ -751,7 +751,7 @@ const tonQtyEl=document.getElementById('ton-qty');
 const tonTotalEl=document.getElementById('ton-total');
 tonQtyEl.addEventListener('input',function(){
   const t=parseInt(this.value)||0;
-  tonTotalEl.textContent=t>0?(t*110).toLocaleString('ru')+' ₽':'0 ₽';
+  tonTotalEl.textContent=t>0?(t*200).toLocaleString('ru')+' ₽':'0 ₽';
 });
 
 /* ═══════════════════════════════════════════ USERNAME VALIDATION */
