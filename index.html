@@ -1,223 +1,1820 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SAYLAR — Premium Portal</title>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <style>
-    :root{
-      --bg:#050506;
-      --panel:rgba(255,255,255,0.07);
-      --panel-strong:rgba(255,255,255,0.12);
-      --text:#f4f5f7;
-      --muted:rgba(235,237,242,0.72);
-      --border:rgba(255,255,255,0.34);
-      --silver:linear-gradient(120deg, rgba(255,255,255,.82), rgba(220,226,240,.45), rgba(255,255,255,.76));
-      --ease:cubic-bezier(0.23,1,0.32,1);
-      --yellow:#ffd400;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color:var(--text);
-      background:#000;
-      overflow-x:hidden;
-      min-height:100vh;
-      cursor:auto;
-    }
-    #cosmos{position:fixed;inset:0;z-index:-5;background:radial-gradient(ellipse at 50% 20%, #0f1424 0%, #060709 45%, #000 100%)}
-    #starCanvas,#earthCanvas{position:absolute;inset:0;width:100%;height:100%}
-    #atmo{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,6,0) 0%,rgba(5,5,6,.55) 50%,rgba(5,5,6,.94) 100%), radial-gradient(circle at 65% 35%, rgba(61,71,93,.2), transparent 45%);mix-blend-mode:screen;animation:drift 20s ease-in-out infinite alternate}
-    @keyframes drift{to{transform:translate3d(-2%,2%,0) scale(1.04)}}
-    #mouseGlow{position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(260px circle at 50% 50%, rgba(255,255,255,.16), rgba(170,180,210,.06) 36%, transparent 70%)}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAYLAR — Premium Dimension</title>
+    <style>
+        :root {
+            --bg-deep: #020510;
+            --bg-void: #060a18;
+            --glass-bg: rgba(255, 255, 255, 0.025);
+            --glass-border: rgba(255, 255, 255, 0.09);
+            --glass-border-hover: rgba(255, 255, 255, 0.20);
+            --glass-shine: rgba(255, 255, 255, 0.05);
+            --text-primary: #e8e5f2;
+            --text-secondary: #b5b0cc;
+            --text-muted: #7d7898;
+            --accent-silver: #c5bfdd;
+            --accent-pearl: #f2edfc;
+            --card-radius: 30px;
+            --transition-premium: 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+            --transition-fast: 0.28s cubic-bezier(0.23, 1, 0.32, 1);
+            --font-heading: 'Georgia', 'Times New Roman', 'Cormorant Garamond', serif;
+            --font-body: 'SF Pro Display', 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
+            --tbank-yellow: #e8c547;
+            --tbank-yellow-glow: rgba(232, 197, 71, 0.5);
+        }
 
-    .loader{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%, #111522, #030304 70%);z-index:50;transition:opacity .7s var(--ease), visibility .7s var(--ease)}
-    .loader.hidden{opacity:0;visibility:hidden}
-    .loader h1{font-size:clamp(2.3rem,8vw,6rem);letter-spacing:.45em;margin:0;text-indent:.45em;filter:blur(6px);opacity:0;transform:scale(.83)}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            cursor: default;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
 
-    .shell{max-width:1200px;margin:0 auto;padding:32px 18px 90px;position:relative}
-    .hero{padding:20px 10px 10px;text-align:center}
-    .hero h2{font-size:clamp(1.2rem,2.2vw,2rem);font-weight:500;color:var(--muted);margin:6px 0 0;letter-spacing:.06em}
-    .title{font-size:clamp(2.2rem,6vw,4.3rem);margin:0;letter-spacing:.18em;text-indent:.18em;background:linear-gradient(120deg,#fff,#bdc5d8,#fff);-webkit-background-clip:text;color:transparent;text-shadow:0 0 26px rgba(255,255,255,.18)}
+        /* ── Фоновые слои ─────────────────────────── */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .mouse-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            background: radial-gradient(circle 520px at var(--mx, 50%) var(--my, 50%),
+                    rgba(210, 200, 230, 0.04) 0%,
+                    rgba(170, 160, 200, 0.015) 40%,
+                    transparent 70%);
+            transition: background 0.18s ease-out;
+        }
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 200px 200px;
+        }
 
-    .tabs{display:flex;gap:10px;overflow:auto;padding:18px 5px 2px;scrollbar-width:none}
-    .tabs::-webkit-scrollbar{display:none}
-    .tab{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:#eceef5;padding:12px 16px;border-radius:999px;white-space:nowrap;transition:all .45s var(--ease);backdrop-filter:blur(10px)}
-    .tab.active{transform:scale(1.05);box-shadow:0 0 0 1px rgba(255,255,255,.35), 0 8px 28px rgba(151,163,194,.25);background:rgba(255,255,255,.1)}
+        /* ── Прелоадер ────────────────────────────── */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #03060e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+                visibility 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            pointer-events: all;
+        }
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .preloader-logo {
+            font-family: var(--font-heading);
+            font-size: clamp(2.6rem, 6.5vw, 4.8rem);
+            letter-spacing: 0.24em;
+            color: var(--accent-pearl);
+            text-shadow: 0 0 70px rgba(210, 195, 240, 0.55),
+                0 0 150px rgba(180, 160, 220, 0.3),
+                0 3px 18px rgba(0, 0, 0, 0.6);
+            animation: logoReveal 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            transform-origin: center;
+            filter: blur(5px);
+            opacity: 0;
+        }
+        @keyframes logoReveal {
+            0% {
+                filter: blur(14px);
+                opacity: 0;
+                transform: scale(0.45);
+                letter-spacing: 0.55em;
+            }
+            55% {
+                filter: blur(2px);
+                opacity: 1;
+                transform: scale(1.03);
+                letter-spacing: 0.24em;
+            }
+            100% {
+                filter: blur(0px);
+                opacity: 1;
+                transform: scale(1);
+                letter-spacing: 0.24em;
+            }
+        }
+        .preloader-ring {
+            width: 48px;
+            height: 48px;
+            margin-top: 26px;
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-top-color: rgba(210, 195, 235, 0.7);
+            border-radius: 50%;
+            animation: ringSpin 0.85s linear infinite;
+            opacity: 0;
+            animation-delay: 0.5s;
+            animation-fill-mode: forwards;
+        }
+        @keyframes ringSpin {
+            to {
+                transform: rotate(360deg);
+            }
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
 
-    .panel{margin-top:20px;display:grid;gap:20px}
-    .content{display:none;opacity:0;transform:translateX(16px);filter:blur(10px)}
-    .content.active{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+        /* ── Основной контент ────────────────────── */
+        .main-content {
+            position: relative;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+            padding: 20px 18px 36px;
+            max-width: 1120px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .main-content.visible {
+            opacity: 1;
+        }
 
-    .card{position:relative;border-radius:32px;padding:22px;background:linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);box-shadow:0 18px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.3), inset 0 -1px 0 rgba(255,255,255,.05);overflow:hidden;transition:transform .5s var(--ease), box-shadow .5s var(--ease), background .5s var(--ease)}
-    .card::before{content:"";position:absolute;inset:0;padding:1px;border-radius:inherit;background:var(--silver);-webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.68;animation:borderFlow 6s linear infinite}
-    .card::after{content:"";position:absolute;inset:-30%;background:radial-gradient(circle, rgba(255,255,255,.22), transparent 60%);opacity:0;transform:translateX(-35%);transition:.6s var(--ease)}
-    .card:hover{transform:translateY(-12px) scale(1.04);background:linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.06));box-shadow:0 32px 70px rgba(0,0,0,.58),0 0 50px rgba(221,229,255,.17)}
-    .card:hover::after{opacity:.36;transform:translateX(25%)}
-    @keyframes borderFlow{to{filter:hue-rotate(30deg)}}
+        /* ── Заголовок ────────────────────────────── */
+        .header {
+            text-align: center;
+            padding: 14px 0 4px;
+            width: 100%;
+        }
+        .header-logo {
+            font-family: var(--font-heading);
+            font-size: 2.1rem;
+            letter-spacing: 0.2em;
+            background: linear-gradient(180deg, #f7f4ff 0%, #c9c1e4 35%, #9b92bc 70%, #6b638c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 16px rgba(190, 175, 220, 0.45));
+            animation: headerGlow 5s ease-in-out infinite;
+        }
+        @keyframes headerGlow {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 16px rgba(190, 175, 220, 0.45));
+            }
+            50% {
+                filter: drop-shadow(0 0 30px rgba(210, 195, 240, 0.7));
+            }
+        }
+        .header-subtitle {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            color: var(--text-muted);
+            margin-top: 0px;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
 
-    h3{margin:0 0 14px;font-size:1.35rem}
-    .muted{color:var(--muted);font-size:.95rem}
-    .price{font-size:2rem;font-weight:700;margin:10px 0;text-shadow:0 0 12px rgba(255,255,255,.24);transition:transform .25s}
-    .field{display:grid;gap:8px;margin-top:12px}
-    input{width:100%;border:1px solid rgba(255,255,255,.24);background:rgba(10,10,11,.33);color:var(--text);padding:12px 13px;border-radius:14px;outline:none}
-    .warn{color:#ffd3d3;font-size:.9rem;min-height:20px}
+        /* ── Табы ─────────────────────────────────── */
+        .tabs-nav {
+            display: flex;
+            gap: 7px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 6px 2px 14px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            justify-content: center;
+            width: 100%;
+            max-width: 680px;
+            position: relative;
+            z-index: 4;
+        }
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-btn {
+            position: relative;
+            padding: 11px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-secondary);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition-fast);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            outline: none;
+            font-weight: 400;
+            flex-shrink: 0;
+        }
+        .tab-btn:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.05);
+            color: #d3cee4;
+            box-shadow: 0 0 22px rgba(160, 145, 200, 0.14);
+        }
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #f5f2ff;
+            font-weight: 500;
+            box-shadow: 0 0 28px rgba(180, 160, 220, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.07);
+            transform: scale(1.05);
+            letter-spacing: 0.08em;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 52px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.14) 50%, rgba(255,
+                        255, 255, 0) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .tab-btn.active::after {
+            opacity: 1;
+        }
 
-    .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
-    .option{padding:16px;border-radius:24px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);cursor:pointer;transition:all .35s var(--ease)}
-    .option:hover{transform:scale(1.03);box-shadow:0 12px 28px rgba(0,0,0,.35)}
-    .option.selected{box-shadow:0 0 0 1px rgba(255,255,255,.4),0 16px 34px rgba(190,205,255,.26);background:rgba(255,255,255,.12)}
+        /* ── Контейнер вкладок ───────────────────── */
+        .tab-panels {
+            width: 100%;
+            position: relative;
+            min-height: 380px;
+        }
+        .tab-panel {
+            display: none;
+            width: 100%;
+            animation: panelOut 0.35s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        .tab-panel.active {
+            display: block;
+            animation: panelIn 0.45s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        @keyframes panelIn {
+            from {
+                opacity: 0;
+                transform: translateX(16px);
+                filter: blur(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
+        }
+        @keyframes panelOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-16px);
+                filter: blur(5px);
+            }
+        }
 
-    .btn{position:relative;overflow:hidden;border:none;color:#0b0b0d;background:linear-gradient(120deg,#f7f8fa,#dce1ea,#ffffff);padding:12px 18px;border-radius:999px;font-weight:700;cursor:pointer;transition:transform .35s var(--ease), box-shadow .35s var(--ease);margin-top:14px}
-    .btn:disabled{opacity:.4;cursor:not-allowed}
-    .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 24px rgba(255,255,255,.25)}
-    .btn::before{content:"";position:absolute;inset:0;transform:translateX(-130%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);transition:transform .65s var(--ease)}
-    .btn:hover::before{transform:translateX(130%)}
+        /* ── Сетка карточек ──────────────────────── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            width: 100%;
+            perspective: 1100px;
+        }
 
-    .modalWrap{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);z-index:60}
-    .modal{width:min(660px,92vw);border-radius:34px;background:rgba(255,255,255,.11);padding:22px;border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(18px)}
-    .bank{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(255,212,0,.95);color:#111;font-weight:700}
-    .line{display:flex;justify-content:space-between;gap:10px;align-items:center;background:rgba(0,0,0,.22);border-radius:14px;padding:10px 12px;margin-top:10px}
-    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;white-space:nowrap;overflow:auto}
-    .success{color:#b9ffcf;min-height:20px;margin-top:10px}
+        /* ── Стеклянная карточка ─────────────────── */
+        .glass-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.022);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: var(--card-radius);
+            padding: 26px 22px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 8px 38px rgba(0, 0, 0, 0.45),
+                0 1px 3px rgba(255, 255, 255, 0.03) inset,
+                0 18px 55px rgba(0, 0, 0, 0.32),
+                0 0 0 1px rgba(255, 255, 255, 0.025) inset;
+            transition: var(--transition-premium);
+            transform-style: preserve-3d;
+            cursor: default;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(28px) scale(0.86);
+            animation: cardAppear 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-play-state: paused;
+            will-change: transform, box-shadow;
+        }
+        .glass-card.revealed {
+            animation-play-state: running;
+        }
+        .glass-card.selected-card {
+            border-color: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 8px 38px rgba(0, 0, 0, 0.45),
+                0 1px 3px rgba(255, 255, 255, 0.05) inset,
+                0 18px 55px rgba(0, 0, 0, 0.35),
+                0 0 0 2px rgba(180, 165, 210, 0.3) inset,
+                0 0 40px rgba(170, 150, 210, 0.18);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: calc(var(--card-radius) + 2px);
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 30%, rgba(255,
+                        255, 255, 0.10) 60%, rgba(255, 255, 255, 0.01) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 0.5s;
+        }
+        .glass-card:hover::before {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.07) 30%, rgba(255,
+                        255, 255, 0.2) 60%, rgba(255, 255, 255, 0.03) 100%);
+        }
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .glass-card:hover::after {
+            opacity: 1;
+        }
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .glass-card:hover {
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55),
+                0 2px 5px rgba(255, 255, 255, 0.05) inset,
+                0 28px 70px rgba(0, 0, 0, 0.38),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                0 0 45px rgba(170, 150, 210, 0.08);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+        .card-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            letter-spacing: 0.05em;
+            color: var(--accent-pearl);
+            margin-bottom: 4px;
+            font-weight: 400;
+        }
+        .card-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            letter-spacing: 0.03em;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .card-price {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #e9e2f6;
+            margin-bottom: 3px;
+            font-family: var(--font-heading);
+            transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card-price.pulse {
+            transform: scale(1.08);
+        }
+        .card-price-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 14px;
+        }
+        .card-input {
+            width: 100%;
+            padding: 11px 15px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            background: rgba(255, 255, 255, 0.03);
+            color: #e0ddf0;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            letter-spacing: 0.04em;
+            outline: none;
+            transition: var(--transition-fast);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            margin-bottom: 10px;
+        }
+        .card-input:focus {
+            border-color: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 0 18px rgba(170, 155, 210, 0.12);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .card-input.invalid {
+            border-color: rgba(255, 110, 110, 0.5);
+            box-shadow: 0 0 14px rgba(255, 80, 80, 0.08);
+        }
+        .card-input.valid {
+            border-color: rgba(130, 210, 130, 0.45);
+            box-shadow: 0 0 14px rgba(110, 210, 110, 0.07);
+        }
+        .validation-hint {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: -6px;
+            margin-bottom: 8px;
+            letter-spacing: 0.03em;
+            min-height: 16px;
+            transition: color 0.3s;
+        }
+        .validation-hint.error {
+            color: #e07070;
+        }
+        .validation-hint.success {
+            color: #80c880;
+        }
 
-    @media (max-width:740px){
-      .card{border-radius:28px}
-      .shell{padding-top:14px}
-    }
-  </style>
+        /* ── Кнопки ───────────────────────────────── */
+        .btn-premium {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            padding: 13px 18px;
+            border-radius: 18px;
+            border: none;
+            background: rgba(255, 255, 255, 0.06);
+            color: #e8e0f5;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: uppercase;
+            transition: var(--transition-fast);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            outline: none;
+        }
+        .btn-premium:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(30%);
+        }
+        .btn-premium:disabled:hover {
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            color: #e8e0f5;
+        }
+        .btn-premium:disabled::before {
+            display: none;
+        }
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.09) 40%, rgba(255, 255, 255, 0.16) 50%,
+                    rgba(255, 255, 255, 0.09) 60%, transparent 100%);
+            z-index: 2;
+            transition: left 0.5s ease;
+        }
+        .btn-premium:hover:not(:disabled)::before {
+            left: 100%;
+        }
+        .btn-premium:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.11);
+            box-shadow: 0 7px 28px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.09),
+                0 0 32px rgba(170, 150, 210, 0.10);
+            color: #fff;
+        }
+        .btn-premium:active:not(:disabled) {
+            transform: scale(0.96);
+            transition: transform 0.1s;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.32);
+            transform: scale(0);
+            animation: rippleEffect 0.7s ease-out forwards;
+            pointer-events: none;
+            z-index: 3;
+        }
+        @keyframes rippleEffect {
+            to {
+                transform: scale(6);
+                opacity: 0;
+            }
+        }
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            10% {
+                transform: translateX(-5px);
+            }
+            30% {
+                transform: translateX(5px);
+            }
+            50% {
+                transform: translateX(-3px);
+            }
+            70% {
+                transform: translateX(3px);
+            }
+            90% {
+                transform: translateX(-2px);
+            }
+        }
+
+        /* ── Особые элементы TON ─────────────────── */
+        .ton-rate-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            padding: 6px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 4px;
+        }
+        .ton-rate-row span {
+            color: #c9c2e2;
+            font-weight: 500;
+        }
+        .ton-markup {
+            color: #b8b090 !important;
+            font-size: 0.7rem;
+        }
+
+        /* ── Модальное окно ──────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(3, 3, 8, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+                visibility 0.45s;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal {
+            background: rgba(28, 26, 40, 0.78);
+            backdrop-filter: blur(26px);
+            -webkit-backdrop-filter: blur(26px);
+            border-radius: 32px;
+            padding: 30px 26px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            box-shadow: 0 28px 75px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.035);
+            max-width: 440px;
+            width: 92%;
+            transform: scale(0.72);
+            transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            text-align: center;
+            position: relative;
+            z-index: 101;
+        }
+        .modal-overlay.open .modal {
+            transform: scale(1);
+        }
+        .modal h3 {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            letter-spacing: 0.06em;
+            margin-bottom: 16px;
+            color: var(--accent-pearl);
+        }
+        .modal-order-info {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            letter-spacing: 0.04em;
+        }
+        .modal-req {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.025);
+            border-radius: 14px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.83rem;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            gap: 10px;
+        }
+        .modal-req.tbank-highlight {
+            border-color: rgba(232, 197, 71, 0.35);
+            background: rgba(232, 197, 71, 0.06);
+            box-shadow: 0 0 20px rgba(232, 197, 71, 0.08);
+        }
+        .modal-req strong {
+            color: #d8d0f0;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        .modal-req .req-value {
+            color: #e8c547;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-shrink: 1;
+            min-width: 0;
+        }
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            color: #c8c0e0;
+            padding: 7px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            transition: var(--transition-fast);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.13);
+            border-color: rgba(255, 255, 255, 0.28);
+        }
+        .btn-copy.copied {
+            background: rgba(120, 200, 120, 0.2);
+            border-color: rgba(140, 220, 140, 0.5);
+            color: #b0e8b0;
+        }
+        .btn-paid {
+            margin-top: 14px;
+            width: 100%;
+            padding: 13px;
+            border-radius: 18px;
+            border: none;
+            background: rgba(200, 180, 230, 0.14);
+            color: #e8e0f5;
+            font-size: 0.88rem;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .btn-paid:hover {
+            background: rgba(200, 180, 230, 0.24);
+            box-shadow: 0 0 28px rgba(170, 150, 210, 0.18);
+        }
+        .modal-success {
+            display: none;
+            color: #b0e8b0;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            margin-top: 10px;
+            animation: fadeInUp 0.4s ease;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            line-height: 1;
+        }
+        .modal-close:hover {
+            color: #fff;
+            transform: scale(1.15);
+        }
+
+        /* ── Адаптив ──────────────────────────────── */
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .tabs-nav {
+                justify-content: flex-start;
+                gap: 4px;
+                padding: 4px 0 10px;
+            }
+            .tab-btn {
+                padding: 9px 16px;
+                font-size: 0.76rem;
+                letter-spacing: 0.04em;
+            }
+            .glass-card {
+                padding: 18px 14px 16px;
+                border-radius: 24px;
+            }
+            .glass-card::before {
+                border-radius: 26px;
+            }
+            .card-title {
+                font-size: 1.05rem;
+            }
+            .card-price {
+                font-size: 1.3rem;
+            }
+            .btn-premium {
+                padding: 11px 14px;
+                font-size: 0.8rem;
+            }
+            .header-logo {
+                font-size: 1.5rem;
+            }
+            .mouse-glow {
+                background: radial-gradient(circle 280px at var(--mx, 50%) var(--my, 50%),
+                        rgba(210, 200, 230, 0.035) 0%,
+                        transparent 70%);
+            }
+            .modal {
+                padding: 22px 16px 16px;
+                border-radius: 24px;
+            }
+            .modal-req {
+                font-size: 0.72rem;
+                padding: 10px 12px;
+                gap: 6px;
+            }
+        }
+        @media (min-width: 1600px) {
+            .cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 26px;
+            }
+            .glass-card {
+                padding: 32px 26px 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div id="cosmos"><canvas id="starCanvas"></canvas><canvas id="earthCanvas"></canvas><div id="atmo"></div></div>
-  <div id="mouseGlow"></div>
 
-  <div class="loader" id="loader"><h1>SAYLAR</h1></div>
-
-  <main class="shell" id="app" style="opacity:0">
-    <section class="hero"><h1 class="title">SAYLAR</h1><h2>Портал в Premium-измерение</h2></section>
-    <div class="tabs" id="tabs"></div>
-    <section class="panel" id="panel"></section>
-  </main>
-
-  <div class="modalWrap" id="modalWrap">
-    <div class="modal" id="modal">
-      <div class="bank">💛 T-BANK</div>
-      <h3 style="margin-top:12px">Оплата заказа</h3>
-      <div id="orderSummary" class="muted"></div>
-      <div class="line"><span class="muted">Карта</span><span class="mono" id="cardLine">4276 1234 5678 9012</span><button class="btn" data-copy="cardLine">Скопировать</button></div>
-      <div class="line"><span class="muted">Телефон</span><span class="mono" id="phoneLine">+7 999 123-45-67</span><button class="btn" data-copy="phoneLine">Скопировать</button></div>
-      <button class="btn" id="paidBtn">Я оплатил</button><div class="success" id="success"></div>
+    <!-- ═══════════════ ПРЕЛОАДЕР ═══════════════ -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-logo">SAYLAR</div>
+        <div class="preloader-ring"></div>
     </div>
-  </div>
 
-<script>
-(() => {
-  const CONFIG = {
-    // Цена продажи TON (можно менять здесь)
-    tonPrice: 225,
-    // Курс звёзд (можно менять здесь)
-    starRate: 1.4,
-    // Минимум звёзд (можно менять здесь)
-    minStars: 50,
-    // Цены Premium (можно менять здесь)
-    premiumPlans:[{m:'3 месяца',p:1050},{m:'6 месяцев',p:1350},{m:'12 месяцев',p:2450}],
-    // Аккаунты (можно менять здесь)
-    accounts:[{n:'Великобритания (+44)',p:200},{n:'США (+1)',p:250}],
-    // Реквизиты Т-Банка (можно менять здесь)
-    bankCard:'4276 1234 5678 9012', bankPhone:'+7 999 123-45-67',
-    // Telegram bot token/chat id (можно менять здесь)
-    tgToken:'8701823510:AAHPyTTDnLAAFtd4cn8lj1mp3Vq-gGpYQlg', tgChatId:'1717982615'
-  };
-  cardLine.textContent = CONFIG.bankCard; phoneLine.textContent = CONFIG.bankPhone;
+    <!-- ═══════════════ ФОНОВЫЕ СЛОИ ═══════════════ -->
+    <canvas id="bg-canvas"></canvas>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div class="noise-overlay"></div>
 
-  const state={tab:'stars',selectedPremium:null,selectedAccount:null,tonMarket:null};
-  const tabs=[{id:'stars',t:'⭐ Звёзды'},{id:'ton',t:'💎 TON'},{id:'premium',t:'👑 Premium'},{id:'accounts',t:'👤 Аккаунты'}];
+    <!-- ═══════════════ ОСНОВНОЙ КОНТЕНТ ═══════════════ -->
+    <main class="main-content" id="mainContent">
+        <header class="header">
+            <div class="header-logo">SAYLAR</div>
+            <div class="header-subtitle">Premium Dimension</div>
+        </header>
 
-  function renderTabs(){tabs.forEach(x=>{const b=document.createElement('button');b.className='tab'+(x.id===state.tab?' active':'');b.textContent=x.t;b.onclick=()=>switchTab(x.id);tabsEl.appendChild(b);});}
-  function switchTab(id){state.tab=id;tabsEl.innerHTML='';renderTabs();renderPanel(true)}
-  const tabsEl=document.getElementById('tabs'), panel=document.getElementById('panel'); renderTabs();
+        <!-- Табы -->
+        <nav class="tabs-nav" id="tabsNav">
+            <button class="tab-btn active" data-tab="stars">✦ Звёзды</button>
+            <button class="tab-btn" data-tab="premium">◆ Premium</button>
+            <button class="tab-btn" data-tab="ton">⬡ TON</button>
+            <button class="tab-btn" data-tab="accounts">◈ Аккаунты</button>
+        </nav>
 
-  function card(html){const d=document.createElement('article');d.className='card';d.innerHTML=html;tiltCard(d);return d;}
-  function renderPanel(anim){panel.innerHTML='';const c=document.createElement('div');c.className='content active';
-    if(state.tab==='stars'){
-      c.append(card(`<h3>Звёзды Telegram</h3><div class='muted'>1 звезда = ${CONFIG.starRate} ₽</div>
-        <div class='field'><label>Количество звёзд</label><input id='starsInput' type='number' min='1' step='1' value='50'></div>
-        <div class='field'><label>У меня есть рублей</label><input id='rubInput' type='number' min='1' step='1' placeholder='Например, 1000'></div>
-        <div class='price' id='starsTotal'>70 ₽</div><div class='warn' id='starsWarn'></div><button class='btn' id='payStars'>Оплатить</button>`));
-    }
-    if(state.tab==='ton'){
-      c.append(card(`<h3>TON</h3><div class='muted'>Фикс: ${CONFIG.tonPrice} ₽ / 1 TON</div><div class='muted' id='tonMarket'>Рынок: загрузка...</div>
-      <div class='field'><label>Количество TON</label><input id='tonInput' type='number' min='1' step='1' value='1'></div><div class='price' id='tonTotal'>225 ₽</div><button class='btn' id='payTon'>Оплатить</button>`));
-    }
-    if(state.tab==='premium'){
-      c.append(card(`<h3>Telegram Premium</h3><div class='grid3' id='premiumGrid'></div><button class='btn' id='payPremium' disabled>Оплатить</button>`));
-    }
-    if(state.tab==='accounts'){
-      c.append(card(`<h3>Аккаунты</h3><div class='grid3' id='accGrid'></div><button class='btn' id='payAcc' disabled>Оплатить</button>`));
-    }
-    panel.append(c); bindHandlers(); if(anim) animateSwap(c);
-    staggerCards();
-  }
+        <!-- Панели вкладок -->
+        <div class="tab-panels" id="tabPanels">
+            <!-- Звёзды -->
+            <div class="tab-panel active" id="panel-stars">
+                <div class="cards-grid" id="cardsStars"></div>
+            </div>
+            <!-- Premium -->
+            <div class="tab-panel" id="panel-premium">
+                <div class="cards-grid" id="cardsPremium"></div>
+            </div>
+            <!-- TON -->
+            <div class="tab-panel" id="panel-ton">
+                <div class="cards-grid" id="cardsTon"></div>
+            </div>
+            <!-- Аккаунты -->
+            <div class="tab-panel" id="panel-accounts">
+                <div class="cards-grid" id="cardsAccounts"></div>
+            </div>
+        </div>
+    </main>
 
-  function bindHandlers(){
-    if(state.tab==='stars'){
-      const s=starsInput,r=rubInput, warn=starsWarn, tot=starsTotal, btn=payStars;
-      const upd=()=>{const stars=Math.max(0,parseInt(s.value)||0);const sum=(stars*CONFIG.starRate).toFixed(1);tot.textContent=`${sum} ₽`;
-        if(stars<CONFIG.minStars){warn.textContent=`Минимум ${CONFIG.minStars} звёзд`;btn.disabled=true;} else {warn.textContent='';btn.disabled=false;}}
-      s.oninput=upd; r.oninput=()=>{const rub=Math.max(0,parseFloat(r.value)||0);const stars=Math.floor(rub/CONFIG.starRate);s.value=stars;upd(); if(stars<CONFIG.minStars)warn.textContent=`Минимальная сумма: ${(CONFIG.minStars*CONFIG.starRate).toFixed(1)} ₽`;};
-      btn.onclick=()=>openModal(`⭐ ${s.value} звёзд · ${tot.textContent}`); upd();
-    }
-    if(state.tab==='ton'){tonInput.oninput=()=>{tonTotal.textContent=`${(Math.max(1,parseInt(tonInput.value)||1)*CONFIG.tonPrice).toLocaleString('ru-RU')} ₽`;pulse(tonTotal)};payTon.onclick=()=>openModal(`💎 ${tonInput.value} TON · ${tonTotal.textContent}`);updateTonMarket();}
-    if(state.tab==='premium'){premiumGrid.innerHTML='';CONFIG.premiumPlans.forEach((p,i)=>{const o=document.createElement('div');o.className='option'+(state.selectedPremium===i?' selected':'');o.innerHTML=`<b>${p.m}</b><div class='muted'>${p.p} ₽</div>`;o.onclick=()=>{state.selectedPremium=i;renderPanel()};premiumGrid.append(o)});payPremium.disabled=state.selectedPremium===null;payPremium.onclick=()=>{const p=CONFIG.premiumPlans[state.selectedPremium];openModal(`👑 Premium ${p.m} · ${p.p} ₽`)};}
-    if(state.tab==='accounts'){accGrid.innerHTML='';CONFIG.accounts.forEach((a,i)=>{const o=document.createElement('div');o.className='option'+(state.selectedAccount===i?' selected':'');o.innerHTML=`<b>${a.n}</b><div class='muted'>${a.p} ₽</div>`;o.onclick=()=>{state.selectedAccount=i;renderPanel()};accGrid.append(o)});payAcc.disabled=state.selectedAccount===null;payAcc.onclick=()=>{const a=CONFIG.accounts[state.selectedAccount];openModal(`👤 ${a.n} · ${a.p} ₽`)};}
-    document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent.trim()));
-  }
+    <!-- ═══════════════ МОДАЛЬНОЕ ОКНО ═══════════════ -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modalBox">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <h3>💳 Реквизиты для оплаты</h3>
+            <div class="modal-order-info" id="modalOrderInfo"></div>
+            <div class="modal-req tbank-highlight">
+                <strong>Т-Банк карта:</strong>
+                <span class="req-value" id="reqBank">4276 1234 5678 9012</span>
+                <button class="btn-copy" data-copy="4276123456789012">Копировать</button>
+            </div>
+            <div class="modal-req tbank-highlight">
+                <strong>Т-Банк тел:</strong>
+                <span class="req-value" id="reqPhone">+7 999 123-45-67</span>
+                <button class="btn-copy" data-copy="+79991234567">Копировать</button>
+            </div>
+            <button class="btn-paid" id="btnPaid">Я оплатил</button>
+            <div class="modal-success" id="modalSuccess">✓ Оплата подтверждена! Окно закроется автоматически…</div>
+        </div>
+    </div>
 
-  async function updateTonMarket(){
-    try{const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=rub');const j=await r.json();state.tonMarket=j['the-open-network']?.rub||null;
-      if(tonMarket){const m=state.tonMarket, mark=(CONFIG.tonPrice-m).toFixed(2);tonMarket.textContent=`Рынок: ~${m} ₽ · Наценка: ${mark} ₽`;}}
-    catch{if(tonMarket)tonMarket.textContent='Рынок: недоступен';}
-  }
-  setInterval(updateTonMarket,60000);
+    <script>
+        (function() {
+            // ═══════════════════════════════════════════
+            // КОНФИГУРАЦИЯ — меняйте здесь при необходимости
+            // ═══════════════════════════════════════════
+            const CONFIG = {
+                // Цены
+                starRate: 1.4, // рублей за 1 звезду
+                minStars: 50, // минимальное количество звёзд для заказа
+                tonPriceFixed: 225, // фиксированная цена 1 TON (руб)
+                tonMarkup: 15, // наценка (константа для отображения)
 
-  function openModal(text){orderSummary.textContent=`Заказ: ${text}`;success.textContent='';modalWrap.style.display='grid';animateModal(true)}
-  function closeModal(){animateModal(false);setTimeout(()=>modalWrap.style.display='none',300)}
-  modalWrap.onclick=(e)=>{if(e.target===modalWrap)closeModal()};
-  paidBtn.onclick=async ()=>{
-    const msg=`SAYLAR заказ\n${orderSummary.textContent}\nВремя: ${new Date().toLocaleString('ru-RU')}`;
-    try{await fetch(`https://api.telegram.org/bot${CONFIG.tgToken}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:CONFIG.tgChatId,text:msg})});success.textContent='Оплата зафиксирована. Спасибо!';}
-    catch{success.textContent='Не удалось отправить в Telegram, но заказ принят.'}
-    setTimeout(closeModal,3000)
-  }
+                // Premium (жёстко заданы)
+                premiumPrices: [
+                    { months: 3, price: 1050, title: 'Premium 3 месяца', desc: 'Оптимальный старт' },
+                    { months: 6, price: 1350, title: 'Premium 6 месяцев', desc: 'Выгода +20%' },
+                    { months: 12, price: 2450, title: 'Premium 12 месяцев', desc: 'Максимальная экономия' },
+                ],
 
-  function animateModal(open){if(window.gsap){gsap.fromTo('#modal',{scale:open?.7:1,opacity:open?0:1},{scale:open?1:.7,opacity:open?1:0,duration:.35,ease:'power3.out'});} }
-  function animateSwap(el){if(window.gsap){gsap.fromTo(el,{opacity:0,x:20,filter:'blur(12px)'},{opacity:1,x:0,filter:'blur(0px)',duration:.45,ease:'power3.out'});} else {el.style.opacity=1;el.style.transform='none';el.style.filter='none';}}
-  function staggerCards(){const cards=document.querySelectorAll('.card');if(window.gsap){gsap.fromTo(cards,{opacity:0,scale:.8,filter:'blur(10px)',y:24},{opacity:1,scale:1,filter:'blur(0)',y:0,duration:.75,stagger:.12,ease:'power4.out'});} }
-  function pulse(el){el.animate([{transform:'scale(1)'},{transform:'scale(1.05)'},{transform:'scale(1)'}],{duration:260,easing:'ease-out'})}
-  function tiltCard(el){el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`translateY(-12px) scale(1.04) rotateX(${(-y*7).toFixed(2)}deg) rotateY(${(x*8).toFixed(2)}deg)`});el.addEventListener('mouseleave',()=>el.style.transform='')}
+                // Аккаунты
+                accounts: [
+                    { id: 'acc_uk', title: 'Великобритания +44', desc: 'Готовый аккаунт', price: 200 },
+                    { id: 'acc_us', title: 'США +1', desc: 'Готовый аккаунт', price: 250 },
+                ],
 
-  const glow=document.getElementById('mouseGlow');window.addEventListener('mousemove',e=>glow.style.background=`radial-gradient(260px circle at ${e.clientX}px ${e.clientY}px, rgba(255,255,255,.16), rgba(170,180,210,.06) 36%, transparent 70%)`);
+                // Реквизиты Т-Банка (одна строка!)
+                bankCard: '4276 1234 5678 9012',
+                bankPhone: '+7 999 123-45-67',
+                bankCardRaw: '4276123456789012',
+                bankPhoneRaw: '+79991234567',
 
-  const starCv=document.getElementById('starCanvas'), earthCv=document.getElementById('earthCanvas');const sctx=starCv.getContext('2d'), ectx=earthCv.getContext('2d');let w,h,stars=[];
-  function resize(){w=starCv.width=earthCv.width=innerWidth;h=starCv.height=earthCv.height=innerHeight;const count=innerWidth<760?90:180;stars=Array.from({length:count},()=>({x:Math.random()*w,y:Math.random()*h,z:Math.random()*1.4+.2,vx:(Math.random()-.5)*.08,vy:Math.random()*.14+.03,r:Math.random()*1.8+.2,a:Math.random()}));}
-  addEventListener('resize',resize);resize();let rot=0;
-  function draw(){sctx.clearRect(0,0,w,h);ectx.clearRect(0,0,w,h);
-    stars.forEach(st=>{st.x=(st.x+st.vx+w)%w;st.y=(st.y+st.vy)%h;st.a+=.02;const tw=0.5+0.5*Math.sin(st.a);sctx.fillStyle=`rgba(255,255,255,${0.15+tw*0.7})`;sctx.beginPath();sctx.arc(st.x,st.y,st.r*st.z,0,Math.PI*2);sctx.fill();});
-    const R=Math.min(w*0.42,h*0.75),cx=w*0.5,cy=h*1.06;const g=ectx.createRadialGradient(cx-R*0.28,cy-R*0.64,R*0.2,cx,cy,R);g.addColorStop(0,'#4d89c3');g.addColorStop(.5,'#1f3f67');g.addColorStop(1,'#081220');
-    ectx.fillStyle=g;ectx.beginPath();ectx.arc(cx,cy,R,Math.PI,0);ectx.fill();
-    ectx.save();ectx.beginPath();ectx.arc(cx,cy,R,Math.PI,0);ectx.clip();
-    for(let i=-2;i<3;i++){const x=((rot*70+i*180)%500)-250;ectx.fillStyle='rgba(255,255,255,.1)';ectx.fillRect(cx-R+x,cy-R,R*.42,R*2);}rot+=0.0018;
-    ectx.globalAlpha=.3;ectx.fillStyle='rgba(230,240,255,.34)';for(let i=0;i<6;i++){ectx.beginPath();ectx.ellipse(cx-R*0.45+i*90,cy-R*.5+i*14,120,30,0,0,6.28);ectx.fill();}
-    ectx.restore();requestAnimationFrame(draw);
-  }draw();
+                // Telegram бот
+                telegramToken: '8701823510:AAHPyTTDnLAAFtd4cn8lj1mp3Vq-gGpYQlg',
+                telegramChatId: '1717982615',
 
-  renderPanel();
-  const loader=document.getElementById('loader'),app=document.getElementById('app'),h1=loader.querySelector('h1');
-  if(window.gsap){gsap.to(h1,{opacity:1,filter:'blur(0px)',scale:1,duration:1.1,ease:'power3.out'});}
-  setTimeout(()=>{loader.classList.add('hidden');app.style.opacity=1;},2300);
-})();
-</script>
+                // CoinGecko
+                coingeckoApi: 'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=rub',
+                coingeckoInterval: 60000,
+            };
+
+            // ═══════════════════════════════════════════
+            // DOM-ЭЛЕМЕНТЫ
+            // ═══════════════════════════════════════════
+            const preloader = document.getElementById('preloader');
+            const mainContent = document.getElementById('mainContent');
+            const mouseGlow = document.getElementById('mouseGlow');
+            const tabsNav = document.getElementById('tabsNav');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalBox = document.getElementById('modalBox');
+            const modalClose = document.getElementById('modalClose');
+            const btnPaid = document.getElementById('btnPaid');
+            const modalSuccess = document.getElementById('modalSuccess');
+            const modalOrderInfo = document.getElementById('modalOrderInfo');
+            const reqBank = document.getElementById('reqBank');
+            const reqPhone = document.getElementById('reqPhone');
+
+            reqBank.textContent = CONFIG.bankCard;
+            reqPhone.textContent = CONFIG.bankPhone;
+
+            let currentOrderData = null;
+            let currentTonMarketRate = null;
+            let selectedPremiumIndex = -1;
+            let selectedAccountIndex = -1;
+
+            // ═══════════════════════════════════════════
+            // CANVAS: ЗЕМЛЯ + ЗВЁЗДЫ
+            // ═══════════════════════════════════════════
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let earthTexture = null;
+            let starsArray = [];
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let earthRotation = 0;
+            let animationId;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initStars();
+            });
+
+            // Генерация процедурной текстуры Земли
+            function createEarthTexture() {
+                const offCanvas = document.createElement('canvas');
+                offCanvas.width = 1024;
+                offCanvas.height = 512;
+                const octx = offCanvas.getContext('2d');
+
+                // Океан — глубокий синий с вариациями
+                const oceanGrad = octx.createLinearGradient(0, 0, 0, 512);
+                oceanGrad.addColorStop(0, '#1a3a5c');
+                oceanGrad.addColorStop(0.3, '#1c4268');
+                oceanGrad.addColorStop(0.5, '#1b3f64');
+                oceanGrad.addColorStop(0.7, '#1a3c60');
+                oceanGrad.addColorStop(1, '#183858');
+                octx.fillStyle = oceanGrad;
+                octx.fillRect(0, 0, 1024, 512);
+
+                // Континенты — процедурные блобы
+                const continents = [
+                    { cx: 200, cy: 180, rx: 140, ry: 100, rot: -0.2, color: '#3d6b4f' },
+                    { cx: 250, cy: 200, rx: 90, ry: 130, rot: 0.3, color: '#4a7858' },
+                    { cx: 180, cy: 150, rx: 70, ry: 60, rot: -0.5, color: '#5c8a62' },
+                    { cx: 550, cy: 160, rx: 160, ry: 90, rot: 0.1, color: '#3d5e3f' },
+                    { cx: 580, cy: 200, rx: 100, ry: 110, rot: -0.3, color: '#4a6b4a' },
+                    { cx: 520, cy: 130, rx: 80, ry: 70, rot: 0.4, color: '#5c8055' },
+                    { cx: 700, cy: 250, rx: 120, ry: 80, rot: 0.2, color: '#3d5a3a' },
+                    { cx: 730, cy: 210, rx: 60, ry: 90, rot: -0.4, color: '#4d6d45' },
+                    { cx: 350, cy: 320, rx: 100, ry: 70, rot: 0.25, color: '#4a7050' },
+                    { cx: 400, cy: 300, rx: 70, ry: 50, rot: -0.35, color: '#55805a' },
+                    { cx: 800, cy: 300, rx: 90, ry: 60, rot: 0.15, color: '#3d5c3f' },
+                    { cx: 850, cy: 280, rx: 50, ry: 40, rot: -0.5, color: '#4e6e48' },
+                ];
+
+                continents.forEach(c => {
+                    octx.save();
+                    octx.translate(c.cx, c.cy);
+                    octx.rotate(c.rot);
+                    octx.beginPath();
+                    octx.ellipse(0, 0, c.rx, c.ry, 0, 0, Math.PI * 2);
+                    octx.fillStyle = c.color;
+                    octx.fill();
+
+                    // Добавляем вариативность — более светлые пятна внутри
+                    octx.beginPath();
+                    octx.ellipse(c.rx * 0.2, -c.ry * 0.15, c.rx * 0.5, c.ry * 0.5, 0.3, 0, Math.PI * 2);
+                    octx.fillStyle = 'rgba(180,200,160,0.25)';
+                    octx.fill();
+                    octx.restore();
+                });
+
+                // Облака — полупрозрачные белые мазки
+                for (let i = 0; i < 60; i++) {
+                    const cx = Math.random() * 1024;
+                    const cy = Math.random() * 512;
+                    const rx = Math.random() * 50 + 20;
+                    const ry = Math.random() * 20 + 8;
+                    octx.save();
+                    octx.translate(cx, cy);
+                    octx.rotate(Math.random() * Math.PI);
+                    octx.beginPath();
+                    octx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+                    octx.fillStyle = `rgba(220,225,235,${Math.random() * 0.25 + 0.08})`;
+                    octx.fill();
+                    octx.restore();
+                }
+
+                // Полярные шапки
+                const capGradTop = octx.createLinearGradient(0, 0, 0, 60);
+                capGradTop.addColorStop(0, 'rgba(230,240,250,0.6)');
+                capGradTop.addColorStop(1, 'rgba(230,240,250,0)');
+                octx.fillStyle = capGradTop;
+                octx.fillRect(0, 0, 1024, 60);
+
+                const capGradBottom = octx.createLinearGradient(0, 452, 0, 512);
+                capGradBottom.addColorStop(0, 'rgba(230,240,250,0)');
+                capGradBottom.addColorStop(1, 'rgba(230,240,250,0.6)');
+                octx.fillStyle = capGradBottom;
+                octx.fillRect(0, 452, 1024, 60);
+
+                return offCanvas;
+            }
+            earthTexture = createEarthTexture();
+
+            // Звёзды
+            function initStars() {
+                starsArray = [];
+                const count = Math.min(Math.floor((canvas.width * canvas.height) / 4000), 350);
+                for (let i = 0; i < count; i++) {
+                    starsArray.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        size: Math.random() * 2.2 + 0.3,
+                        opacity: Math.random() * 0.7 + 0.2,
+                        twinkleSpeed: Math.random() * 0.02 + 0.005,
+                        twinkleOffset: Math.random() * Math.PI * 2,
+                        layer: Math.floor(Math.random() * 3),
+                        vx: (Math.random() - 0.5) * 0.12,
+                        vy: (Math.random() - 0.5) * 0.08,
+                    });
+                }
+            }
+            initStars();
+
+            function drawEarth(time) {
+                const earthCX = canvas.width * 0.72;
+                const earthCY = canvas.height * 0.75;
+                const earthRadius = Math.min(canvas.width * 0.3, canvas.height * 0.45, 420);
+
+                // Обрезаем область сферы
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(earthCX, earthCY, earthRadius, 0, Math.PI * 2);
+                ctx.clip();
+
+                // Рисуем текстуру со смещением для вращения
+                const texWidth = 1024;
+                const texHeight = 512;
+                const offsetX = (earthRotation % texWidth + texWidth) % texWidth;
+
+                // Маппинг: текстура рисуется так, чтобы покрыть сферу
+                const scaleX = texWidth / (earthRadius * 2);
+                const scaleY = texHeight / (earthRadius * 2);
+                const srcX = offsetX;
+                const srcW = earthRadius * 2 * scaleX;
+                ctx.drawImage(
+                    earthTexture,
+                    srcX, 0, srcW, texHeight,
+                    earthCX - earthRadius, earthCY - earthRadius,
+                    earthRadius * 2, earthRadius * 2
+                );
+                // Дублируем для бесшовности
+                if (offsetX + srcW > texWidth) {
+                    const remainingW = (offsetX + srcW) - texWidth;
+                    ctx.drawImage(
+                        earthTexture,
+                        0, 0, remainingW, texHeight,
+                        earthCX - earthRadius + (srcW - remainingW) / scaleX, earthCY - earthRadius,
+                        remainingW / scaleX, earthRadius * 2
+                    );
+                }
+
+                // Объём — тень по краям сферы
+                const shadowGrad = ctx.createRadialGradient(
+                    earthCX - earthRadius * 0.25, earthCY - earthRadius * 0.3, earthRadius * 0.3,
+                    earthCX, earthCY, earthRadius
+                );
+                shadowGrad.addColorStop(0, 'rgba(0,0,0,0)');
+                shadowGrad.addColorStop(0.65, 'rgba(0,0,0,0.15)');
+                shadowGrad.addColorStop(0.9, 'rgba(0,0,0,0.55)');
+                shadowGrad.addColorStop(1, 'rgba(0,0,0,0.8)');
+                ctx.fillStyle = shadowGrad;
+                ctx.fillRect(earthCX - earthRadius, earthCY - earthRadius, earthRadius * 2, earthRadius * 2);
+
+                // Блик
+                const shineGrad = ctx.createRadialGradient(
+                    earthCX - earthRadius * 0.35, earthCY - earthRadius * 0.4, earthRadius * 0.05,
+                    earthCX, earthCY, earthRadius
+                );
+                shineGrad.addColorStop(0, 'rgba(255,255,255,0.25)');
+                shineGrad.addColorStop(0.4, 'rgba(255,255,255,0.06)');
+                shineGrad.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = shineGrad;
+                ctx.fillRect(earthCX - earthRadius, earthCY - earthRadius, earthRadius * 2, earthRadius * 2);
+
+                ctx.restore();
+
+                // Атмосферное свечение
+                const atmosGrad = ctx.createRadialGradient(earthCX, earthCY, earthRadius * 0.85,
+                    earthCX, earthCY, earthRadius * 1.25);
+                atmosGrad.addColorStop(0, 'rgba(100,140,200,0)');
+                atmosGrad.addColorStop(0.5, 'rgba(100,140,210,0.08)');
+                atmosGrad.addColorStop(1, 'rgba(80,120,190,0)');
+                ctx.fillStyle = atmosGrad;
+                ctx.beginPath();
+                ctx.arc(earthCX, earthCY, earthRadius * 1.25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            function drawStars(time) {
+                starsArray.forEach(star => {
+                    const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.3 + 0.7;
+                    const opacity = star.opacity * twinkle;
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(220,215,240,${opacity})`;
+                    ctx.fill();
+                    // Свечение крупных звёзд
+                    if (star.size > 1.5) {
+                        ctx.beginPath();
+                        ctx.arc(star.x, star.y, star.size * 2.5, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(190,180,220,${opacity * 0.2})`;
+                        ctx.fill();
+                    }
+                });
+            }
+
+            function animateBackground(time) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Звёзды (рисуем до Земли, чтобы они были и на фоне космоса)
+                drawStars(time);
+
+                // Земля
+                earthRotation += 0.15; // скорость вращения
+                drawEarth(time);
+
+                // Обновляем позиции звёзд (медленный дрейф)
+                starsArray.forEach(star => {
+                    star.x += star.vx * (0.5 + star.layer * 0.3);
+                    star.y += star.vy * (0.5 + star.layer * 0.3);
+                    if (star.x < -20) star.x = canvas.width + 20;
+                    if (star.x > canvas.width + 20) star.x = -20;
+                    if (star.y < -20) star.y = canvas.height + 20;
+                    if (star.y > canvas.height + 20) star.y = -20;
+                });
+
+                animationId = requestAnimationFrame(animateBackground);
+            }
+            animationId = requestAnimationFrame(animateBackground);
+
+            // Отслеживание мыши
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                mouseGlow.style.setProperty('--mx', mouseX + 'px');
+                mouseGlow.style.setProperty('--my', mouseY + 'px');
+            });
+            document.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) {
+                    mouseX = e.touches[0].clientX;
+                    mouseY = e.touches[0].clientY;
+                    mouseGlow.style.setProperty('--mx', mouseX + 'px');
+                    mouseGlow.style.setProperty('--my', mouseY + 'px');
+                }
+            }, { passive: true });
+
+            // ═══════════════════════════════════════════
+            // ПРЕЛОАДЕР
+            // ═══════════════════════════════════════════
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    preloader.classList.add('hidden');
+                    mainContent.classList.add('visible');
+                    setTimeout(revealAllCards, 350);
+                }, 2200);
+            });
+
+            function revealAllCards() {
+                const allCards = document.querySelectorAll('.glass-card');
+                allCards.forEach((card, i) => {
+                    card.style.animationDelay = (i * 0.07) + 's';
+                    card.classList.add('revealed');
+                });
+            }
+
+            // ═══════════════════════════════════════════
+            // ПОСТРОЕНИЕ КАРТОЧЕК
+            // ═══════════════════════════════════════════
+            function buildStarsCard() {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.setAttribute('data-category', 'stars');
+                card.innerHTML = `
+                <div class="card-content">
+                  <div class="card-title">⭐ Звёзды Telegram</div>
+                  <div class="card-desc">Курс: 1 звезда = ${CONFIG.starRate}₽ | Мин: ${CONFIG.minStars} звёзд</div>
+                  <input type="number" class="card-input stars-qty-input" placeholder="Количество звёзд" min="${CONFIG.minStars}" step="1" autocomplete="off">
+                  <div class="card-price" id="starsTotal">— ₽</div>
+                  <div class="card-price-sub">Итоговая сумма</div>
+                  <input type="number" class="card-input stars-rub-input" placeholder="У меня есть X рублей" min="0" step="1" autocomplete="off">
+                  <div class="validation-hint" id="starsReverseHint">Сколько звёзд можно получить</div>
+                  <input type="text" class="card-input username-input" placeholder="@username" autocomplete="off" spellcheck="false">
+                  <div class="validation-hint">Введите Telegram username</div>
+                  <button class="btn-premium pay-btn" disabled>Оплатить</button>
+                </div>
+              `;
+                return card;
+            }
+
+            function buildPremiumCards() {
+                const fragment = document.createDocumentFragment();
+                CONFIG.premiumPrices.forEach((p, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'glass-card premium-option';
+                    card.setAttribute('data-category', 'premium');
+                    card.setAttribute('data-index', i);
+                    card.innerHTML = `
+                    <div class="card-content">
+                      <div class="card-title">👑 ${p.title}</div>
+                      <div class="card-desc">${p.desc}</div>
+                      <div class="card-price">${p.price} ₽</div>
+                      <div class="card-price-sub">за ${p.months} мес.</div>
+                      <input type="text" class="card-input username-input" placeholder="@username" autocomplete="off" spellcheck="false">
+                      <div class="validation-hint">Введите Telegram username</div>
+                      <button class="btn-premium pay-btn" disabled>Оплатить</button>
+                    </div>
+                  `;
+                    fragment.appendChild(card);
+                });
+                return fragment;
+            }
+
+            function buildTonCard(marketRate) {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.setAttribute('data-category', 'ton');
+                const marketDisplay = marketRate !== null ? `${marketRate.toFixed(1)} ₽` : 'Загрузка...';
+                card.innerHTML = `
+                <div class="card-content">
+                  <div class="card-title">💎 TON</div>
+                  <div class="card-desc">Фикс. цена: ${CONFIG.tonPriceFixed}₽ за 1 TON</div>
+                  <input type="number" class="card-input ton-qty-input" placeholder="Количество TON (целое)" min="1" step="1" autocomplete="off">
+                  <div class="card-price" id="tonTotal">— ₽</div>
+                  <div class="card-price-sub">Итоговая сумма</div>
+                  <div class="ton-rate-row">
+                    <span>Рынок CoinGecko:</span>
+                    <span class="ton-market-rate">${marketDisplay}</span>
+                  </div>
+                  <div class="ton-rate-row">
+                    <span>Наша наценка:</span>
+                    <span class="ton-markup">+${CONFIG.tonMarkup}₽</span>
+                  </div>
+                  <input type="text" class="card-input username-input" placeholder="@username" autocomplete="off" spellcheck="false" style="margin-top:8px;">
+                  <div class="validation-hint">Введите Telegram username</div>
+                  <button class="btn-premium pay-btn" disabled>Оплатить</button>
+                </div>
+              `;
+                return card;
+            }
+
+            function buildAccountCards() {
+                const fragment = document.createDocumentFragment();
+                CONFIG.accounts.forEach((acc, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'glass-card account-option';
+                    card.setAttribute('data-category', 'accounts');
+                    card.setAttribute('data-index', i);
+                    card.innerHTML = `
+                    <div class="card-content">
+                      <div class="card-title">👤 ${acc.title}</div>
+                      <div class="card-desc">${acc.desc}</div>
+                      <div class="card-price">${acc.price} ₽</div>
+                      <div class="card-price-sub">единовременно</div>
+                      <input type="text" class="card-input username-input" placeholder="@username" autocomplete="off" spellcheck="false">
+                      <div class="validation-hint">Введите Telegram username</div>
+                      <button class="btn-premium pay-btn" disabled>Оплатить</button>
+                    </div>
+                  `;
+                    fragment.appendChild(card);
+                });
+                return fragment;
+            }
+
+            function populateAllCards() {
+                document.getElementById('cardsStars').appendChild(buildStarsCard());
+                document.getElementById('cardsPremium').appendChild(buildPremiumCards());
+                document.getElementById('cardsTon').appendChild(buildTonCard(currentTonMarketRate));
+                document.getElementById('cardsAccounts').appendChild(buildAccountCards());
+            }
+            populateAllCards();
+
+            // ═══════════════════════════════════════════
+            // COINGECKO API
+            // ═══════════════════════════════════════════
+            async function fetchTonRate() {
+                try {
+                    const resp = await fetch(CONFIG.coingeckoApi);
+                    const data = await resp.json();
+                    if (data['the-open-network'] && data['the-open-network'].rub) {
+                        currentTonMarketRate = data['the-open-network'].rub;
+                        updateTonMarketDisplay();
+                    }
+                } catch (err) {
+                    console.warn('CoinGecko API error:', err.message);
+                }
+            }
+
+            function updateTonMarketDisplay() {
+                const rateEl = document.querySelector('.ton-market-rate');
+                if (rateEl && currentTonMarketRate !== null) {
+                    rateEl.textContent = `${currentTonMarketRate.toFixed(1)} ₽`;
+                }
+            }
+            fetchTonRate();
+            setInterval(fetchTonRate, CONFIG.coingeckoInterval);
+
+            // ═══════════════════════════════════════════
+            // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+            // ═══════════════════════════════════════════
+            tabsNav.addEventListener('click', (e) => {
+                const btn = e.target.closest('.tab-btn');
+                if (!btn) return;
+                const targetTab = btn.getAttribute('data-tab');
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+                const targetPanel = document.getElementById('panel-' + targetTab);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                    const cards = targetPanel.querySelectorAll('.glass-card');
+                    cards.forEach((card, i) => {
+                        card.classList.remove('revealed');
+                        card.style.animationDelay = (i * 0.05) + 's';
+                        void card.offsetWidth;
+                        card.classList.add('revealed');
+                    });
+                }
+            });
+
+            // ═══════════════════════════════════════════
+            // TILT-ЭФФЕКТ ДЛЯ КАРТОЧЕК
+            // ═══════════════════════════════════════════
+            document.addEventListener('mousemove', (e) => {
+                const hoveredCards = document.querySelectorAll('.glass-card:hover');
+                hoveredCards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const cx = rect.width / 2;
+                    const cy = rect.height / 2;
+                    const rotX = ((y - cy) / cy) * -7;
+                    const rotY = ((x - cx) / cx) * 7;
+                    card.style.transform =
+                        `translateY(-10px) scale(1.04) perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+                    card.style.boxShadow = `
+                0 20px 50px rgba(0,0,0,0.55),
+                0 2px 5px rgba(255,255,255,0.05) inset,
+                0 28px 70px rgba(0,0,0,0.38),
+                0 0 0 1px rgba(255,255,255,0.05) inset,
+                0 ${Math.abs(rotY)*1.4}px ${Math.abs(rotX)*1.8}px rgba(170,150,210,0.09)
+              `;
+                });
+            });
+            document.addEventListener('mouseout', (e) => {
+                const card = e.target.closest('.glass-card');
+                if (card && !card.contains(e.relatedTarget)) {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                }
+            });
+            document.addEventListener('mouseleave', () => {
+                document.querySelectorAll('.glass-card').forEach(c => {
+                    c.style.transform = '';
+                    c.style.boxShadow = '';
+                });
+            });
+
+            // ═══════════════════════════════════════════
+            // RIPPLE-ЭФФЕКТ
+            // ═══════════════════════════════════════════
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.btn-premium, .btn-copy, .btn-paid');
+                if (!btn || btn.disabled) return;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const rect = btn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height) * 2;
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                btn.appendChild(ripple);
+                ripple.addEventListener('animationend', () => ripple.remove());
+            });
+
+            // ═══════════════════════════════════════════
+            // ВАЛИДАЦИЯ USERNAME
+            // ═══════════════════════════════════════════
+            function validateUsername(value) {
+                if (value.length === 0) return 'empty';
+                if (!value.startsWith('@')) return 'no_at';
+                if (value.length < 5) return 'too_short';
+                if (!/^@[a-zA-Z0-9_]+$/.test(value)) return 'invalid_chars';
+                return 'valid';
+            }
+
+            function getValidationMessage(status) {
+                switch (status) {
+                    case 'empty':
+                        return 'Введите Telegram username';
+                    case 'no_at':
+                        return 'Username должен начинаться с @';
+                    case 'too_short':
+                        return 'Минимум 5 символов (включая @)';
+                    case 'invalid_chars':
+                        return 'Только латиница, цифры и _ после @';
+                    case 'valid':
+                        return '✓ Username корректен';
+                    default:
+                        return '';
+                }
+            }
+
+            document.addEventListener('input', function(e) {
+                const input = e.target.closest('.username-input');
+                if (!input) return;
+                const hint = input.parentElement.querySelector('.validation-hint');
+                const status = validateUsername(input.value);
+                input.classList.remove('invalid', 'valid');
+                if (hint) {
+                    hint.classList.remove('error', 'success');
+                    if (status === 'valid') {
+                        input.classList.add('valid');
+                        hint.classList.add('success');
+                    } else if (status !== 'empty') {
+                        input.classList.add('invalid');
+                        hint.classList.add('error');
+                    }
+                    hint.textContent = getValidationMessage(status);
+                }
+                updatePayButtonState(input);
+            });
+
+            // ═══════════════════════════════════════════
+            // ЛОГИКА ЗВЁЗД
+            // ═══════════════════════════════════════════
+            document.addEventListener('input', function(e) {
+                const starsQtyInput = e.target.closest('.stars-qty-input');
+                const starsRubInput = e.target.closest('.stars-rub-input');
+                if (starsQtyInput) {
+                    const qty = parseInt(starsQtyInput.value) || 0;
+                    const totalEl = document.getElementById('starsTotal');
+                    const total = qty * CONFIG.starRate;
+                    totalEl.textContent = total > 0 ? `${total.toFixed(0)} ₽` : '— ₽';
+                    if (total > 0) {
+                        totalEl.classList.add('pulse');
+                        setTimeout(() => totalEl.classList.remove('pulse'), 250);
+                    }
+                    updateStarsPayButton();
+                }
+                if (starsRubInput) {
+                    const rub = parseInt(starsRubInput.value) || 0;
+                    const hint = document.getElementById('starsReverseHint');
+                    const starsCount = Math.floor(rub / CONFIG.starRate);
+                    if (rub > 0 && starsCount < CONFIG.minStars) {
+                        hint.textContent =
+                            `Можно получить ${starsCount} зв. (мин. заказ: ${CONFIG.minStars} зв., нужно ${Math.ceil(CONFIG.minStars * CONFIG.starRate)} ₽)`;
+                        hint.classList.add('error');
+                        hint.classList.remove('success');
+                    } else if (rub > 0) {
+                        hint.textContent = `Можно получить ${starsCount} звёзд за ${rub} ₽`;
+                        hint.classList.add('success');
+                        hint.classList.remove('error');
+                    } else {
+                        hint.textContent = 'Сколько звёзд можно получить';
+                        hint.classList.remove('error', 'success');
+                    }
+                }
+            });
+
+            function updateStarsPayButton() {
+                const card = document.querySelector('#cardsStars .glass-card');
+                if (!card) return;
+                const qtyInput = card.querySelector('.stars-qty-input');
+                const usernameInput = card.querySelector('.username-input');
+                const payBtn = card.querySelector('.pay-btn');
+                const qty = parseInt(qtyInput?.value) || 0;
+                const usernameStatus = validateUsername(usernameInput?.value || '');
+                const isValid = qty >= CONFIG.minStars && usernameStatus === 'valid';
+                payBtn.disabled = !isValid;
+            }
+
+            // ═══════════════════════════════════════════
+            // ЛОГИКА TON
+            // ═══════════════════════════════════════════
+            document.addEventListener('input', function(e) {
+                const tonQtyInput = e.target.closest('.ton-qty-input');
+                if (tonQtyInput) {
+                    const qty = parseInt(tonQtyInput.value) || 0;
+                    const totalEl = document.getElementById('tonTotal');
+                    const total = qty * CONFIG.tonPriceFixed;
+                    totalEl.textContent = total > 0 ? `${total.toFixed(0)} ₽` : '— ₽';
+                    if (total > 0) {
+                        totalEl.classList.add('pulse');
+                        setTimeout(() => totalEl.classList.remove('pulse'), 250);
+                    }
+                    updateTonPayButton();
+                }
+            });
+
+            function updateTonPayButton() {
+                const card = document.querySelector('#cardsTon .glass-card');
+                if (!card) return;
+                const qtyInput = card.querySelector('.ton-qty-input');
+                const usernameInput = card.querySelector('.username-input');
+                const payBtn = card.querySelector('.pay-btn');
+                const qty = parseInt(qtyInput?.value) || 0;
+                const usernameStatus = validateUsername(usernameInput?.value || '');
+                const isValid = qty >= 1 && Number.isInteger(qty) && usernameStatus === 'valid';
+                payBtn.disabled = !isValid;
+            }
+
+            // ═══════════════════════════════════════════
+            // ЛОГИКА PREMIUM (выбор карточки)
+            // ═══════════════════════════════════════════
+            document.addEventListener('click', function(e) {
+                const premiumCard = e.target.closest('.premium-option');
+                if (premiumCard && !e.target.closest('.pay-btn') && !e.target.closest('input')) {
+                    const index = parseInt(premiumCard.getAttribute('data-index'));
+                    selectedPremiumIndex = index;
+                    document.querySelectorAll('.premium-option').forEach(c => c.classList.remove(
+                        'selected-card'));
+                    premiumCard.classList.add('selected-card');
+                    updatePremiumPayButtons();
+                }
+                const accountCard = e.target.closest('.account-option');
+                if (accountCard && !e.target.closest('.pay-btn') && !e.target.closest('input')) {
+                    const index = parseInt(accountCard.getAttribute('data-index'));
+                    selectedAccountIndex = index;
+                    document.querySelectorAll('.account-option').forEach(c => c.classList.remove(
+                        'selected-card'));
+                    accountCard.classList.add('selected-card');
+                    updateAccountPayButtons();
+                }
+            });
+
+            function updatePremiumPayButtons() {
+                document.querySelectorAll('.premium-option').forEach((card, i) => {
+                    const payBtn = card.querySelector('.pay-btn');
+                    const usernameInput = card.querySelector('.username-input');
+                    const usernameStatus = validateUsername(usernameInput?.value || '');
+                    const isSelected = i === selectedPremiumIndex;
+                    payBtn.disabled = !(isSelected && usernameStatus === 'valid');
+                });
+            }
+
+            function updateAccountPayButtons() {
+                document.querySelectorAll('.account-option').forEach((card, i) => {
+                    const payBtn = card.querySelector('.pay-btn');
+                    const usernameInput = card.querySelector('.username-input');
+                    const usernameStatus = validateUsername(usernameInput?.value || '');
+                    const isSelected = i === selectedAccountIndex;
+                    payBtn.disabled = !(isSelected && usernameStatus === 'valid');
+                });
+            }
+
+            function updatePayButtonState(input) {
+                const card = input.closest('.glass-card');
+                if (!card) return;
+                if (card.closest('#cardsStars')) updateStarsPayButton();
+                if (card.closest('#cardsTon')) updateTonPayButton();
+                if (card.closest('#cardsPremium')) updatePremiumPayButtons();
+                if (card.closest('#cardsAccounts')) updateAccountPayButtons();
+            }
+
+            // ═══════════════════════════════════════════
+            // МОДАЛЬНОЕ ОКНО
+            // ═══════════════════════════════════════════
+            function openModal(orderData) {
+                currentOrderData = orderData;
+                modalOrderInfo.textContent =
+                    `Заказ: ${orderData.productTitle} | Username: ${orderData.username} | Сумма: ${orderData.price}`;
+                modalSuccess.style.display = 'none';
+                btnPaid.style.display = 'block';
+                btnPaid.disabled = false;
+                btnPaid.textContent = 'Я оплатил';
+                modalOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modalOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+                currentOrderData = null;
+                setTimeout(() => {
+                    modalSuccess.style.display = 'none';
+                    btnPaid.style.display = 'block';
+                    btnPaid.disabled = false;
+                    btnPaid.textContent = 'Я оплатил';
+                }, 400);
+            }
+
+            modalClose.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) closeModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
+            });
+
+            // Копирование реквизитов
+            document.querySelectorAll('.btn-copy').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const textToCopy = this.getAttribute('data-copy');
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        this.textContent = '✓ Скопировано';
+                        this.classList.add('copied');
+                        setTimeout(() => {
+                            this.textContent = 'Копировать';
+                            this.classList.remove('copied');
+                        }, 1800);
+                    }).catch(() => {
+                        this.textContent = 'Ошибка';
+                        setTimeout(() => { this.textContent = 'Копировать'; }, 1500);
+                    });
+                });
+            });
+
+            // Кнопка "Я оплатил"
+            btnPaid.addEventListener('click', async function() {
+                if (!currentOrderData) return;
+                this.disabled = true;
+                this.textContent = 'Отправка...';
+
+                const message = `💎 *Новый заказ SAYLAR*%0A` +
+                    `📦 Товар: ${currentOrderData.productTitle}%0A` +
+                    `👤 Username: ${currentOrderData.username}%0A` +
+                    `💰 Сумма: ${currentOrderData.price}%0A` +
+                    `🕐 Время: ${new Date().toLocaleString('ru-RU')}`;
+
+                const url =
+                    `https://api.telegram.org/bot${CONFIG.telegramToken}/sendMessage?chat_id=${CONFIG.telegramChatId}&text=${message}&parse_mode=Markdown`;
+                try {
+                    const resp = await fetch(url);
+                    const data = await resp.json();
+                    if (data.ok) {
+                        modalSuccess.style.display = 'block';
+                        btnPaid.style.display = 'none';
+                        setTimeout(closeModal, 3000);
+                    } else {
+                        alert('Ошибка отправки. Попробуйте ещё раз.');
+                        this.disabled = false;
+                        this.textContent = 'Я оплатил';
+                    }
+                } catch (err) {
+                    alert('Ошибка сети. Проверьте соединение.');
+                    this.disabled = false;
+                    this.textContent = 'Я оплатил';
+                }
+            });
+
+            // ═══════════════════════════════════════════
+            // ОБРАБОТКА КНОПКИ "ОПЛАТИТЬ"
+            // ═══════════════════════════════════════════
+            document.addEventListener('click', function(e) {
+                const payBtn = e.target.closest('.pay-btn');
+                if (!payBtn || payBtn.disabled) return;
+                const card = payBtn.closest('.glass-card');
+                const category = card.getAttribute('data-category');
+                const usernameInput = card.querySelector('.username-input');
+                const username = usernameInput?.value?.trim() || '';
+
+                if (validateUsername(username) !== 'valid') {
+                    if (usernameInput) {
+                        usernameInput.classList.add('invalid');
+                        usernameInput.style.animation = 'none';
+                        void usernameInput.offsetWidth;
+                        usernameInput.style.animation = 'shake 0.5s ease';
+                    }
+                    return;
+                }
+
+                let productTitle = '';
+                let price = '';
+
+                if (category === 'stars') {
+                    const qty = parseInt(card.querySelector('.stars-qty-input')?.value) || 0;
+                    const total = qty * CONFIG.starRate;
+                    productTitle = `${qty} Звёзд`;
+                    price = `${total.toFixed(0)} ₽`;
+                } else if (category === 'ton') {
+                    const qty = parseInt(card.querySelector('.ton-qty-input')?.value) || 0;
+                    const total = qty * CONFIG.tonPriceFixed;
+                    productTitle = `${qty} TON`;
+                    price = `${total.toFixed(0)} ₽`;
+                } else if (category === 'premium') {
+                    const idx = parseInt(card.getAttribute('data-index'));
+                    const p = CONFIG.premiumPrices[idx];
+                    productTitle = p.title;
+                    price = `${p.price} ₽`;
+                } else if (category === 'accounts') {
+                    const idx = parseInt(card.getAttribute('data-index'));
+                    const acc = CONFIG.accounts[idx];
+                    productTitle = acc.title;
+                    price = `${acc.price} ₽`;
+                }
+
+                openModal({ productTitle, price, username, category });
+            });
+
+            // ═══════════════════════════════════════════
+            // ИНИЦИАЛИЗАЦИЯ
+            // ═══════════════════════════════════════════
+            console.log('%c🌌 SAYLAR Premium Dimension %cзагружен',
+                'font-size:1.2em;letter-spacing:0.1em;color:#d8d0f0;',
+                'color:#888;');
+            console.log('%c⭐ Звёзды: ' + CONFIG.starRate + '₽/шт | Мин: ' + CONFIG.minStars + ' | 💎 TON: ' + CONFIG
+                .tonPriceFixed + '₽',
+                'color:#b0a890;');
+            console.log('%c👑 Premium: 3 мес=' + CONFIG.premiumPrices[0].price + '₽ | 6 мес=' + CONFIG.premiumPrices[1]
+                .price + '₽ | 12 мес=' + CONFIG.premiumPrices[2].price + '₽',
+                'color:#c9c2e2;');
+            console.log('%c🌍 Земля вращается. Звёзды мерцают. Портал открыт ✦',
+                'color:#7d7898;font-style:italic;');
+
+            // Первичный reveal карточек после загрузки
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    const visibleCards = document.querySelectorAll('#panel-stars .glass-card');
+                    visibleCards.forEach((c, i) => {
+                        c.style.animationDelay = (i * 0.07) + 's';
+                        c.classList.add('revealed');
+                    });
+                }, 2550);
+            });
+        })();
+    </script>
 </body>
 </html>
