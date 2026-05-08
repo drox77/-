@@ -1,1820 +1,948 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAYLAR — Premium Dimension</title>
-    <style>
-        :root {
-            --bg-deep: #020510;
-            --bg-void: #060a18;
-            --glass-bg: rgba(255, 255, 255, 0.025);
-            --glass-border: rgba(255, 255, 255, 0.09);
-            --glass-border-hover: rgba(255, 255, 255, 0.20);
-            --glass-shine: rgba(255, 255, 255, 0.05);
-            --text-primary: #e8e5f2;
-            --text-secondary: #b5b0cc;
-            --text-muted: #7d7898;
-            --accent-silver: #c5bfdd;
-            --accent-pearl: #f2edfc;
-            --card-radius: 30px;
-            --transition-premium: 0.55s cubic-bezier(0.23, 1, 0.32, 1);
-            --transition-fast: 0.28s cubic-bezier(0.23, 1, 0.32, 1);
-            --font-heading: 'Georgia', 'Times New Roman', 'Cormorant Garamond', serif;
-            --font-body: 'SF Pro Display', 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
-            --tbank-yellow: #e8c547;
-            --tbank-yellow-glow: rgba(232, 197, 71, 0.5);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SAYLAR — Telegram Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════ RESET & BASE */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#f8f8f6;--off:#d4d0c8;--mid:#888680;--dim:#3a3836;--dark:#141210;--black:#0a0908;
+  --glass:rgba(248,248,246,.04);--glass2:rgba(248,248,246,.08);
+  --border:rgba(248,248,246,.1);--border2:rgba(248,248,246,.18);
+  --accent:#f8f8f6;--glow:rgba(248,248,246,.06);
+  --radius:18px;--radius-sm:12px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--black);color:var(--white);
+  font-family:'DM Mono',monospace;
+  min-height:100vh;overflow-x:hidden;
+}
+::selection{background:rgba(248,248,246,.2)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html {
-            font-size: 16px;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-        }
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-deep);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            cursor: default;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            position: relative;
-        }
+/* ═══════════════════════════════════════════ PARTICLES CANVAS */
+#canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
 
-        /* ── Фоновые слои ─────────────────────────── */
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .mouse-glow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            background: radial-gradient(circle 520px at var(--mx, 50%) var(--my, 50%),
-                    rgba(210, 200, 230, 0.04) 0%,
-                    rgba(170, 160, 200, 0.015) 40%,
-                    transparent 70%);
-            transition: background 0.18s ease-out;
-        }
-        .noise-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 200px 200px;
-        }
+/* ═══════════════════════════════════════════ LAYOUT */
+.site{position:relative;z-index:1}
 
-        /* ── Прелоадер ────────────────────────────── */
-        .preloader {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #03060e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
-                visibility 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-            pointer-events: all;
-        }
-        .preloader.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        .preloader-logo {
-            font-family: var(--font-heading);
-            font-size: clamp(2.6rem, 6.5vw, 4.8rem);
-            letter-spacing: 0.24em;
-            color: var(--accent-pearl);
-            text-shadow: 0 0 70px rgba(210, 195, 240, 0.55),
-                0 0 150px rgba(180, 160, 220, 0.3),
-                0 3px 18px rgba(0, 0, 0, 0.6);
-            animation: logoReveal 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            transform-origin: center;
-            filter: blur(5px);
-            opacity: 0;
-        }
-        @keyframes logoReveal {
-            0% {
-                filter: blur(14px);
-                opacity: 0;
-                transform: scale(0.45);
-                letter-spacing: 0.55em;
-            }
-            55% {
-                filter: blur(2px);
-                opacity: 1;
-                transform: scale(1.03);
-                letter-spacing: 0.24em;
-            }
-            100% {
-                filter: blur(0px);
-                opacity: 1;
-                transform: scale(1);
-                letter-spacing: 0.24em;
-            }
-        }
-        .preloader-ring {
-            width: 48px;
-            height: 48px;
-            margin-top: 26px;
-            border: 2px solid rgba(255, 255, 255, 0.12);
-            border-top-color: rgba(210, 195, 235, 0.7);
-            border-radius: 50%;
-            animation: ringSpin 0.85s linear infinite;
-            opacity: 0;
-            animation-delay: 0.5s;
-            animation-fill-mode: forwards;
-        }
-        @keyframes ringSpin {
-            to {
-                transform: rotate(360deg);
-            }
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
+/* ═══════════════════════════════════════════ HERO */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  padding:40px 24px;
+}
+.hero-noise{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.6;
+}
+.hero-line-h{
+  position:absolute;top:50%;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(248,248,246,.06),transparent);
+  transform:translateY(-1px);
+}
+.hero-line-v{
+  position:absolute;left:50%;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,transparent,rgba(248,248,246,.04),transparent);
+}
 
-        /* ── Основной контент ────────────────────── */
-        .main-content {
-            position: relative;
-            z-index: 3;
-            opacity: 0;
-            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1);
-            padding: 20px 18px 36px;
-            max-width: 1120px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .main-content.visible {
-            opacity: 1;
-        }
+.hero-content{position:relative;z-index:2;text-align:center}
 
-        /* ── Заголовок ────────────────────────────── */
-        .header {
-            text-align: center;
-            padding: 14px 0 4px;
-            width: 100%;
-        }
-        .header-logo {
-            font-family: var(--font-heading);
-            font-size: 2.1rem;
-            letter-spacing: 0.2em;
-            background: linear-gradient(180deg, #f7f4ff 0%, #c9c1e4 35%, #9b92bc 70%, #6b638c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 16px rgba(190, 175, 220, 0.45));
-            animation: headerGlow 5s ease-in-out infinite;
-        }
-        @keyframes headerGlow {
-            0%,
-            100% {
-                filter: drop-shadow(0 0 16px rgba(190, 175, 220, 0.45));
-            }
-            50% {
-                filter: drop-shadow(0 0 30px rgba(210, 195, 240, 0.7));
-            }
-        }
-        .header-subtitle {
-            font-size: 0.8rem;
-            letter-spacing: 0.3em;
-            color: var(--text-muted);
-            margin-top: 0px;
-            font-weight: 300;
-            text-transform: uppercase;
-        }
+/* SAYLAR main title */
+.hero-eyebrow{
+  font-family:'DM Mono',monospace;font-size:11px;letter-spacing:5px;
+  color:var(--mid);text-transform:uppercase;margin-bottom:32px;
+  opacity:0;transform:translateY(10px);
+  animation:revealUp .8s cubic-bezier(.22,1,.36,1) .2s forwards;
+}
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(80px,18vw,160px);font-weight:300;
+  letter-spacing:-4px;line-height:.9;
+  color:var(--white);
+  position:relative;
+  opacity:0;
+  animation:heroReveal 1.4s cubic-bezier(.22,1,.36,1) .4s forwards;
+}
+@keyframes heroReveal{
+  0%{opacity:0;transform:scale(.94) translateY(20px);filter:blur(12px)}
+  100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}
+}
+.hero-title-inner{
+  display:inline-block;
+  background:linear-gradient(135deg,#fff 0%,#ccc 40%,#fff 70%,#aaa 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:200%;
+  animation:shimmer 4s linear 2s infinite;
+}
+@keyframes shimmer{
+  0%{background-position:0 50%}100%{background-position:200% 50%}
+}
+.hero-sub{
+  font-family:'DM Mono',monospace;font-size:12px;letter-spacing:3px;
+  color:var(--mid);text-transform:uppercase;margin-top:28px;
+  opacity:0;transform:translateY(10px);
+  animation:revealUp .8s cubic-bezier(.22,1,.36,1) 1.1s forwards;
+}
+@keyframes revealUp{
+  to{opacity:1;transform:translateY(0)}
+}
 
-        /* ── Табы ─────────────────────────────────── */
-        .tabs-nav {
-            display: flex;
-            gap: 7px;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            padding: 6px 2px 14px;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            justify-content: center;
-            width: 100%;
-            max-width: 680px;
-            position: relative;
-            z-index: 4;
-        }
-        .tabs-nav::-webkit-scrollbar {
-            display: none;
-        }
-        .tab-btn {
-            position: relative;
-            padding: 11px 24px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            background: rgba(255, 255, 255, 0.02);
-            color: var(--text-secondary);
-            font-family: var(--font-body);
-            font-size: 0.88rem;
-            letter-spacing: 0.06em;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: var(--transition-fast);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            outline: none;
-            font-weight: 400;
-            flex-shrink: 0;
-        }
-        .tab-btn:hover {
-            border-color: rgba(255, 255, 255, 0.18);
-            background: rgba(255, 255, 255, 0.05);
-            color: #d3cee4;
-            box-shadow: 0 0 22px rgba(160, 145, 200, 0.14);
-        }
-        .tab-btn.active {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.25);
-            color: #f5f2ff;
-            font-weight: 500;
-            box-shadow: 0 0 28px rgba(180, 160, 220, 0.22),
-                inset 0 1px 0 rgba(255, 255, 255, 0.07);
-            transform: scale(1.05);
-            letter-spacing: 0.08em;
-        }
-        .tab-btn::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 52px;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.14) 50%, rgba(255,
-                        255, 255, 0) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        .tab-btn.active::after {
-            opacity: 1;
-        }
+.hero-actions{
+  margin-top:52px;display:flex;flex-direction:column;align-items:center;gap:18px;
+  opacity:0;transform:translateY(12px);
+  animation:revealUp .8s cubic-bezier(.22,1,.36,1) 1.4s forwards;
+}
+.btn-hero{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 40px;
+  border:1px solid var(--border2);border-radius:50px;
+  background:transparent;color:var(--white);
+  font-family:'DM Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;
+  transition:all .35s ease;
+  position:relative;overflow:hidden;
+}
+.btn-hero::before{
+  content:'';position:absolute;inset:0;
+  background:var(--glass2);opacity:0;transition:opacity .3s;
+}
+.btn-hero:hover::before{opacity:1}
+.btn-hero:hover{border-color:rgba(248,248,246,.35);letter-spacing:4px}
+.btn-hero svg{transition:transform .3s}
+.btn-hero:hover svg{transform:translateY(4px)}
 
-        /* ── Контейнер вкладок ───────────────────── */
-        .tab-panels {
-            width: 100%;
-            position: relative;
-            min-height: 380px;
-        }
-        .tab-panel {
-            display: none;
-            width: 100%;
-            animation: panelOut 0.35s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
-        .tab-panel.active {
-            display: block;
-            animation: panelIn 0.45s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
-        @keyframes panelIn {
-            from {
-                opacity: 0;
-                transform: translateX(16px);
-                filter: blur(5px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-                filter: blur(0);
-            }
-        }
-        @keyframes panelOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-                filter: blur(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(-16px);
-                filter: blur(5px);
-            }
-        }
+.reviews-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mid);text-decoration:none;
+  border:1px solid var(--border);border-radius:50px;
+  padding:9px 20px;
+  transition:all .3s;
+}
+.reviews-pill:hover{color:var(--white);border-color:var(--border2)}
+.reviews-dot{width:5px;height:5px;border-radius:50%;background:var(--mid);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-        /* ── Сетка карточек ──────────────────────── */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-            width: 100%;
-            perspective: 1100px;
-        }
+/* scroll indicator */
+.scroll-hint{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  opacity:0;animation:revealUp .8s .6s forwards;
+}
+.scroll-line{
+  width:1px;height:50px;background:linear-gradient(180deg,transparent,var(--mid));
+  margin:0 auto;animation:scrollPulse 2s infinite;
+}
+@keyframes scrollPulse{
+  0%{transform:scaleY(0);transform-origin:top;opacity:0}
+  50%{transform:scaleY(1);transform-origin:top;opacity:1}
+  100%{transform:scaleY(1);transform-origin:bottom;opacity:0}
+}
 
-        /* ── Стеклянная карточка ─────────────────── */
-        .glass-card {
-            position: relative;
-            background: rgba(255, 255, 255, 0.022);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border-radius: var(--card-radius);
-            padding: 26px 22px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            box-shadow: 0 8px 38px rgba(0, 0, 0, 0.45),
-                0 1px 3px rgba(255, 255, 255, 0.03) inset,
-                0 18px 55px rgba(0, 0, 0, 0.32),
-                0 0 0 1px rgba(255, 255, 255, 0.025) inset;
-            transition: var(--transition-premium);
-            transform-style: preserve-3d;
-            cursor: default;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(28px) scale(0.86);
-            animation: cardAppear 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            animation-play-state: paused;
-            will-change: transform, box-shadow;
-        }
-        .glass-card.revealed {
-            animation-play-state: running;
-        }
-        .glass-card.selected-card {
-            border-color: rgba(255, 255, 255, 0.28);
-            box-shadow: 0 8px 38px rgba(0, 0, 0, 0.45),
-                0 1px 3px rgba(255, 255, 255, 0.05) inset,
-                0 18px 55px rgba(0, 0, 0, 0.35),
-                0 0 0 2px rgba(180, 165, 210, 0.3) inset,
-                0 0 40px rgba(170, 150, 210, 0.18);
-            background: rgba(255, 255, 255, 0.04);
-        }
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: calc(var(--card-radius) + 2px);
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 30%, rgba(255,
-                        255, 255, 0.10) 60%, rgba(255, 255, 255, 0.01) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            z-index: 1;
-            transition: opacity 0.5s;
-        }
-        .glass-card:hover::before {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.07) 30%, rgba(255,
-                        255, 255, 0.2) 60%, rgba(255, 255, 255, 0.03) 100%);
-        }
-        .glass-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .glass-card:hover::after {
-            opacity: 1;
-        }
-        @keyframes cardAppear {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        .glass-card:hover {
-            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55),
-                0 2px 5px rgba(255, 255, 255, 0.05) inset,
-                0 28px 70px rgba(0, 0, 0, 0.38),
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-                0 0 45px rgba(170, 150, 210, 0.08);
-            border-color: rgba(255, 255, 255, 0.16);
-        }
-        .card-content {
-            position: relative;
-            z-index: 2;
-        }
-        .card-title {
-            font-family: var(--font-heading);
-            font-size: 1.2rem;
-            letter-spacing: 0.05em;
-            color: var(--accent-pearl);
-            margin-bottom: 4px;
-            font-weight: 400;
-        }
-        .card-desc {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            letter-spacing: 0.03em;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-        .card-price {
-            font-size: 1.6rem;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            color: #e9e2f6;
-            margin-bottom: 3px;
-            font-family: var(--font-heading);
-            transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .card-price.pulse {
-            transform: scale(1.08);
-        }
-        .card-price-sub {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
-            margin-bottom: 14px;
-        }
-        .card-input {
-            width: 100%;
-            padding: 11px 15px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.10);
-            background: rgba(255, 255, 255, 0.03);
-            color: #e0ddf0;
-            font-family: var(--font-body);
-            font-size: 0.88rem;
-            letter-spacing: 0.04em;
-            outline: none;
-            transition: var(--transition-fast);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            margin-bottom: 10px;
-        }
-        .card-input:focus {
-            border-color: rgba(255, 255, 255, 0.28);
-            box-shadow: 0 0 18px rgba(170, 155, 210, 0.12);
-            background: rgba(255, 255, 255, 0.06);
-        }
-        .card-input.invalid {
-            border-color: rgba(255, 110, 110, 0.5);
-            box-shadow: 0 0 14px rgba(255, 80, 80, 0.08);
-        }
-        .card-input.valid {
-            border-color: rgba(130, 210, 130, 0.45);
-            box-shadow: 0 0 14px rgba(110, 210, 110, 0.07);
-        }
-        .validation-hint {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            margin-top: -6px;
-            margin-bottom: 8px;
-            letter-spacing: 0.03em;
-            min-height: 16px;
-            transition: color 0.3s;
-        }
-        .validation-hint.error {
-            color: #e07070;
-        }
-        .validation-hint.success {
-            color: #80c880;
-        }
+/* ═══════════════════════════════════════════ SECTION WRAPPER */
+.shop-section{
+  padding:80px 24px 100px;
+  max-width:860px;margin:0 auto;
+}
+.section-label{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:5px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:48px;text-align:center;
+}
 
-        /* ── Кнопки ───────────────────────────────── */
-        .btn-premium {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-            padding: 13px 18px;
-            border-radius: 18px;
-            border: none;
-            background: rgba(255, 255, 255, 0.06);
-            color: #e8e0f5;
-            font-family: var(--font-body);
-            font-size: 0.88rem;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            font-weight: 500;
-            text-transform: uppercase;
-            transition: var(--transition-fast);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            overflow: hidden;
-            z-index: 1;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            outline: none;
-        }
-        .btn-premium:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            filter: grayscale(30%);
-        }
-        .btn-premium:disabled:hover {
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            color: #e8e0f5;
-        }
-        .btn-premium:disabled::before {
-            display: none;
-        }
-        .btn-premium::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.09) 40%, rgba(255, 255, 255, 0.16) 50%,
-                    rgba(255, 255, 255, 0.09) 60%, transparent 100%);
-            z-index: 2;
-            transition: left 0.5s ease;
-        }
-        .btn-premium:hover:not(:disabled)::before {
-            left: 100%;
-        }
-        .btn-premium:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.11);
-            box-shadow: 0 7px 28px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.09),
-                0 0 32px rgba(170, 150, 210, 0.10);
-            color: #fff;
-        }
-        .btn-premium:active:not(:disabled) {
-            transform: scale(0.96);
-            transition: transform 0.1s;
-        }
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.32);
-            transform: scale(0);
-            animation: rippleEffect 0.7s ease-out forwards;
-            pointer-events: none;
-            z-index: 3;
-        }
-        @keyframes rippleEffect {
-            to {
-                transform: scale(6);
-                opacity: 0;
-            }
-        }
-        @keyframes shake {
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-            10% {
-                transform: translateX(-5px);
-            }
-            30% {
-                transform: translateX(5px);
-            }
-            50% {
-                transform: translateX(-3px);
-            }
-            70% {
-                transform: translateX(3px);
-            }
-            90% {
-                transform: translateX(-2px);
-            }
-        }
+/* ═══════════════════════════════════════════ TABS */
+.tabs-nav{
+  display:flex;gap:4px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:50px;
+  padding:5px;margin-bottom:48px;
+  flex-wrap:wrap;
+}
+.tab-btn{
+  flex:1;min-width:0;
+  padding:12px 8px;border-radius:50px;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mid);background:transparent;border:none;cursor:pointer;
+  transition:all .28s ease;white-space:nowrap;
+}
+.tab-btn:hover{color:var(--white)}
+.tab-btn.active{
+  background:rgba(248,248,246,.08);
+  border:1px solid var(--border2);color:var(--white);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+}
 
-        /* ── Особые элементы TON ─────────────────── */
-        .ton-rate-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.74rem;
-            color: var(--text-muted);
-            letter-spacing: 0.04em;
-            padding: 6px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            margin-top: 4px;
-        }
-        .ton-rate-row span {
-            color: #c9c2e2;
-            font-weight: 500;
-        }
-        .ton-markup {
-            color: #b8b090 !important;
-            font-size: 0.7rem;
-        }
+.tab-panel{display:none}
+.tab-panel.active{
+  display:block;
+  animation:panelIn .35s cubic-bezier(.22,1,.36,1);
+}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-        /* ── Модальное окно ──────────────────────── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: rgba(3, 3, 8, 0.78);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.45s cubic-bezier(0.23, 1, 0.32, 1),
-                visibility 0.45s;
-        }
-        .modal-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal {
-            background: rgba(28, 26, 40, 0.78);
-            backdrop-filter: blur(26px);
-            -webkit-backdrop-filter: blur(26px);
-            border-radius: 32px;
-            padding: 30px 26px 22px;
-            border: 1px solid rgba(255, 255, 255, 0.11);
-            box-shadow: 0 28px 75px rgba(0, 0, 0, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.035);
-            max-width: 440px;
-            width: 92%;
-            transform: scale(0.72);
-            transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
-            text-align: center;
-            position: relative;
-            z-index: 101;
-        }
-        .modal-overlay.open .modal {
-            transform: scale(1);
-        }
-        .modal h3 {
-            font-family: var(--font-heading);
-            font-size: 1.4rem;
-            letter-spacing: 0.06em;
-            margin-bottom: 16px;
-            color: var(--accent-pearl);
-        }
-        .modal-order-info {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-bottom: 14px;
-            letter-spacing: 0.04em;
-        }
-        .modal-req {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.025);
-            border-radius: 14px;
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.83rem;
-            letter-spacing: 0.04em;
-            white-space: nowrap;
-            gap: 10px;
-        }
-        .modal-req.tbank-highlight {
-            border-color: rgba(232, 197, 71, 0.35);
-            background: rgba(232, 197, 71, 0.06);
-            box-shadow: 0 0 20px rgba(232, 197, 71, 0.08);
-        }
-        .modal-req strong {
-            color: #d8d0f0;
-            font-weight: 500;
-            flex-shrink: 0;
-        }
-        .modal-req .req-value {
-            color: #e8c547;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex-shrink: 1;
-            min-width: 0;
-        }
-        .btn-copy {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            color: #c8c0e0;
-            padding: 7px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.72rem;
-            letter-spacing: 0.05em;
-            transition: var(--transition-fast);
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .btn-copy:hover {
-            background: rgba(255, 255, 255, 0.13);
-            border-color: rgba(255, 255, 255, 0.28);
-        }
-        .btn-copy.copied {
-            background: rgba(120, 200, 120, 0.2);
-            border-color: rgba(140, 220, 140, 0.5);
-            color: #b0e8b0;
-        }
-        .btn-paid {
-            margin-top: 14px;
-            width: 100%;
-            padding: 13px;
-            border-radius: 18px;
-            border: none;
-            background: rgba(200, 180, 230, 0.14);
-            color: #e8e0f5;
-            font-size: 0.88rem;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-        .btn-paid:hover {
-            background: rgba(200, 180, 230, 0.24);
-            box-shadow: 0 0 28px rgba(170, 150, 210, 0.18);
-        }
-        .modal-success {
-            display: none;
-            color: #b0e8b0;
-            font-size: 0.85rem;
-            letter-spacing: 0.05em;
-            margin-top: 10px;
-            animation: fadeInUp 0.4s ease;
-        }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .modal-close {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            line-height: 1;
-        }
-        .modal-close:hover {
-            color: #fff;
-            transform: scale(1.15);
-        }
+/* ═══════════════════════════════════════════ GLASS CARD */
+.glass-card{
+  background:var(--glass);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:32px;position:relative;overflow:hidden;
+}
+.glass-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+}
+/* diagonal reflection */
+.glass-card::after{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(255,255,255,.03) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
 
-        /* ── Адаптив ──────────────────────────────── */
-        @media (max-width: 768px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
-                gap: 14px;
-            }
-            .tabs-nav {
-                justify-content: flex-start;
-                gap: 4px;
-                padding: 4px 0 10px;
-            }
-            .tab-btn {
-                padding: 9px 16px;
-                font-size: 0.76rem;
-                letter-spacing: 0.04em;
-            }
-            .glass-card {
-                padding: 18px 14px 16px;
-                border-radius: 24px;
-            }
-            .glass-card::before {
-                border-radius: 26px;
-            }
-            .card-title {
-                font-size: 1.05rem;
-            }
-            .card-price {
-                font-size: 1.3rem;
-            }
-            .btn-premium {
-                padding: 11px 14px;
-                font-size: 0.8rem;
-            }
-            .header-logo {
-                font-size: 1.5rem;
-            }
-            .mouse-glow {
-                background: radial-gradient(circle 280px at var(--mx, 50%) var(--my, 50%),
-                        rgba(210, 200, 230, 0.035) 0%,
-                        transparent 70%);
-            }
-            .modal {
-                padding: 22px 16px 16px;
-                border-radius: 24px;
-            }
-            .modal-req {
-                font-size: 0.72rem;
-                padding: 10px 12px;
-                gap: 6px;
-            }
-        }
-        @media (min-width: 1600px) {
-            .cards-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 26px;
-            }
-            .glass-card {
-                padding: 32px 26px 24px;
-            }
-        }
-    </style>
+/* ═══════════════════════════════════════════ FORM ELEMENTS */
+.field{margin-bottom:20px}
+.field-label{
+  display:block;font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--mid);margin-bottom:8px;
+}
+.field-input{
+  width:100%;padding:14px 18px;
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--white);font-family:'DM Mono',monospace;font-size:14px;
+  outline:none;transition:border-color .25s,box-shadow .25s;
+  -moz-appearance:textfield;
+}
+.field-input::-webkit-outer-spin-button,
+.field-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.field-input::placeholder{color:var(--dim);font-size:12px}
+.field-input:focus{
+  border-color:rgba(248,248,246,.3);
+  box-shadow:0 0 0 3px rgba(248,248,246,.04);
+}
+.field-input.err{border-color:rgba(255,100,100,.4)}
+
+.field-err{
+  font-size:10px;letter-spacing:1px;color:#e06060;
+  margin-top:6px;min-height:16px;display:block;
+}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.two-col{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════════════ TOTAL DISPLAY */
+.total-display{
+  display:flex;align-items:baseline;gap:8px;
+  margin:20px 0 24px;padding:16px 20px;
+  background:rgba(255,255,255,.02);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+}
+.total-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mid)}
+.total-amount{
+  font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;
+  background:linear-gradient(135deg,var(--white),var(--off));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ═══════════════════════════════════════════ PREMIUM CARDS */
+.premium-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;
+}
+@media(max-width:600px){.premium-grid{grid-template-columns:1fr}}
+
+.premium-card{
+  background:rgba(255,255,255,.025);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 20px;
+  position:relative;overflow:hidden;
+  transition:border-color .25s,transform .25s;cursor:default;
+}
+.premium-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+}
+.premium-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.prem-duration{
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mid);margin-bottom:10px;
+}
+.prem-price{
+  font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;
+  color:var(--white);white-space:nowrap;margin-bottom:20px;
+  background:linear-gradient(135deg,var(--white),var(--off));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.prem-desc{font-size:10px;color:var(--mid);margin-bottom:20px;letter-spacing:1px}
+
+/* ═══════════════════════════════════════════ ACCOUNT OPTIONS */
+.account-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+@media(max-width:480px){.account-opts{grid-template-columns:1fr}}
+.account-opt{
+  background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 20px;position:relative;overflow:hidden;transition:all .25s;
+}
+.account-opt::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+}
+.account-opt:hover{border-color:var(--border2);transform:translateY(-2px)}
+.acc-country{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
+.acc-flag{font-size:24px;margin-bottom:8px}
+.acc-price{
+  font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;
+  background:linear-gradient(135deg,var(--white),var(--off));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:18px;
+}
+
+/* ═══════════════════════════════════════════ TON SECTION */
+.ton-rate{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mid);
+  border:1px solid var(--border);border-radius:50px;padding:7px 16px;margin-bottom:20px;
+}
+
+/* ═══════════════════════════════════════════ BUTTON */
+.btn-pay{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:16px;
+  background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--white);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
+}
+.btn-pay::before{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.06);opacity:0;transition:opacity .3s;
+}
+.btn-pay:hover:not(:disabled)::before{opacity:1}
+.btn-pay:hover:not(:disabled){border-color:rgba(248,248,246,.4);letter-spacing:4px}
+.btn-pay:disabled{opacity:.3;cursor:not-allowed}
+
+.btn-pay-sm{
+  width:auto;padding:13px 24px;
+  font-size:10px;
+}
+
+/* ═══════════════════════════════════════════ SCROLL REVEAL */
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════════════════ DIVIDER */
+.section-divider{
+  width:1px;height:80px;background:linear-gradient(180deg,transparent,var(--dim),transparent);
+  margin:0 auto;
+}
+
+/* ═══════════════════════════════════════════ MODAL OVERLAY */
+.modal-overlay{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(8,7,6,.88);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal-box{
+  background:rgba(16,14,12,.96);
+  border:1px solid rgba(248,248,246,.14);
+  border-radius:24px;
+  width:100%;max-width:400px;
+  position:relative;overflow:hidden;
+  animation:modalSlide .38s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 40px 80px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.08);
+}
+@keyframes modalSlide{
+  from{transform:scale(.93) translateY(20px);opacity:0}
+  to{transform:scale(1) translateY(0);opacity:1}
+}
+.modal-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+}
+/* reflection */
+.modal-box::after{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:180px;height:180px;
+  background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+
+.modal-inner{padding:36px 32px 32px}
+
+.modal-close{
+  position:absolute;top:18px;right:18px;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  color:var(--mid);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;z-index:2;
+}
+.modal-close:hover{border-color:var(--border2);color:var(--white)}
+
+.modal-eyebrow{
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:6px;
+}
+.modal-title{
+  font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;
+  color:var(--white);margin-bottom:28px;
+}
+
+/* TBANK block */
+.tbank-block{
+  background:linear-gradient(135deg,rgba(255,220,0,.07) 0%,rgba(255,200,0,.03) 100%);
+  border:1.5px solid rgba(255,215,0,.3);
+  border-radius:16px;padding:22px 20px;
+  margin-bottom:10px;
+  position:relative;overflow:hidden;
+}
+.tbank-block::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,215,0,.5),transparent);
+}
+.tbank-block::after{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;
+  background:radial-gradient(circle,rgba(255,215,0,.06) 0%,transparent 70%);
+  border-radius:50%;
+}
+.tbank-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.tbank-badge{
+  background:#FFD700;color:#1a1a00;
+  font-family:'DM Mono',monospace;font-weight:500;font-size:14px;
+  padding:5px 13px;border-radius:8px;
+  box-shadow:0 4px 16px rgba(255,215,0,.25);
+  letter-spacing:-.5px;
+}
+.tbank-name{font-size:15px;font-weight:400;color:var(--white)}
+.tbank-caption{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,.5)}
+
+.copy-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.copy-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,.5);margin-bottom:3px}
+.copy-val{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:#FFD700;letter-spacing:2px}
+.copy-val-sm{font-size:13px;color:rgba(255,215,0,.7)}
+.copy-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);
+  cursor:pointer;transition:all .2s;color:rgba(255,215,0,.6);flex-shrink:0;
+}
+.copy-btn:hover{background:rgba(255,215,0,.18);color:#FFD700}
+
+.bank-recipient{
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);
+  margin-top:8px;
+}
+
+.modal-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:16px 0}
+
+.btn-paid{
+  width:100%;padding:16px;
+  background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--white);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
+  margin-top:16px;
+}
+.btn-paid::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.06);opacity:0;transition:opacity .3s}
+.btn-paid:hover::before{opacity:1}
+.btn-paid:hover{border-color:rgba(248,248,246,.4)}
+
+.modal-success{
+  text-align:center;padding:8px 0;
+}
+.modal-success-icon{font-size:40px;margin-bottom:12px}
+.modal-success-title{
+  font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;
+  color:var(--white);margin-bottom:8px;
+}
+.modal-success-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mid)}
+
+/* toast */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:rgba(14,12,10,.95);border:1px solid var(--border2);
+  border-radius:50px;padding:11px 22px;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--white);
+  z-index:10000;pointer-events:none;
+  opacity:0;transition:opacity .3s;
+  white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+}
+.toast.show{opacity:1}
+
+/* ═══════════════════════════════════════════ FOOTER */
+.footer{
+  padding:40px 24px;text-align:center;border-top:1px solid var(--border);
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);
+}
+</style>
 </head>
 <body>
 
-    <!-- ═══════════════ ПРЕЛОАДЕР ═══════════════ -->
-    <div class="preloader" id="preloader">
-        <div class="preloader-logo">SAYLAR</div>
-        <div class="preloader-ring"></div>
+<!-- Particle canvas -->
+<canvas id="canvas"></canvas>
+
+<div class="site">
+
+  <!-- ══════════ HERO ══════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-noise"></div>
+    <div class="hero-line-h"></div>
+    <div class="hero-line-v"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Telegram Premium Shop</div>
+      <h1 class="hero-title"><span class="hero-title-inner">SAYLAR</span></h1>
+      <p class="hero-sub">Звёзды · Premium · TON · Аккаунты</p>
+      <div class="hero-actions">
+        <a href="#shop" class="btn-hero">
+          Перейти в магазин
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M6 1v10M1 6l5 5 5-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="https://t.me/saylarreviews" target="_blank" rel="noopener" class="reviews-pill">
+          <span class="reviews-dot"></span>
+          100+ отзывов
+        </a>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ SHOP ══════════ -->
+  <section class="shop-section" id="shop">
+    <p class="section-label reveal">— Каталог —</p>
+
+    <!-- TABS NAV -->
+    <div class="tabs-nav reveal">
+      <button class="tab-btn active" data-tab="stars">⭐ Звёзды</button>
+      <button class="tab-btn" data-tab="premium">👑 Premium</button>
+      <button class="tab-btn" data-tab="ton">💎 TON</button>
+      <button class="tab-btn" data-tab="accounts">📱 Аккаунты</button>
     </div>
 
-    <!-- ═══════════════ ФОНОВЫЕ СЛОИ ═══════════════ -->
-    <canvas id="bg-canvas"></canvas>
-    <div class="mouse-glow" id="mouseGlow"></div>
-    <div class="noise-overlay"></div>
-
-    <!-- ═══════════════ ОСНОВНОЙ КОНТЕНТ ═══════════════ -->
-    <main class="main-content" id="mainContent">
-        <header class="header">
-            <div class="header-logo">SAYLAR</div>
-            <div class="header-subtitle">Premium Dimension</div>
-        </header>
-
-        <!-- Табы -->
-        <nav class="tabs-nav" id="tabsNav">
-            <button class="tab-btn active" data-tab="stars">✦ Звёзды</button>
-            <button class="tab-btn" data-tab="premium">◆ Premium</button>
-            <button class="tab-btn" data-tab="ton">⬡ TON</button>
-            <button class="tab-btn" data-tab="accounts">◈ Аккаунты</button>
-        </nav>
-
-        <!-- Панели вкладок -->
-        <div class="tab-panels" id="tabPanels">
-            <!-- Звёзды -->
-            <div class="tab-panel active" id="panel-stars">
-                <div class="cards-grid" id="cardsStars"></div>
-            </div>
-            <!-- Premium -->
-            <div class="tab-panel" id="panel-premium">
-                <div class="cards-grid" id="cardsPremium"></div>
-            </div>
-            <!-- TON -->
-            <div class="tab-panel" id="panel-ton">
-                <div class="cards-grid" id="cardsTon"></div>
-            </div>
-            <!-- Аккаунты -->
-            <div class="tab-panel" id="panel-accounts">
-                <div class="cards-grid" id="cardsAccounts"></div>
-            </div>
+    <!-- ──────── TAB: STARS ──────── -->
+    <div class="tab-panel active" id="tab-stars">
+      <div class="glass-card reveal">
+        <div class="two-col">
+          <div class="field">
+            <label class="field-label" for="stars-qty">Количество звёзд</label>
+            <input class="field-input" type="number" id="stars-qty" placeholder="50" min="50" step="1">
+          </div>
+          <div class="field">
+            <label class="field-label" for="stars-rub">Сумма в ₽</label>
+            <input class="field-input" type="number" id="stars-rub" placeholder="70" min="70" step="1">
+          </div>
         </div>
-    </main>
-
-    <!-- ═══════════════ МОДАЛЬНОЕ ОКНО ═══════════════ -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal" id="modalBox">
-            <button class="modal-close" id="modalClose">&times;</button>
-            <h3>💳 Реквизиты для оплаты</h3>
-            <div class="modal-order-info" id="modalOrderInfo"></div>
-            <div class="modal-req tbank-highlight">
-                <strong>Т-Банк карта:</strong>
-                <span class="req-value" id="reqBank">4276 1234 5678 9012</span>
-                <button class="btn-copy" data-copy="4276123456789012">Копировать</button>
-            </div>
-            <div class="modal-req tbank-highlight">
-                <strong>Т-Банк тел:</strong>
-                <span class="req-value" id="reqPhone">+7 999 123-45-67</span>
-                <button class="btn-copy" data-copy="+79991234567">Копировать</button>
-            </div>
-            <button class="btn-paid" id="btnPaid">Я оплатил</button>
-            <div class="modal-success" id="modalSuccess">✓ Оплата подтверждена! Окно закроется автоматически…</div>
+        <div class="total-display">
+          <span class="total-label">К оплате</span>
+          <span class="total-amount" id="stars-total">0 ₽</span>
         </div>
+        <div class="field">
+          <label class="field-label" for="stars-user">Username</label>
+          <input class="field-input" type="text" id="stars-user" placeholder="@username">
+          <span class="field-err" id="stars-user-err"></span>
+        </div>
+        <button class="btn-pay" id="stars-pay-btn" onclick="openModal('stars')">Оплатить</button>
+      </div>
     </div>
 
-    <script>
-        (function() {
-            // ═══════════════════════════════════════════
-            // КОНФИГУРАЦИЯ — меняйте здесь при необходимости
-            // ═══════════════════════════════════════════
-            const CONFIG = {
-                // Цены
-                starRate: 1.4, // рублей за 1 звезду
-                minStars: 50, // минимальное количество звёзд для заказа
-                tonPriceFixed: 225, // фиксированная цена 1 TON (руб)
-                tonMarkup: 15, // наценка (константа для отображения)
-
-                // Premium (жёстко заданы)
-                premiumPrices: [
-                    { months: 3, price: 1050, title: 'Premium 3 месяца', desc: 'Оптимальный старт' },
-                    { months: 6, price: 1350, title: 'Premium 6 месяцев', desc: 'Выгода +20%' },
-                    { months: 12, price: 2450, title: 'Premium 12 месяцев', desc: 'Максимальная экономия' },
-                ],
-
-                // Аккаунты
-                accounts: [
-                    { id: 'acc_uk', title: 'Великобритания +44', desc: 'Готовый аккаунт', price: 200 },
-                    { id: 'acc_us', title: 'США +1', desc: 'Готовый аккаунт', price: 250 },
-                ],
-
-                // Реквизиты Т-Банка (одна строка!)
-                bankCard: '4276 1234 5678 9012',
-                bankPhone: '+7 999 123-45-67',
-                bankCardRaw: '4276123456789012',
-                bankPhoneRaw: '+79991234567',
-
-                // Telegram бот
-                telegramToken: '8701823510:AAHPyTTDnLAAFtd4cn8lj1mp3Vq-gGpYQlg',
-                telegramChatId: '1717982615',
-
-                // CoinGecko
-                coingeckoApi: 'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=rub',
-                coingeckoInterval: 60000,
-            };
-
-            // ═══════════════════════════════════════════
-            // DOM-ЭЛЕМЕНТЫ
-            // ═══════════════════════════════════════════
-            const preloader = document.getElementById('preloader');
-            const mainContent = document.getElementById('mainContent');
-            const mouseGlow = document.getElementById('mouseGlow');
-            const tabsNav = document.getElementById('tabsNav');
-            const modalOverlay = document.getElementById('modalOverlay');
-            const modalBox = document.getElementById('modalBox');
-            const modalClose = document.getElementById('modalClose');
-            const btnPaid = document.getElementById('btnPaid');
-            const modalSuccess = document.getElementById('modalSuccess');
-            const modalOrderInfo = document.getElementById('modalOrderInfo');
-            const reqBank = document.getElementById('reqBank');
-            const reqPhone = document.getElementById('reqPhone');
-
-            reqBank.textContent = CONFIG.bankCard;
-            reqPhone.textContent = CONFIG.bankPhone;
-
-            let currentOrderData = null;
-            let currentTonMarketRate = null;
-            let selectedPremiumIndex = -1;
-            let selectedAccountIndex = -1;
-
-            // ═══════════════════════════════════════════
-            // CANVAS: ЗЕМЛЯ + ЗВЁЗДЫ
-            // ═══════════════════════════════════════════
-            const canvas = document.getElementById('bg-canvas');
-            const ctx = canvas.getContext('2d');
-            let earthTexture = null;
-            let starsArray = [];
-            let mouseX = window.innerWidth / 2;
-            let mouseY = window.innerHeight / 2;
-            let earthRotation = 0;
-            let animationId;
-
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener('resize', () => {
-                resizeCanvas();
-                initStars();
-            });
-
-            // Генерация процедурной текстуры Земли
-            function createEarthTexture() {
-                const offCanvas = document.createElement('canvas');
-                offCanvas.width = 1024;
-                offCanvas.height = 512;
-                const octx = offCanvas.getContext('2d');
-
-                // Океан — глубокий синий с вариациями
-                const oceanGrad = octx.createLinearGradient(0, 0, 0, 512);
-                oceanGrad.addColorStop(0, '#1a3a5c');
-                oceanGrad.addColorStop(0.3, '#1c4268');
-                oceanGrad.addColorStop(0.5, '#1b3f64');
-                oceanGrad.addColorStop(0.7, '#1a3c60');
-                oceanGrad.addColorStop(1, '#183858');
-                octx.fillStyle = oceanGrad;
-                octx.fillRect(0, 0, 1024, 512);
-
-                // Континенты — процедурные блобы
-                const continents = [
-                    { cx: 200, cy: 180, rx: 140, ry: 100, rot: -0.2, color: '#3d6b4f' },
-                    { cx: 250, cy: 200, rx: 90, ry: 130, rot: 0.3, color: '#4a7858' },
-                    { cx: 180, cy: 150, rx: 70, ry: 60, rot: -0.5, color: '#5c8a62' },
-                    { cx: 550, cy: 160, rx: 160, ry: 90, rot: 0.1, color: '#3d5e3f' },
-                    { cx: 580, cy: 200, rx: 100, ry: 110, rot: -0.3, color: '#4a6b4a' },
-                    { cx: 520, cy: 130, rx: 80, ry: 70, rot: 0.4, color: '#5c8055' },
-                    { cx: 700, cy: 250, rx: 120, ry: 80, rot: 0.2, color: '#3d5a3a' },
-                    { cx: 730, cy: 210, rx: 60, ry: 90, rot: -0.4, color: '#4d6d45' },
-                    { cx: 350, cy: 320, rx: 100, ry: 70, rot: 0.25, color: '#4a7050' },
-                    { cx: 400, cy: 300, rx: 70, ry: 50, rot: -0.35, color: '#55805a' },
-                    { cx: 800, cy: 300, rx: 90, ry: 60, rot: 0.15, color: '#3d5c3f' },
-                    { cx: 850, cy: 280, rx: 50, ry: 40, rot: -0.5, color: '#4e6e48' },
-                ];
-
-                continents.forEach(c => {
-                    octx.save();
-                    octx.translate(c.cx, c.cy);
-                    octx.rotate(c.rot);
-                    octx.beginPath();
-                    octx.ellipse(0, 0, c.rx, c.ry, 0, 0, Math.PI * 2);
-                    octx.fillStyle = c.color;
-                    octx.fill();
-
-                    // Добавляем вариативность — более светлые пятна внутри
-                    octx.beginPath();
-                    octx.ellipse(c.rx * 0.2, -c.ry * 0.15, c.rx * 0.5, c.ry * 0.5, 0.3, 0, Math.PI * 2);
-                    octx.fillStyle = 'rgba(180,200,160,0.25)';
-                    octx.fill();
-                    octx.restore();
-                });
-
-                // Облака — полупрозрачные белые мазки
-                for (let i = 0; i < 60; i++) {
-                    const cx = Math.random() * 1024;
-                    const cy = Math.random() * 512;
-                    const rx = Math.random() * 50 + 20;
-                    const ry = Math.random() * 20 + 8;
-                    octx.save();
-                    octx.translate(cx, cy);
-                    octx.rotate(Math.random() * Math.PI);
-                    octx.beginPath();
-                    octx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-                    octx.fillStyle = `rgba(220,225,235,${Math.random() * 0.25 + 0.08})`;
-                    octx.fill();
-                    octx.restore();
-                }
-
-                // Полярные шапки
-                const capGradTop = octx.createLinearGradient(0, 0, 0, 60);
-                capGradTop.addColorStop(0, 'rgba(230,240,250,0.6)');
-                capGradTop.addColorStop(1, 'rgba(230,240,250,0)');
-                octx.fillStyle = capGradTop;
-                octx.fillRect(0, 0, 1024, 60);
-
-                const capGradBottom = octx.createLinearGradient(0, 452, 0, 512);
-                capGradBottom.addColorStop(0, 'rgba(230,240,250,0)');
-                capGradBottom.addColorStop(1, 'rgba(230,240,250,0.6)');
-                octx.fillStyle = capGradBottom;
-                octx.fillRect(0, 452, 1024, 60);
-
-                return offCanvas;
-            }
-            earthTexture = createEarthTexture();
-
-            // Звёзды
-            function initStars() {
-                starsArray = [];
-                const count = Math.min(Math.floor((canvas.width * canvas.height) / 4000), 350);
-                for (let i = 0; i < count; i++) {
-                    starsArray.push({
-                        x: Math.random() * canvas.width,
-                        y: Math.random() * canvas.height,
-                        size: Math.random() * 2.2 + 0.3,
-                        opacity: Math.random() * 0.7 + 0.2,
-                        twinkleSpeed: Math.random() * 0.02 + 0.005,
-                        twinkleOffset: Math.random() * Math.PI * 2,
-                        layer: Math.floor(Math.random() * 3),
-                        vx: (Math.random() - 0.5) * 0.12,
-                        vy: (Math.random() - 0.5) * 0.08,
-                    });
-                }
-            }
-            initStars();
-
-            function drawEarth(time) {
-                const earthCX = canvas.width * 0.72;
-                const earthCY = canvas.height * 0.75;
-                const earthRadius = Math.min(canvas.width * 0.3, canvas.height * 0.45, 420);
-
-                // Обрезаем область сферы
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(earthCX, earthCY, earthRadius, 0, Math.PI * 2);
-                ctx.clip();
-
-                // Рисуем текстуру со смещением для вращения
-                const texWidth = 1024;
-                const texHeight = 512;
-                const offsetX = (earthRotation % texWidth + texWidth) % texWidth;
-
-                // Маппинг: текстура рисуется так, чтобы покрыть сферу
-                const scaleX = texWidth / (earthRadius * 2);
-                const scaleY = texHeight / (earthRadius * 2);
-                const srcX = offsetX;
-                const srcW = earthRadius * 2 * scaleX;
-                ctx.drawImage(
-                    earthTexture,
-                    srcX, 0, srcW, texHeight,
-                    earthCX - earthRadius, earthCY - earthRadius,
-                    earthRadius * 2, earthRadius * 2
-                );
-                // Дублируем для бесшовности
-                if (offsetX + srcW > texWidth) {
-                    const remainingW = (offsetX + srcW) - texWidth;
-                    ctx.drawImage(
-                        earthTexture,
-                        0, 0, remainingW, texHeight,
-                        earthCX - earthRadius + (srcW - remainingW) / scaleX, earthCY - earthRadius,
-                        remainingW / scaleX, earthRadius * 2
-                    );
-                }
-
-                // Объём — тень по краям сферы
-                const shadowGrad = ctx.createRadialGradient(
-                    earthCX - earthRadius * 0.25, earthCY - earthRadius * 0.3, earthRadius * 0.3,
-                    earthCX, earthCY, earthRadius
-                );
-                shadowGrad.addColorStop(0, 'rgba(0,0,0,0)');
-                shadowGrad.addColorStop(0.65, 'rgba(0,0,0,0.15)');
-                shadowGrad.addColorStop(0.9, 'rgba(0,0,0,0.55)');
-                shadowGrad.addColorStop(1, 'rgba(0,0,0,0.8)');
-                ctx.fillStyle = shadowGrad;
-                ctx.fillRect(earthCX - earthRadius, earthCY - earthRadius, earthRadius * 2, earthRadius * 2);
-
-                // Блик
-                const shineGrad = ctx.createRadialGradient(
-                    earthCX - earthRadius * 0.35, earthCY - earthRadius * 0.4, earthRadius * 0.05,
-                    earthCX, earthCY, earthRadius
-                );
-                shineGrad.addColorStop(0, 'rgba(255,255,255,0.25)');
-                shineGrad.addColorStop(0.4, 'rgba(255,255,255,0.06)');
-                shineGrad.addColorStop(1, 'rgba(255,255,255,0)');
-                ctx.fillStyle = shineGrad;
-                ctx.fillRect(earthCX - earthRadius, earthCY - earthRadius, earthRadius * 2, earthRadius * 2);
-
-                ctx.restore();
-
-                // Атмосферное свечение
-                const atmosGrad = ctx.createRadialGradient(earthCX, earthCY, earthRadius * 0.85,
-                    earthCX, earthCY, earthRadius * 1.25);
-                atmosGrad.addColorStop(0, 'rgba(100,140,200,0)');
-                atmosGrad.addColorStop(0.5, 'rgba(100,140,210,0.08)');
-                atmosGrad.addColorStop(1, 'rgba(80,120,190,0)');
-                ctx.fillStyle = atmosGrad;
-                ctx.beginPath();
-                ctx.arc(earthCX, earthCY, earthRadius * 1.25, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            function drawStars(time) {
-                starsArray.forEach(star => {
-                    const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.3 + 0.7;
-                    const opacity = star.opacity * twinkle;
-                    ctx.beginPath();
-                    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(220,215,240,${opacity})`;
-                    ctx.fill();
-                    // Свечение крупных звёзд
-                    if (star.size > 1.5) {
-                        ctx.beginPath();
-                        ctx.arc(star.x, star.y, star.size * 2.5, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(190,180,220,${opacity * 0.2})`;
-                        ctx.fill();
-                    }
-                });
-            }
-
-            function animateBackground(time) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Звёзды (рисуем до Земли, чтобы они были и на фоне космоса)
-                drawStars(time);
-
-                // Земля
-                earthRotation += 0.15; // скорость вращения
-                drawEarth(time);
-
-                // Обновляем позиции звёзд (медленный дрейф)
-                starsArray.forEach(star => {
-                    star.x += star.vx * (0.5 + star.layer * 0.3);
-                    star.y += star.vy * (0.5 + star.layer * 0.3);
-                    if (star.x < -20) star.x = canvas.width + 20;
-                    if (star.x > canvas.width + 20) star.x = -20;
-                    if (star.y < -20) star.y = canvas.height + 20;
-                    if (star.y > canvas.height + 20) star.y = -20;
-                });
-
-                animationId = requestAnimationFrame(animateBackground);
-            }
-            animationId = requestAnimationFrame(animateBackground);
-
-            // Отслеживание мыши
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                mouseGlow.style.setProperty('--mx', mouseX + 'px');
-                mouseGlow.style.setProperty('--my', mouseY + 'px');
-            });
-            document.addEventListener('touchmove', (e) => {
-                if (e.touches.length > 0) {
-                    mouseX = e.touches[0].clientX;
-                    mouseY = e.touches[0].clientY;
-                    mouseGlow.style.setProperty('--mx', mouseX + 'px');
-                    mouseGlow.style.setProperty('--my', mouseY + 'px');
-                }
-            }, { passive: true });
-
-            // ═══════════════════════════════════════════
-            // ПРЕЛОАДЕР
-            // ═══════════════════════════════════════════
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    preloader.classList.add('hidden');
-                    mainContent.classList.add('visible');
-                    setTimeout(revealAllCards, 350);
-                }, 2200);
-            });
-
-            function revealAllCards() {
-                const allCards = document.querySelectorAll('.glass-card');
-                allCards.forEach((card, i) => {
-                    card.style.animationDelay = (i * 0.07) + 's';
-                    card.classList.add('revealed');
-                });
-            }
-
-            // ═══════════════════════════════════════════
-            // ПОСТРОЕНИЕ КАРТОЧЕК
-            // ═══════════════════════════════════════════
-            function buildStarsCard() {
-                const card = document.createElement('div');
-                card.className = 'glass-card';
-                card.setAttribute('data-category', 'stars');
-                card.innerHTML = `
-                <div class="card-content">
-                  <div class="card-title">⭐ Звёзды Telegram</div>
-                  <div class="card-desc">Курс: 1 звезда = ${CONFIG.starRate}₽ | Мин: ${CONFIG.minStars} звёзд</div>
-                  <input type="number" class="card-input stars-qty-input" placeholder="Количество звёзд" min="${CONFIG.minStars}" step="1" autocomplete="off">
-                  <div class="card-price" id="starsTotal">— ₽</div>
-                  <div class="card-price-sub">Итоговая сумма</div>
-                  <input type="number" class="card-input stars-rub-input" placeholder="У меня есть X рублей" min="0" step="1" autocomplete="off">
-                  <div class="validation-hint" id="starsReverseHint">Сколько звёзд можно получить</div>
-                  <input type="text" class="card-input username-input" placeholder="@username" autocomplete="off" spellcheck="false">
-                  <div class="validation-hint">Введите Telegram username</div>
-                  <button class="btn-premium pay-btn" disabled>Оплатить</button>
-                </div>
-              `;
-                return card;
-            }
-
-            function buildPremiumCards() {
-                const fragment = document.createDocumentFragment();
-                CONFIG.premiumPrices.forEach((p, i) => {
-                    const card = document.createElement('div');
-                    card.className = 'glass-card premium-option';
-                    card.setAttribute('data-category', 'premium');
-                    card.setAttribute('data-index', i);
-                    card.innerHTML = `
-                    <div class="card-content">
-                      <div class="card-title">👑 ${p.title}</div>
-                      <div class="card-desc">${p.desc}</div>
-                      <div class="card-price">${p.price} ₽</div>
-                      <div class="card-price-sub">за ${p.months} мес.</div>
-                      <input type="text" class="card-input username-input" placeholder="@username" autocomplete="off" spellcheck="false">
-                      <div class="validation-hint">Введите Telegram username</div>
-                      <button class="btn-premium pay-btn" disabled>Оплатить</button>
-                    </div>
-                  `;
-                    fragment.appendChild(card);
-                });
-                return fragment;
-            }
-
-            function buildTonCard(marketRate) {
-                const card = document.createElement('div');
-                card.className = 'glass-card';
-                card.setAttribute('data-category', 'ton');
-                const marketDisplay = marketRate !== null ? `${marketRate.toFixed(1)} ₽` : 'Загрузка...';
-                card.innerHTML = `
-                <div class="card-content">
-                  <div class="card-title">💎 TON</div>
-                  <div class="card-desc">Фикс. цена: ${CONFIG.tonPriceFixed}₽ за 1 TON</div>
-                  <input type="number" class="card-input ton-qty-input" placeholder="Количество TON (целое)" min="1" step="1" autocomplete="off">
-                  <div class="card-price" id="tonTotal">— ₽</div>
-                  <div class="card-price-sub">Итоговая сумма</div>
-                  <div class="ton-rate-row">
-                    <span>Рынок CoinGecko:</span>
-                    <span class="ton-market-rate">${marketDisplay}</span>
-                  </div>
-                  <div class="ton-rate-row">
-                    <span>Наша наценка:</span>
-                    <span class="ton-markup">+${CONFIG.tonMarkup}₽</span>
-                  </div>
-                  <input type="text" class="card-input username-input" placeholder="@username" autocomplete="off" spellcheck="false" style="margin-top:8px;">
-                  <div class="validation-hint">Введите Telegram username</div>
-                  <button class="btn-premium pay-btn" disabled>Оплатить</button>
-                </div>
-              `;
-                return card;
-            }
-
-            function buildAccountCards() {
-                const fragment = document.createDocumentFragment();
-                CONFIG.accounts.forEach((acc, i) => {
-                    const card = document.createElement('div');
-                    card.className = 'glass-card account-option';
-                    card.setAttribute('data-category', 'accounts');
-                    card.setAttribute('data-index', i);
-                    card.innerHTML = `
-                    <div class="card-content">
-                      <div class="card-title">👤 ${acc.title}</div>
-                      <div class="card-desc">${acc.desc}</div>
-                      <div class="card-price">${acc.price} ₽</div>
-                      <div class="card-price-sub">единовременно</div>
-                      <input type="text" class="card-input username-input" placeholder="@username" autocomplete="off" spellcheck="false">
-                      <div class="validation-hint">Введите Telegram username</div>
-                      <button class="btn-premium pay-btn" disabled>Оплатить</button>
-                    </div>
-                  `;
-                    fragment.appendChild(card);
-                });
-                return fragment;
-            }
-
-            function populateAllCards() {
-                document.getElementById('cardsStars').appendChild(buildStarsCard());
-                document.getElementById('cardsPremium').appendChild(buildPremiumCards());
-                document.getElementById('cardsTon').appendChild(buildTonCard(currentTonMarketRate));
-                document.getElementById('cardsAccounts').appendChild(buildAccountCards());
-            }
-            populateAllCards();
-
-            // ═══════════════════════════════════════════
-            // COINGECKO API
-            // ═══════════════════════════════════════════
-            async function fetchTonRate() {
-                try {
-                    const resp = await fetch(CONFIG.coingeckoApi);
-                    const data = await resp.json();
-                    if (data['the-open-network'] && data['the-open-network'].rub) {
-                        currentTonMarketRate = data['the-open-network'].rub;
-                        updateTonMarketDisplay();
-                    }
-                } catch (err) {
-                    console.warn('CoinGecko API error:', err.message);
-                }
-            }
-
-            function updateTonMarketDisplay() {
-                const rateEl = document.querySelector('.ton-market-rate');
-                if (rateEl && currentTonMarketRate !== null) {
-                    rateEl.textContent = `${currentTonMarketRate.toFixed(1)} ₽`;
-                }
-            }
-            fetchTonRate();
-            setInterval(fetchTonRate, CONFIG.coingeckoInterval);
-
-            // ═══════════════════════════════════════════
-            // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
-            // ═══════════════════════════════════════════
-            tabsNav.addEventListener('click', (e) => {
-                const btn = e.target.closest('.tab-btn');
-                if (!btn) return;
-                const targetTab = btn.getAttribute('data-tab');
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-                const targetPanel = document.getElementById('panel-' + targetTab);
-                if (targetPanel) {
-                    targetPanel.classList.add('active');
-                    const cards = targetPanel.querySelectorAll('.glass-card');
-                    cards.forEach((card, i) => {
-                        card.classList.remove('revealed');
-                        card.style.animationDelay = (i * 0.05) + 's';
-                        void card.offsetWidth;
-                        card.classList.add('revealed');
-                    });
-                }
-            });
-
-            // ═══════════════════════════════════════════
-            // TILT-ЭФФЕКТ ДЛЯ КАРТОЧЕК
-            // ═══════════════════════════════════════════
-            document.addEventListener('mousemove', (e) => {
-                const hoveredCards = document.querySelectorAll('.glass-card:hover');
-                hoveredCards.forEach(card => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const cx = rect.width / 2;
-                    const cy = rect.height / 2;
-                    const rotX = ((y - cy) / cy) * -7;
-                    const rotY = ((x - cx) / cx) * 7;
-                    card.style.transform =
-                        `translateY(-10px) scale(1.04) perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-                    card.style.boxShadow = `
-                0 20px 50px rgba(0,0,0,0.55),
-                0 2px 5px rgba(255,255,255,0.05) inset,
-                0 28px 70px rgba(0,0,0,0.38),
-                0 0 0 1px rgba(255,255,255,0.05) inset,
-                0 ${Math.abs(rotY)*1.4}px ${Math.abs(rotX)*1.8}px rgba(170,150,210,0.09)
-              `;
-                });
-            });
-            document.addEventListener('mouseout', (e) => {
-                const card = e.target.closest('.glass-card');
-                if (card && !card.contains(e.relatedTarget)) {
-                    card.style.transform = '';
-                    card.style.boxShadow = '';
-                }
-            });
-            document.addEventListener('mouseleave', () => {
-                document.querySelectorAll('.glass-card').forEach(c => {
-                    c.style.transform = '';
-                    c.style.boxShadow = '';
-                });
-            });
-
-            // ═══════════════════════════════════════════
-            // RIPPLE-ЭФФЕКТ
-            // ═══════════════════════════════════════════
-            document.addEventListener('click', function(e) {
-                const btn = e.target.closest('.btn-premium, .btn-copy, .btn-paid');
-                if (!btn || btn.disabled) return;
-                const ripple = document.createElement('span');
-                ripple.className = 'ripple';
-                const rect = btn.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height) * 2;
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-                btn.appendChild(ripple);
-                ripple.addEventListener('animationend', () => ripple.remove());
-            });
-
-            // ═══════════════════════════════════════════
-            // ВАЛИДАЦИЯ USERNAME
-            // ═══════════════════════════════════════════
-            function validateUsername(value) {
-                if (value.length === 0) return 'empty';
-                if (!value.startsWith('@')) return 'no_at';
-                if (value.length < 5) return 'too_short';
-                if (!/^@[a-zA-Z0-9_]+$/.test(value)) return 'invalid_chars';
-                return 'valid';
-            }
-
-            function getValidationMessage(status) {
-                switch (status) {
-                    case 'empty':
-                        return 'Введите Telegram username';
-                    case 'no_at':
-                        return 'Username должен начинаться с @';
-                    case 'too_short':
-                        return 'Минимум 5 символов (включая @)';
-                    case 'invalid_chars':
-                        return 'Только латиница, цифры и _ после @';
-                    case 'valid':
-                        return '✓ Username корректен';
-                    default:
-                        return '';
-                }
-            }
-
-            document.addEventListener('input', function(e) {
-                const input = e.target.closest('.username-input');
-                if (!input) return;
-                const hint = input.parentElement.querySelector('.validation-hint');
-                const status = validateUsername(input.value);
-                input.classList.remove('invalid', 'valid');
-                if (hint) {
-                    hint.classList.remove('error', 'success');
-                    if (status === 'valid') {
-                        input.classList.add('valid');
-                        hint.classList.add('success');
-                    } else if (status !== 'empty') {
-                        input.classList.add('invalid');
-                        hint.classList.add('error');
-                    }
-                    hint.textContent = getValidationMessage(status);
-                }
-                updatePayButtonState(input);
-            });
-
-            // ═══════════════════════════════════════════
-            // ЛОГИКА ЗВЁЗД
-            // ═══════════════════════════════════════════
-            document.addEventListener('input', function(e) {
-                const starsQtyInput = e.target.closest('.stars-qty-input');
-                const starsRubInput = e.target.closest('.stars-rub-input');
-                if (starsQtyInput) {
-                    const qty = parseInt(starsQtyInput.value) || 0;
-                    const totalEl = document.getElementById('starsTotal');
-                    const total = qty * CONFIG.starRate;
-                    totalEl.textContent = total > 0 ? `${total.toFixed(0)} ₽` : '— ₽';
-                    if (total > 0) {
-                        totalEl.classList.add('pulse');
-                        setTimeout(() => totalEl.classList.remove('pulse'), 250);
-                    }
-                    updateStarsPayButton();
-                }
-                if (starsRubInput) {
-                    const rub = parseInt(starsRubInput.value) || 0;
-                    const hint = document.getElementById('starsReverseHint');
-                    const starsCount = Math.floor(rub / CONFIG.starRate);
-                    if (rub > 0 && starsCount < CONFIG.minStars) {
-                        hint.textContent =
-                            `Можно получить ${starsCount} зв. (мин. заказ: ${CONFIG.minStars} зв., нужно ${Math.ceil(CONFIG.minStars * CONFIG.starRate)} ₽)`;
-                        hint.classList.add('error');
-                        hint.classList.remove('success');
-                    } else if (rub > 0) {
-                        hint.textContent = `Можно получить ${starsCount} звёзд за ${rub} ₽`;
-                        hint.classList.add('success');
-                        hint.classList.remove('error');
-                    } else {
-                        hint.textContent = 'Сколько звёзд можно получить';
-                        hint.classList.remove('error', 'success');
-                    }
-                }
-            });
-
-            function updateStarsPayButton() {
-                const card = document.querySelector('#cardsStars .glass-card');
-                if (!card) return;
-                const qtyInput = card.querySelector('.stars-qty-input');
-                const usernameInput = card.querySelector('.username-input');
-                const payBtn = card.querySelector('.pay-btn');
-                const qty = parseInt(qtyInput?.value) || 0;
-                const usernameStatus = validateUsername(usernameInput?.value || '');
-                const isValid = qty >= CONFIG.minStars && usernameStatus === 'valid';
-                payBtn.disabled = !isValid;
-            }
-
-            // ═══════════════════════════════════════════
-            // ЛОГИКА TON
-            // ═══════════════════════════════════════════
-            document.addEventListener('input', function(e) {
-                const tonQtyInput = e.target.closest('.ton-qty-input');
-                if (tonQtyInput) {
-                    const qty = parseInt(tonQtyInput.value) || 0;
-                    const totalEl = document.getElementById('tonTotal');
-                    const total = qty * CONFIG.tonPriceFixed;
-                    totalEl.textContent = total > 0 ? `${total.toFixed(0)} ₽` : '— ₽';
-                    if (total > 0) {
-                        totalEl.classList.add('pulse');
-                        setTimeout(() => totalEl.classList.remove('pulse'), 250);
-                    }
-                    updateTonPayButton();
-                }
-            });
-
-            function updateTonPayButton() {
-                const card = document.querySelector('#cardsTon .glass-card');
-                if (!card) return;
-                const qtyInput = card.querySelector('.ton-qty-input');
-                const usernameInput = card.querySelector('.username-input');
-                const payBtn = card.querySelector('.pay-btn');
-                const qty = parseInt(qtyInput?.value) || 0;
-                const usernameStatus = validateUsername(usernameInput?.value || '');
-                const isValid = qty >= 1 && Number.isInteger(qty) && usernameStatus === 'valid';
-                payBtn.disabled = !isValid;
-            }
-
-            // ═══════════════════════════════════════════
-            // ЛОГИКА PREMIUM (выбор карточки)
-            // ═══════════════════════════════════════════
-            document.addEventListener('click', function(e) {
-                const premiumCard = e.target.closest('.premium-option');
-                if (premiumCard && !e.target.closest('.pay-btn') && !e.target.closest('input')) {
-                    const index = parseInt(premiumCard.getAttribute('data-index'));
-                    selectedPremiumIndex = index;
-                    document.querySelectorAll('.premium-option').forEach(c => c.classList.remove(
-                        'selected-card'));
-                    premiumCard.classList.add('selected-card');
-                    updatePremiumPayButtons();
-                }
-                const accountCard = e.target.closest('.account-option');
-                if (accountCard && !e.target.closest('.pay-btn') && !e.target.closest('input')) {
-                    const index = parseInt(accountCard.getAttribute('data-index'));
-                    selectedAccountIndex = index;
-                    document.querySelectorAll('.account-option').forEach(c => c.classList.remove(
-                        'selected-card'));
-                    accountCard.classList.add('selected-card');
-                    updateAccountPayButtons();
-                }
-            });
-
-            function updatePremiumPayButtons() {
-                document.querySelectorAll('.premium-option').forEach((card, i) => {
-                    const payBtn = card.querySelector('.pay-btn');
-                    const usernameInput = card.querySelector('.username-input');
-                    const usernameStatus = validateUsername(usernameInput?.value || '');
-                    const isSelected = i === selectedPremiumIndex;
-                    payBtn.disabled = !(isSelected && usernameStatus === 'valid');
-                });
-            }
-
-            function updateAccountPayButtons() {
-                document.querySelectorAll('.account-option').forEach((card, i) => {
-                    const payBtn = card.querySelector('.pay-btn');
-                    const usernameInput = card.querySelector('.username-input');
-                    const usernameStatus = validateUsername(usernameInput?.value || '');
-                    const isSelected = i === selectedAccountIndex;
-                    payBtn.disabled = !(isSelected && usernameStatus === 'valid');
-                });
-            }
-
-            function updatePayButtonState(input) {
-                const card = input.closest('.glass-card');
-                if (!card) return;
-                if (card.closest('#cardsStars')) updateStarsPayButton();
-                if (card.closest('#cardsTon')) updateTonPayButton();
-                if (card.closest('#cardsPremium')) updatePremiumPayButtons();
-                if (card.closest('#cardsAccounts')) updateAccountPayButtons();
-            }
-
-            // ═══════════════════════════════════════════
-            // МОДАЛЬНОЕ ОКНО
-            // ═══════════════════════════════════════════
-            function openModal(orderData) {
-                currentOrderData = orderData;
-                modalOrderInfo.textContent =
-                    `Заказ: ${orderData.productTitle} | Username: ${orderData.username} | Сумма: ${orderData.price}`;
-                modalSuccess.style.display = 'none';
-                btnPaid.style.display = 'block';
-                btnPaid.disabled = false;
-                btnPaid.textContent = 'Я оплатил';
-                modalOverlay.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeModal() {
-                modalOverlay.classList.remove('open');
-                document.body.style.overflow = '';
-                currentOrderData = null;
-                setTimeout(() => {
-                    modalSuccess.style.display = 'none';
-                    btnPaid.style.display = 'block';
-                    btnPaid.disabled = false;
-                    btnPaid.textContent = 'Я оплатил';
-                }, 400);
-            }
-
-            modalClose.addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) closeModal();
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
-            });
-
-            // Копирование реквизитов
-            document.querySelectorAll('.btn-copy').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const textToCopy = this.getAttribute('data-copy');
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        this.textContent = '✓ Скопировано';
-                        this.classList.add('copied');
-                        setTimeout(() => {
-                            this.textContent = 'Копировать';
-                            this.classList.remove('copied');
-                        }, 1800);
-                    }).catch(() => {
-                        this.textContent = 'Ошибка';
-                        setTimeout(() => { this.textContent = 'Копировать'; }, 1500);
-                    });
-                });
-            });
-
-            // Кнопка "Я оплатил"
-            btnPaid.addEventListener('click', async function() {
-                if (!currentOrderData) return;
-                this.disabled = true;
-                this.textContent = 'Отправка...';
-
-                const message = `💎 *Новый заказ SAYLAR*%0A` +
-                    `📦 Товар: ${currentOrderData.productTitle}%0A` +
-                    `👤 Username: ${currentOrderData.username}%0A` +
-                    `💰 Сумма: ${currentOrderData.price}%0A` +
-                    `🕐 Время: ${new Date().toLocaleString('ru-RU')}`;
-
-                const url =
-                    `https://api.telegram.org/bot${CONFIG.telegramToken}/sendMessage?chat_id=${CONFIG.telegramChatId}&text=${message}&parse_mode=Markdown`;
-                try {
-                    const resp = await fetch(url);
-                    const data = await resp.json();
-                    if (data.ok) {
-                        modalSuccess.style.display = 'block';
-                        btnPaid.style.display = 'none';
-                        setTimeout(closeModal, 3000);
-                    } else {
-                        alert('Ошибка отправки. Попробуйте ещё раз.');
-                        this.disabled = false;
-                        this.textContent = 'Я оплатил';
-                    }
-                } catch (err) {
-                    alert('Ошибка сети. Проверьте соединение.');
-                    this.disabled = false;
-                    this.textContent = 'Я оплатил';
-                }
-            });
-
-            // ═══════════════════════════════════════════
-            // ОБРАБОТКА КНОПКИ "ОПЛАТИТЬ"
-            // ═══════════════════════════════════════════
-            document.addEventListener('click', function(e) {
-                const payBtn = e.target.closest('.pay-btn');
-                if (!payBtn || payBtn.disabled) return;
-                const card = payBtn.closest('.glass-card');
-                const category = card.getAttribute('data-category');
-                const usernameInput = card.querySelector('.username-input');
-                const username = usernameInput?.value?.trim() || '';
-
-                if (validateUsername(username) !== 'valid') {
-                    if (usernameInput) {
-                        usernameInput.classList.add('invalid');
-                        usernameInput.style.animation = 'none';
-                        void usernameInput.offsetWidth;
-                        usernameInput.style.animation = 'shake 0.5s ease';
-                    }
-                    return;
-                }
-
-                let productTitle = '';
-                let price = '';
-
-                if (category === 'stars') {
-                    const qty = parseInt(card.querySelector('.stars-qty-input')?.value) || 0;
-                    const total = qty * CONFIG.starRate;
-                    productTitle = `${qty} Звёзд`;
-                    price = `${total.toFixed(0)} ₽`;
-                } else if (category === 'ton') {
-                    const qty = parseInt(card.querySelector('.ton-qty-input')?.value) || 0;
-                    const total = qty * CONFIG.tonPriceFixed;
-                    productTitle = `${qty} TON`;
-                    price = `${total.toFixed(0)} ₽`;
-                } else if (category === 'premium') {
-                    const idx = parseInt(card.getAttribute('data-index'));
-                    const p = CONFIG.premiumPrices[idx];
-                    productTitle = p.title;
-                    price = `${p.price} ₽`;
-                } else if (category === 'accounts') {
-                    const idx = parseInt(card.getAttribute('data-index'));
-                    const acc = CONFIG.accounts[idx];
-                    productTitle = acc.title;
-                    price = `${acc.price} ₽`;
-                }
-
-                openModal({ productTitle, price, username, category });
-            });
-
-            // ═══════════════════════════════════════════
-            // ИНИЦИАЛИЗАЦИЯ
-            // ═══════════════════════════════════════════
-            console.log('%c🌌 SAYLAR Premium Dimension %cзагружен',
-                'font-size:1.2em;letter-spacing:0.1em;color:#d8d0f0;',
-                'color:#888;');
-            console.log('%c⭐ Звёзды: ' + CONFIG.starRate + '₽/шт | Мин: ' + CONFIG.minStars + ' | 💎 TON: ' + CONFIG
-                .tonPriceFixed + '₽',
-                'color:#b0a890;');
-            console.log('%c👑 Premium: 3 мес=' + CONFIG.premiumPrices[0].price + '₽ | 6 мес=' + CONFIG.premiumPrices[1]
-                .price + '₽ | 12 мес=' + CONFIG.premiumPrices[2].price + '₽',
-                'color:#c9c2e2;');
-            console.log('%c🌍 Земля вращается. Звёзды мерцают. Портал открыт ✦',
-                'color:#7d7898;font-style:italic;');
-
-            // Первичный reveal карточек после загрузки
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    const visibleCards = document.querySelectorAll('#panel-stars .glass-card');
-                    visibleCards.forEach((c, i) => {
-                        c.style.animationDelay = (i * 0.07) + 's';
-                        c.classList.add('revealed');
-                    });
-                }, 2550);
-            });
-        })();
-    </script>
+    <!-- ──────── TAB: PREMIUM ──────── -->
+    <div class="tab-panel" id="tab-premium">
+      <div class="premium-grid reveal">
+        <div class="premium-card">
+          <div class="prem-duration">3 месяца</div>
+          <div class="prem-price">1 050 ₽</div>
+          <div class="prem-desc">Premium подписка</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('premium',3,1050)">Оплатить</button>
+        </div>
+        <div class="premium-card">
+          <div class="prem-duration">6 месяцев</div>
+          <div class="prem-price">1 350 ₽</div>
+          <div class="prem-desc">Premium подписка</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('premium',6,1350)">Оплатить</button>
+        </div>
+        <div class="premium-card">
+          <div class="prem-duration">12 месяцев</div>
+          <div class="prem-price">2 400 ₽</div>
+          <div class="prem-desc">Лучшая цена 🔥</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('premium',12,2400)">Оплатить</button>
+        </div>
+      </div>
+      <div class="glass-card reveal">
+        <div class="field">
+          <label class="field-label" for="prem-user">Username</label>
+          <input class="field-input" type="text" id="prem-user" placeholder="@username">
+          <span class="field-err" id="prem-user-err"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────── TAB: TON ──────── -->
+    <div class="tab-panel" id="tab-ton">
+      <div class="glass-card reveal">
+        <div class="ton-rate">💎 &nbsp;1 TON = 200 ₽</div>
+        <div class="field">
+          <label class="field-label" for="ton-qty">Количество TON</label>
+          <input class="field-input" type="number" id="ton-qty" placeholder="1" min="1" step="1">
+        </div>
+        <div class="total-display">
+          <span class="total-label">К оплате</span>
+          <span class="total-amount" id="ton-total">0 ₽</span>
+        </div>
+        <div class="field">
+          <label class="field-label" for="ton-user">Username</label>
+          <input class="field-input" type="text" id="ton-user" placeholder="@username">
+          <span class="field-err" id="ton-user-err"></span>
+        </div>
+        <button class="btn-pay" id="ton-pay-btn" onclick="openModal('ton')">Оплатить</button>
+      </div>
+    </div>
+
+    <!-- ──────── TAB: ACCOUNTS ──────── -->
+    <div class="tab-panel" id="tab-accounts">
+      <div class="account-opts reveal">
+        <div class="account-opt">
+          <div class="acc-country">США</div>
+          <div class="acc-flag">🇺🇸</div>
+          <div class="acc-price">250 ₽</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('account','США',250)">Оплатить</button>
+        </div>
+        <div class="account-opt">
+          <div class="acc-country">Великобритания</div>
+          <div class="acc-flag">🇬🇧</div>
+          <div class="acc-price">200 ₽</div>
+          <button class="btn-pay btn-pay-sm" onclick="openModal('account','Великобритания',200)">Оплатить</button>
+        </div>
+      </div>
+      <div class="glass-card reveal">
+        <div class="field">
+          <label class="field-label" for="acc-user">Username</label>
+          <input class="field-input" type="text" id="acc-user" placeholder="@username">
+          <span class="field-err" id="acc-user-err"></span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    © SAYLAR Shop &nbsp;·&nbsp; Telegram Premium
+  </footer>
+</div>
+
+<!-- ══════════ MODAL ══════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+    <button class="modal-close" onclick="closeModal()" title="Закрыть">✕</button>
+    <div class="modal-inner" id="modal-inner">
+      <!-- Content injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════ PARTICLES */
+(function(){
+  const c=document.getElementById('canvas');
+  const ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  resize();window.addEventListener('resize',()=>{resize();init()});
+  function Pt(){
+    this.x=Math.random()*W;this.y=Math.random()*H;
+    this.vx=(Math.random()-.5)*.18;this.vy=(Math.random()-.5)*.18;
+    this.r=Math.random()*1.2+.3;this.a=Math.random();
+  }
+  function init(){pts=[];for(let i=0;i<80;i++)pts.push(new Pt())}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;
+      if(p.y<0||p.y>H)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,196,190,${p.a*.4})`;ctx.fill();
+    });
+    // connections
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+        if(d<120){
+          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle=`rgba(160,156,148,${(.12*(1-d/120))})`;
+          ctx.lineWidth=.5;ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  init();draw();
+})();
+
+/* ═══════════════════════════════════════════ SCROLL REVEAL */
+const revealEls=document.querySelectorAll('.reveal');
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}});
+},{threshold:.1});
+revealEls.forEach(el=>io.observe(el));
+
+/* ═══════════════════════════════════════════ TABS */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tab-'+this.dataset.tab).classList.add('active');
+    // re-run reveal for new panel
+    document.querySelectorAll('#tab-'+this.dataset.tab+' .reveal:not(.visible)').forEach(el=>{
+      el.classList.add('visible');
+    });
+  });
+});
+
+/* ═══════════════════════════════════════════ STARS CALC */
+const starsQtyEl=document.getElementById('stars-qty');
+const starsRubEl=document.getElementById('stars-rub');
+const starsTotalEl=document.getElementById('stars-total');
+let starsLock=false;
+const RATE=1.4;
+
+starsQtyEl.addEventListener('input',function(){
+  if(starsLock)return;starsLock=true;
+  const q=parseInt(this.value)||0;
+  if(q>0){starsRubEl.value=Math.ceil(q*RATE);}else{starsRubEl.value='';}
+  updateStarsTotal();starsLock=false;
+});
+starsRubEl.addEventListener('input',function(){
+  if(starsLock)return;starsLock=true;
+  const r=parseInt(this.value)||0;
+  if(r>0){starsQtyEl.value=Math.floor(r/RATE);}else{starsQtyEl.value='';}
+  updateStarsTotal();starsLock=false;
+});
+function updateStarsTotal(){
+  const r=parseInt(starsRubEl.value)||0;
+  starsTotalEl.textContent=r>0?r.toLocaleString('ru')+' ₽':'0 ₽';
+}
+
+/* ═══════════════════════════════════════════ TON CALC */
+const tonQtyEl=document.getElementById('ton-qty');
+const tonTotalEl=document.getElementById('ton-total');
+tonQtyEl.addEventListener('input',function(){
+  const t=parseInt(this.value)||0;
+  tonTotalEl.textContent=t>0?(t*200).toLocaleString('ru')+' ₽':'0 ₽';
+});
+
+/* ═══════════════════════════════════════════ USERNAME VALIDATION */
+function validateUser(val){
+  if(!val||val==='@')return{ok:false,err:''};// silent while typing @
+  if(!val.startsWith('@'))return{ok:false,err:'Должен начинаться с @'};
+  const after=val.slice(1);
+  if(after.length===0)return{ok:false,err:''};
+  if(!/^[a-zA-Z0-9_]+$/.test(after))return{ok:false,err:'Только латиница, цифры и _'};
+  if(after.length<3)return{ok:false,err:'Минимум 3 символа после @'};
+  return{ok:true,err:''};
+}
+function bindUserValidation(inputId,errId){
+  const inp=document.getElementById(inputId);
+  const err=document.getElementById(errId);
+  if(!inp||!err)return;
+  inp.addEventListener('input',function(){
+    const v=validateUser(this.value.trim());
+    err.textContent=v.err;
+    this.classList.toggle('err',!!v.err&&this.value.length>1);
+  });
+}
+bindUserValidation('stars-user','stars-user-err');
+bindUserValidation('prem-user','prem-user-err');
+bindUserValidation('ton-user','ton-user-err');
+bindUserValidation('acc-user','acc-user-err');
+
+/* ═══════════════════════════════════════════ MODAL STATE */
+let _modalData={};
+
+/* ═══════════════════════════════════════════ OPEN MODAL */
+function openModal(type, arg2, arg3){
+  // --- Gather data per type ---
+  let userFieldId, errFieldId;
+  let orderInfo={};
+
+  if(type==='stars'){
+    userFieldId='stars-user'; errFieldId='stars-user-err';
+    const qty=parseInt(starsQtyEl.value)||0;
+    const rub=parseInt(starsRubEl.value)||0;
+    if(qty<50||rub<70){
+      showToast('Минимум 50 звёзд / 70 ₽');return;
+    }
+    orderInfo={tab:'Звёзды',desc:`${qty} звёзд — ${rub} ₽`,amount:rub};
+  } else if(type==='premium'){
+    userFieldId='prem-user'; errFieldId='prem-user-err';
+    const months=arg2, price=arg3;
+    orderInfo={tab:'Premium',desc:`${months} мес.`,amount:price};
+  } else if(type==='ton'){
+    userFieldId='ton-user'; errFieldId='ton-user-err';
+    const t=parseInt(tonQtyEl.value)||0;
+    if(t<1){showToast('Введите количество TON');return;}
+    orderInfo={tab:'TON',desc:`${t} TON`,amount:t*110};
+  } else if(type==='account'){
+    userFieldId='acc-user'; errFieldId='acc-user-err';
+    const country=arg2, price=arg3;
+    orderInfo={tab:'Аккаунт',desc:`Аккаунт TG (${country})`,amount:price};
+  }
+
+  // Validate username
+  const userEl=document.getElementById(userFieldId);
+  const errEl=document.getElementById(errFieldId);
+  const rawUser=(userEl?userEl.value.trim():'');
+  const uv=validateUser(rawUser);
+  if(!uv.ok){
+    if(errEl)errEl.textContent=uv.err||'Введите корректный @username';
+    if(userEl){userEl.classList.add('err');userEl.focus();}
+    showToast('Укажите @username');return;
+  }
+
+  orderInfo.username=rawUser;
+  _modalData=orderInfo;
+
+  // Render modal
+  renderModalContent();
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderModalContent(){
+  const d=_modalData;
+  document.getElementById('modal-inner').innerHTML=`
+    <div class="modal-eyebrow">Оплата заказа</div>
+    <div class="modal-title">${d.desc}</div>
+
+    <div class="tbank-block">
+      <div class="tbank-header">
+        <div class="tbank-badge">Т</div>
+        <div>
+          <div class="tbank-name">Т‑Банк</div>
+          <div class="tbank-caption">перевод по карте или номеру телефона</div>
+        </div>
+      </div>
+      <div class="copy-row">
+        <div>
+          <div class="copy-label">Номер карты</div>
+          <div class="copy-val">2200 7019 4219 4652</div>
+        </div>
+        <button class="copy-btn" onclick="copyText('2200701942194652','Номер карты скопирован')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <div class="copy-row">
+        <div>
+          <div class="copy-label">Телефон</div>
+          <div class="copy-val copy-val-sm">+7 966 349 22 74</div>
+        </div>
+        <button class="copy-btn" onclick="copyText('+79663492274','Телефон скопирован')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <div class="bank-recipient">Получатель: Дамир О.</div>
+    </div>
+
+    <div class="modal-divider"></div>
+
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--mid)">К переводу</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;background:linear-gradient(135deg,#f8f8f6,#d4d0c8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${(d.amount||0).toLocaleString('ru')} ₽</span>
+    </div>
+
+    <button class="btn-paid" id="btn-paid" onclick="handlePaid()">Я оплатил</button>
+  `;
+}
+
+/* ═══════════════════════════════════════════ HANDLE PAID */
+async function handlePaid(){
+  const btn=document.getElementById('btn-paid');
+  if(btn){btn.disabled=true;btn.textContent='Отправка...';}
+
+  const d=_modalData;
+  const text=`[${d.tab}] ${d.desc} | Username: ${d.username} | Оплачено: ${(d.amount||0)} ₽`;
+  const TOKEN='8701823510:AAHPyTTDnLAAFtd4cn8lj1mp3Vq-gGpYQlg';
+  const CHAT='1717982615';
+
+  try{
+    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:CHAT,text})
+    });
+    showSuccess();
+  } catch(e){
+    if(btn){btn.disabled=false;btn.textContent='Я оплатил';}
+    document.getElementById('modal-inner').insertAdjacentHTML('beforeend',
+      '<p style="color:#e06060;font-size:10px;letter-spacing:1.5px;text-align:center;margin-top:10px">Ошибка отправки, попробуйте снова</p>');
+  }
+}
+
+function showSuccess(){
+  document.getElementById('modal-inner').innerHTML=`
+    <div class="modal-success">
+      <div class="modal-success-icon">✓</div>
+      <div class="modal-success-title">Заказ отправлен</div>
+      <div class="modal-success-sub">Скоро будет выдан · Ожидайте</div>
+    </div>
+  `;
+  // clear username
+  ['stars-user','prem-user','ton-user','acc-user'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  setTimeout(closeModal,3000);
+}
+
+/* ═══════════════════════════════════════════ CLOSE MODAL */
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function handleOverlayClick(e){
+  if(e.target===document.getElementById('modal-overlay'))closeModal();
+}
+
+/* ═══════════════════════════════════════════ COPY */
+function copyText(text,msg){
+  navigator.clipboard?.writeText(text).then(()=>showToast(msg)).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);showToast(msg);
+  });
+}
+
+/* ═══════════════════════════════════════════ TOAST */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._tid);t._tid=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+/* ═══════════════════════════════════════════ KEYBOARD */
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+</script>
 </body>
 </html>
